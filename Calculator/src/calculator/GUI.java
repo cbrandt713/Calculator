@@ -38,6 +38,7 @@ public class GUI extends JPanel
 	private JButton backspace;
 	private JButton decimal;
 	private JButton clear;
+	private JButton clearEntry;
 	private JButton addition;
 	private JButton subtraction;
 	private JButton multiplication;
@@ -170,10 +171,9 @@ public class GUI extends JPanel
 		
 		add(decimal, decC);
 		
-		deleteAction = new DeleteAction("Clr", null, "Delete number", null);
+		deleteAction = new DeleteAction("Clr", null, "Clear All Input", null);
 		clear = new JButton(deleteAction);
 		clear.setFocusable(false);
-		
 		
 		GridBagConstraints clearC = new GridBagConstraints();
 		clearC.gridx = 2;
@@ -181,6 +181,17 @@ public class GUI extends JPanel
 		clearC.weightx = 0.5;
 		
 		add(clear, clearC);
+		
+		deleteAction = new DeleteAction("CE", null, "Clear Entry", null);
+		clearEntry = new JButton(deleteAction);
+		clearEntry.setFocusable(false);
+		
+		clearC.gridx = 1;
+		
+		add(clearEntry, clearC);
+		
+		
+		
 	}
 	
 	public void createOperators()
@@ -221,6 +232,13 @@ public class GUI extends JPanel
 		
 	}
 	
+	private String getUserInput()
+	{
+		int newLine = displayText.indexOf('\n');
+		System.out.println(displayText.substring(newLine + 1));
+		return displayText.substring(newLine + 1);
+	}
+	
 	private void changeDisplay(String message, int lineNum)
 	{
 		int newLine = 0;
@@ -237,11 +255,16 @@ public class GUI extends JPanel
 		
 		if (lineNum == 0)
 		{
-			display.insert(message, 0);
+			display.insert(message, newLine - 1);
 		}
 		else
 		{
-			if (display.getText().substring(newLine).equals("0"))
+			if (message.equals("Clear"))
+			{
+				display.setText(display.getText().substring(0, newLine));
+			}
+			
+			else if (display.getText().substring(newLine).equals("0"))
 			{
 				display.insert(message, newLine);
 				int length = display.getText().length(); 
@@ -253,6 +276,7 @@ public class GUI extends JPanel
 				display.insert(message, length);
 			}
 		}
+		
 		displayText = display.getText();
 	}
 	
@@ -351,6 +375,10 @@ public class GUI extends JPanel
 			System.out.println(e.getActionCommand());
 			
 			String operator = e.getActionCommand();
+			
+			String input = getUserInput();
+			changeDisplay(input + " " + operator + " ", EXPRESSION);
+			changeDisplay("Clear", INPUT);
 			
 			switch (operator)
 			{
