@@ -65,9 +65,6 @@ public class GUI extends JPanel
 		//Create calculator
 		calculator = Calculator.getCalculatorInstance();
 		
-		changeDisplay("5 +", 0);
-		changeDisplay(3, 1);
-		
 	}
 	
 	private void createDisplay()
@@ -246,9 +243,15 @@ public class GUI extends JPanel
 		{
 			if (display.getText().substring(newLine).equals("0"))
 			{
-				System.out.println("Here");
+				display.insert(message, newLine);
+				int length = display.getText().length(); 
+				display.setText(display.getText().substring(0, length - 1));
 			}
-			display.insert(message, newLine);
+			else 
+			{
+				int length = display.getText().length(); 
+				display.insert(message, length);
+			}
 		}
 		displayText = display.getText();
 	}
@@ -256,7 +259,6 @@ public class GUI extends JPanel
 	private void changeDisplay(float expression, int lineNum)
 	{
 		String exp = ((Float) expression).toString();
-		int newLine = 0;
 		
 		changeDisplay(exp, lineNum);
 	}
@@ -264,7 +266,6 @@ public class GUI extends JPanel
 	private void changeDisplay(int expression, int lineNum)
 	{
 		String exp = ((Integer) expression).toString();
-		int newLine = 0;
 		
 		changeDisplay(exp, lineNum);
 	}
@@ -281,7 +282,6 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			System.out.println(e.getActionCommand());
-			
 			changeDisplay(e.getActionCommand(), INPUT);
 		}
 		
