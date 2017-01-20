@@ -25,12 +25,17 @@ public class GUI extends JPanel
 	public static final int EXPRESSION = 0;
 	public static final int INPUT = 1;
 	
+	//Calculator and Required Data:
 	private Calculator calculator;
 	private double input;
 	private double total;
 	
-	//Data Objects:
+	//GUI Data Objects:
 	private String displayText = "\n0";
+	private String prevOperator = "";
+	private boolean typeOverFlag;
+	private boolean firstInputFlag;
+	private EventQueue queue;
 	
 	//GUI Elements:
 	private JTextArea display;
@@ -43,11 +48,10 @@ public class GUI extends JPanel
 	private JButton subtraction;
 	private JButton multiplication;
 	private JButton division;
+	private JButton equals;
 	private NumberAction numberAction;
 	private DeleteAction deleteAction;
 	private OperatorAction operatorAction;
-	private EventQueue queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-	
 	
 	public GUI()
 	{
@@ -65,6 +69,12 @@ public class GUI extends JPanel
 		
 		//Create calculator
 		calculator = Calculator.getCalculatorInstance();
+		input = 0;
+		total = 0;
+		typeOverFlag = true;
+		firstInputFlag = true;
+		
+		queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
 		
 	}
 	
@@ -96,13 +106,14 @@ public class GUI extends JPanel
 		display.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
 		display.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
 		display.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
+		display.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
+		display.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "operation");
 		
 		GridBagConstraints displayC = new GridBagConstraints();
 		
 		displayC.gridx = 0;
 		displayC.gridy = 0;
-		displayC.gridwidth = 4;
-		//displayC.gridheight = 2;
+		displayC.gridwidth = 5;
 		displayC.weighty = 1.0;
 		displayC.weightx = 1.0;
 		displayC.fill = GridBagConstraints.BOTH;
@@ -112,7 +123,6 @@ public class GUI extends JPanel
 	
 	private void createNumbers()
 	{
-		
 		numbers = new JButton[10];
 		
 		GridBagConstraints numC = new GridBagConstraints();
@@ -131,7 +141,7 @@ public class GUI extends JPanel
 				numC.weightx = 0.5;
 				numC.fill = GridBagConstraints.HORIZONTAL;
 			}
-			//Register the action based on number touched. 0 = 48, 1 = 49, etc.
+			
 			numberAction = new NumberAction(i.toString(), null, "Insert number", null);
 			numbers[i] = new JButton(numberAction);
 			numbers[i].setFocusable(false);
@@ -194,10 +204,11 @@ public class GUI extends JPanel
 		
 	}
 	
-	public void createOperators()
+	private void createOperators()
 	{
 		operatorAction = new OperatorAction("+", null, "Add numbers", null);
 		addition = new JButton(operatorAction);
+		addition.setFocusable(false);
 		
 		GridBagConstraints operatorC = new GridBagConstraints();
 		
@@ -210,6 +221,7 @@ public class GUI extends JPanel
 		
 		operatorAction = new OperatorAction("-", null, "Subtract numbers", null);
 		subtraction = new JButton(operatorAction);
+		subtraction.setFocusable(false);
 		
 		operatorC.gridy = 4;
 		
@@ -217,6 +229,7 @@ public class GUI extends JPanel
 
 		operatorAction = new OperatorAction("*", null, "Multiply numbers", null);
 		multiplication = new JButton(operatorAction);
+		multiplication.setFocusable(false);
 		
 		operatorC.gridy = 3;
 		
@@ -224,18 +237,30 @@ public class GUI extends JPanel
 		
 		operatorAction = new OperatorAction("/", null, "Divide numbers", null);
 		division = new JButton(operatorAction);
+		division.setFocusable(false);
 		
 		operatorC.gridy = 2;
 		
 		add(division, operatorC);
 		
+		operatorAction = new OperatorAction("=", null, "Find Total", null);
+		equals = new JButton(operatorAction);
+		equals.setFocusable(false);
 		
+		operatorC.gridy = 4;
+		operatorC.gridx = 4;
+		operatorC.gridheight = 2;
+		operatorC.fill = GridBagConstraints.BOTH;
+		operatorC.weighty = 1.0;
+		operatorC.weightx = 1.0;
+		
+		add(equals, operatorC);
 	}
 	
 	private String getUserInput()
 	{
 		int newLine = displayText.indexOf('\n');
-		System.out.println(displayText.substring(newLine + 1));
+		System.out.println("User input: " + displayText.substring(newLine + 1));
 		return displayText.substring(newLine + 1);
 	}
 	
@@ -253,9 +278,16 @@ public class GUI extends JPanel
 		}
 		
 		
-		if (lineNum == 0)
+		if (lineNum == EXPRESSION)
 		{
-			display.insert(message, newLine - 1);
+			if (message.equals("Clear"))
+			{
+				display.setText(display.getText().substring(newLine));
+			}
+			else
+			{
+				display.insert(message, newLine - 1);
+			}	
 		}
 		else
 		{
@@ -264,11 +296,12 @@ public class GUI extends JPanel
 				display.setText(display.getText().substring(0, newLine));
 			}
 			
-			else if (display.getText().substring(newLine).equals("0"))
+			//display.getText().substring(newLine).equals("0")
+			else if (typeOverFlag)
 			{
+				display.setText(display.getText().substring(0, newLine));
 				display.insert(message, newLine);
-				int length = display.getText().length(); 
-				display.setText(display.getText().substring(0, length - 1));
+				typeOverFlag = false;
 			}
 			else 
 			{
@@ -280,9 +313,9 @@ public class GUI extends JPanel
 		displayText = display.getText();
 	}
 	
-	private void changeDisplay(float expression, int lineNum)
+	private void changeDisplay(double expression, int lineNum)
 	{
-		String exp = ((Float) expression).toString();
+		String exp = ((Double) expression).toString();
 		
 		changeDisplay(exp, lineNum);
 	}
@@ -292,6 +325,13 @@ public class GUI extends JPanel
 		String exp = ((Integer) expression).toString();
 		
 		changeDisplay(exp, lineNum);
+	}
+	
+	private String formatResult(double result)
+	{
+		String res = ((Double) result).toString();
+		String s = res.indexOf(".") < 0 ? res : res.replaceAll("0*$", "").replaceAll("\\.$", "");
+		return s;
 	}
 	
 	public class NumberAction extends AbstractAction
@@ -304,7 +344,8 @@ public class GUI extends JPanel
 		}
 		
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) 
+		{
 			System.out.println(e.getActionCommand());
 			changeDisplay(e.getActionCommand(), INPUT);
 		}
@@ -322,33 +363,35 @@ public class GUI extends JPanel
 		}
 		
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) 
+		{
+			String keyStroke = "";
 			
-			if (e.getSource() instanceof JTextField)
+			if (e.getSource() instanceof JTextArea)
 			{
 			 	KeyEvent ke = (KeyEvent)queue.getCurrentEvent();
-		        String keyStroke = ke.getKeyText( ke.getKeyCode() );
-		        
-		        //Backspace:
-				if (keyStroke.equals("Backspace"))
-				{
-					if (!displayText.equals(""))
-					{
-						displayText = displayText.substring(0, displayText.length() - 1);
-					}
-				}
-				//Clear:
-				else
-				{
-					displayText = "";
-				}
+		        keyStroke = ke.getKeyText( ke.getKeyCode() );
+		        System.out.println(keyStroke);
+			}
 				
-			}
+			System.out.println(e.getActionCommand());
 			//Clear:
-			else if (e.getActionCommand().equals("Clr"))
+			if (e.getActionCommand().equals("Clr") || keyStroke.equals("Delete"))
 			{
-				displayText = "";
+				changeDisplay("Clear", EXPRESSION);
+				changeDisplay("Clear", INPUT);
+				displayText = "\n0";
+				input = 0;
+				total = 0;
+				typeOverFlag = true;
 			}
+			//Clear Entry:
+			else if (e.getActionCommand().equals("CE"))
+			{
+				changeDisplay("Clear", INPUT);
+				input = 0;
+			}
+			//Backspace:
 			else
 			{
 				if (!displayText.equals(""))
@@ -371,34 +414,77 @@ public class GUI extends JPanel
 		}
 		
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			System.out.println(e.getActionCommand());
+		public void actionPerformed(ActionEvent e) 
+		{
 			
 			String operator = e.getActionCommand();
+			System.out.println("Operator: " + operator);
 			
-			String input = getUserInput();
-			changeDisplay(input + " " + operator + " ", EXPRESSION);
+			String formattedTotal = "";
+			
+			String userInput = getUserInput();
+			input = Double.parseDouble(userInput);
+			
+			if (operator.equals("\n")) operator = "=";
+			
+			changeDisplay(userInput + " " + operator + " ", EXPRESSION);
 			changeDisplay("Clear", INPUT);
 			
-			switch (operator)
+			if (operator.equals("=") || operator.equals("\n"))
+			{
+				
+			}
+			
+			switch (prevOperator)
 			{
 				case "+":
 				{
-					
+					total = calculator.add(total, input);
+					break;
 				}
 				case "-":
 				{
-					
+					total = calculator.subtract(total, input);
+					break;
 				}
 				case "*":
 				{
-					
+					total = calculator.multiply(total, input);
+					break;
 				}
 				case "/":
 				{
-					
+					total = calculator.divide(total, input);
+					break;
+				}
+				//Prev operator not yet used:
+				case "":
+				{
+					total = input;
+					break;
+				}
+				//Do nothing:
+				case "\n":
+				{
+					changeDisplay("Clear", EXPRESSION);
+					total = input;
+				}
+				case "=":
+				{
+					break;
+				}
+				//Error case:
+				default :
+				{
+					System.out.println("An unknown error has occurred");
+					break;
 				}
 			}
+			
+			formattedTotal = formatResult(total);
+			changeDisplay(formattedTotal, INPUT);
+			prevOperator = operator;
+			typeOverFlag = true;
 			
 			
 			

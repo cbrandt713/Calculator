@@ -20,9 +20,24 @@ public class Calculator {
 		return calcObj;
 	}
 	
-	public double add(double firstAddend, double secondAddend)
+	public double add(double LHS, double RHS)
 	{
-		return firstAddend + secondAddend;
+		return LHS + RHS;
+	}
+	
+	public double subtract(double LHS, double RHS)
+	{
+		return LHS - RHS;
+	}
+	
+	public double multiply(double LHS, double RHS)
+	{
+		return LHS * RHS;
+	}
+	
+	public double divide(double LHS, double RHS)
+	{
+		return LHS / RHS;
 	}
 	
 	
