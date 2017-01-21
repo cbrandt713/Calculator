@@ -78,6 +78,12 @@ public class GUI extends JPanel
 		
 	}
 	
+	
+	/*public GUI getGUIInstance()
+	{
+		
+	}*/
+	
 	private void createDisplay()
 	{
 		display = new JTextArea(displayText);
@@ -282,7 +288,7 @@ public class GUI extends JPanel
 		{
 			if (message.equals("Clear"))
 			{
-				display.setText(display.getText().substring(newLine));
+				display.setText(display.getText().substring(newLine - 1));
 			}
 			else
 			{
@@ -419,6 +425,7 @@ public class GUI extends JPanel
 			
 			String operator = e.getActionCommand();
 			System.out.println("Operator: " + operator);
+			System.out.println("PrevOperator: " + prevOperator);
 			
 			String formattedTotal = "";
 			
@@ -430,10 +437,10 @@ public class GUI extends JPanel
 			changeDisplay(userInput + " " + operator + " ", EXPRESSION);
 			changeDisplay("Clear", INPUT);
 			
-			if (operator.equals("=") || operator.equals("\n"))
+			if (operator.equals("="))
 			{
-				
-			}
+				changeDisplay("Clear", EXPRESSION);
+			}		
 			
 			switch (prevOperator)
 			{
@@ -464,17 +471,14 @@ public class GUI extends JPanel
 					break;
 				}
 				//Do nothing:
-				case "\n":
-				{
-					changeDisplay("Clear", EXPRESSION);
-					total = input;
-				}
+				case "\n":		
 				case "=":
 				{
+					total = input;
 					break;
 				}
 				//Error case:
-				default :
+				default:
 				{
 					System.out.println("An unknown error has occurred");
 					break;
@@ -485,8 +489,6 @@ public class GUI extends JPanel
 			changeDisplay(formattedTotal, INPUT);
 			prevOperator = operator;
 			typeOverFlag = true;
-			
-			
 			
 		}
 		
