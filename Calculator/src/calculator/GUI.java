@@ -40,16 +40,23 @@ public class GUI extends JPanel
 	
 	//GUI Elements:
 	private JTextArea display;
+	//Number Buttons:
 	private JButton numbers[];
-	private JButton backspace;
 	private JButton decimal;
+	
+	//Delete Buttons:
+	private JButton backspace;
 	private JButton clear;
 	private JButton clearEntry;
+	
+	//Operator Buttons:
 	private JButton addition;
 	private JButton subtraction;
 	private JButton multiplication;
 	private JButton division;
 	private JButton equals;
+	
+	//Action Elements:
 	private NumberAction numberAction;
 	private DeleteAction deleteAction;
 	private OperatorAction operatorAction;
@@ -67,6 +74,7 @@ public class GUI extends JPanel
 		createNumbers();
 		createDeleteButtons();
 		createOperators();
+		createMiscOperators();
 		
 		//Create calculator
 		calculator = Calculator.getCalculatorInstance();
@@ -263,6 +271,11 @@ public class GUI extends JPanel
 		operatorC.weightx = 1.0;
 		
 		add(equals, operatorC);
+	}
+	
+	private void createMiscOperators()
+	{
+		GridBagConstraints operatorC = new GridBagConstraints();
 	}
 	
 	private String getUserInput()
