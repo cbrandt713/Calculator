@@ -7,7 +7,7 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		GUI gui = new GUI();
+		GUI gui = GUI.getGUIInstance();
 		
 		JFrame frame = new JFrame("Calculator");
 		frame.getContentPane().add(gui);

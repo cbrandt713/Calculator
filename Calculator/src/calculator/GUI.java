@@ -31,6 +31,7 @@ public class GUI extends JPanel
 	private double total;
 	
 	//GUI Data Objects:
+	private static GUI GUIObject;
 	private String displayText = "\n0";
 	private String prevOperator = "";
 	private boolean typeOverFlag;
@@ -53,7 +54,7 @@ public class GUI extends JPanel
 	private DeleteAction deleteAction;
 	private OperatorAction operatorAction;
 	
-	public GUI()
+	private GUI()
 	{
 		//Call JPanel constructor
 		super();
@@ -64,7 +65,7 @@ public class GUI extends JPanel
 		//Create elements of the layout
 		createDisplay();
 		createNumbers();
-		createMiscButtons();
+		createDeleteButtons();
 		createOperators();
 		
 		//Create calculator
@@ -79,10 +80,15 @@ public class GUI extends JPanel
 	}
 	
 	
-	/*public GUI getGUIInstance()
+	public static GUI getGUIInstance()
 	{
+		if (GUIObject == null)
+		{
+			GUIObject = new GUI();
+		}
 		
-	}*/
+		return GUIObject;
+	}
 	
 	private void createDisplay()
 	{
@@ -160,9 +166,20 @@ public class GUI extends JPanel
 			add(numbers[i], numC);
 		}
 		
+		numberAction = new NumberAction(".", null, "Insert number", null);
+		decimal = new JButton(numberAction);
+		decimal.setFocusable(false);
+		
+		GridBagConstraints decC = new GridBagConstraints();
+		decC.gridx = 2;
+		decC.gridy = 5;
+		decC.weightx = 0.5;
+		decC.fill = GridBagConstraints.HORIZONTAL;
+		
+		add(decimal, decC);	
 	}
 	
-	private void createMiscButtons()
+	private void createDeleteButtons()
 	{
 		deleteAction = new DeleteAction("←", null, "Delete number", null);
 		backspace = new JButton(deleteAction);
@@ -174,18 +191,6 @@ public class GUI extends JPanel
 		backspaceC.weightx = 0.5;
 		
 		add(backspace, backspaceC);
-		
-		numberAction = new NumberAction(".", null, "Insert number", KeyEvent.VK_PERIOD);
-		decimal = new JButton(numberAction);
-		decimal.setFocusable(false);
-		
-		GridBagConstraints decC = new GridBagConstraints();
-		decC.gridx = 2;
-		decC.gridy = 5;
-		decC.weightx = 0.5;
-		decC.fill = GridBagConstraints.HORIZONTAL;
-		
-		add(decimal, decC);
 		
 		deleteAction = new DeleteAction("Clr", null, "Clear All Input", null);
 		clear = new JButton(deleteAction);
@@ -205,9 +210,6 @@ public class GUI extends JPanel
 		clearC.gridx = 1;
 		
 		add(clearEntry, clearC);
-		
-		
-		
 	}
 	
 	private void createOperators()
