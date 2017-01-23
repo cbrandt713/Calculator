@@ -35,9 +35,14 @@ public class Calculator {
 		return LHS * RHS;
 	}
 	
-	public double divide(double LHS, double RHS)
+	public double divide(double dividend, double divisor)
 	{
-		return LHS / RHS;
+		return (dividend / divisor);
+	}
+	
+	public double squareRoot(double input)
+	{
+		return Math.sqrt(input);
 	}
 	
 	

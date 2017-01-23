@@ -16,7 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 
-//Increase gridx = move left
+//Increase gridx = move right
 //Increase gridy = move down
 //Starts top left corner (0,0)
 public class GUI extends JPanel
@@ -40,6 +40,7 @@ public class GUI extends JPanel
 	
 	//GUI Elements:
 	private JTextArea display;
+	
 	//Number Buttons:
 	private JButton numbers[];
 	private JButton decimal;
@@ -56,10 +57,17 @@ public class GUI extends JPanel
 	private JButton division;
 	private JButton equals;
 	
+	//Misc Operator Buttons:
+	private JButton plusMinus;
+	private JButton reciprocal;
+	private JButton squareRoot;
+	private JButton percent;
+
 	//Action Elements:
 	private NumberAction numberAction;
 	private DeleteAction deleteAction;
 	private OperatorAction operatorAction;
+	private MiscOperatorAction miscOperatorAction;
 	
 	private GUI()
 	{
@@ -104,13 +112,15 @@ public class GUI extends JPanel
 		display.setRows(2);
 		display.setEditable(false);
 		
-		numberAction = new NumberAction("0", null, "Insert number", null);
-		deleteAction = new DeleteAction("←", null, "Delete number", null);
-		operatorAction = new OperatorAction("+", null, "", null);
+		numberAction = new NumberAction("0", "Insert number");
+		deleteAction = new DeleteAction("Clr", "Delete number");
+		operatorAction = new OperatorAction("+", "Add Numbers");
+		miscOperatorAction = new MiscOperatorAction("1/x", "Reciprocal");
 		
 		display.getActionMap().put("number", numberAction);
 		display.getActionMap().put("delete", deleteAction);
 		display.getActionMap().put("operation", operatorAction);
+		display.getActionMap().put("miscOperation", miscOperatorAction);
 		
 		for (Integer i = 0; i <= 9; i++)
 		{
@@ -162,7 +172,7 @@ public class GUI extends JPanel
 				numC.fill = GridBagConstraints.HORIZONTAL;
 			}
 			
-			numberAction = new NumberAction(i.toString(), null, "Insert number", null);
+			numberAction = new NumberAction(i.toString(), "Insert number");
 			numbers[i] = new JButton(numberAction);
 			numbers[i].setFocusable(false);
 			
@@ -174,7 +184,7 @@ public class GUI extends JPanel
 			add(numbers[i], numC);
 		}
 		
-		numberAction = new NumberAction(".", null, "Insert number", null);
+		numberAction = new NumberAction(".", "Decimal");
 		decimal = new JButton(numberAction);
 		decimal.setFocusable(false);
 		
@@ -189,7 +199,7 @@ public class GUI extends JPanel
 	
 	private void createDeleteButtons()
 	{
-		deleteAction = new DeleteAction("←", null, "Delete number", null);
+		deleteAction = new DeleteAction("←", "Delete number");
 		backspace = new JButton(deleteAction);
 		backspace.setFocusable(false);
 	
@@ -200,7 +210,7 @@ public class GUI extends JPanel
 		
 		add(backspace, backspaceC);
 		
-		deleteAction = new DeleteAction("Clr", null, "Clear All Input", null);
+		deleteAction = new DeleteAction("Clr", "Clear All Input");
 		clear = new JButton(deleteAction);
 		clear.setFocusable(false);
 		
@@ -211,7 +221,7 @@ public class GUI extends JPanel
 		
 		add(clear, clearC);
 		
-		deleteAction = new DeleteAction("CE", null, "Clear Entry", null);
+		deleteAction = new DeleteAction("CE", "Clear Entry");
 		clearEntry = new JButton(deleteAction);
 		clearEntry.setFocusable(false);
 		
@@ -222,7 +232,7 @@ public class GUI extends JPanel
 	
 	private void createOperators()
 	{
-		operatorAction = new OperatorAction("+", null, "Add numbers", null);
+		operatorAction = new OperatorAction("+", "Add numbers");
 		addition = new JButton(operatorAction);
 		addition.setFocusable(false);
 		
@@ -235,7 +245,7 @@ public class GUI extends JPanel
 		
 		add(addition, operatorC);
 		
-		operatorAction = new OperatorAction("-", null, "Subtract numbers", null);
+		operatorAction = new OperatorAction("-", "Subtract numbers");
 		subtraction = new JButton(operatorAction);
 		subtraction.setFocusable(false);
 		
@@ -243,7 +253,7 @@ public class GUI extends JPanel
 		
 		add(subtraction, operatorC);
 
-		operatorAction = new OperatorAction("*", null, "Multiply numbers", null);
+		operatorAction = new OperatorAction("*", "Multiply numbers");
 		multiplication = new JButton(operatorAction);
 		multiplication.setFocusable(false);
 		
@@ -251,7 +261,7 @@ public class GUI extends JPanel
 		
 		add(multiplication, operatorC);
 		
-		operatorAction = new OperatorAction("/", null, "Divide numbers", null);
+		operatorAction = new OperatorAction("/", "Divide numbers");
 		division = new JButton(operatorAction);
 		division.setFocusable(false);
 		
@@ -259,7 +269,7 @@ public class GUI extends JPanel
 		
 		add(division, operatorC);
 		
-		operatorAction = new OperatorAction("=", null, "Find Total", null);
+		operatorAction = new OperatorAction("=", "Find Total");
 		equals = new JButton(operatorAction);
 		equals.setFocusable(false);
 		
@@ -276,6 +286,43 @@ public class GUI extends JPanel
 	private void createMiscOperators()
 	{
 		GridBagConstraints operatorC = new GridBagConstraints();
+		
+		miscOperatorAction = new MiscOperatorAction("±", "Make number opposite");
+		plusMinus = new JButton(miscOperatorAction);
+		plusMinus.setFocusable(false);
+		
+		operatorC.gridx = 3;
+		operatorC.gridy = 1;
+		operatorC.weightx = 0.5;
+		operatorC.weighty = 0.5;
+		operatorC.fill = GridBagConstraints.BOTH;
+		
+		add(plusMinus, operatorC);
+		
+		miscOperatorAction = new MiscOperatorAction("1/x", "Reciprocal");
+		reciprocal = new JButton(miscOperatorAction);
+		reciprocal.setFocusable(false);
+		
+		operatorC.gridx = 4;
+		operatorC.gridy = 3;
+		
+		add(reciprocal, operatorC);
+		
+		miscOperatorAction = new MiscOperatorAction("%", "Calculate percentages");
+		percent = new JButton(miscOperatorAction);
+		percent.setFocusable(false);
+		
+		operatorC.gridy = 2;
+		
+		add(percent, operatorC);
+		
+		miscOperatorAction = new MiscOperatorAction("√", "Square Root");
+		squareRoot = new JButton(miscOperatorAction);
+		squareRoot.setFocusable(false);
+		
+		operatorC.gridy = 1;
+		
+		add(squareRoot, operatorC);
 	}
 	
 	private String getUserInput()
@@ -348,7 +395,7 @@ public class GUI extends JPanel
 		changeDisplay(exp, lineNum);
 	}
 	
-	private String formatResult(double result)
+	private String formatDouble(double result)
 	{
 		String res = ((Double) result).toString();
 		String s = res.indexOf(".") < 0 ? res : res.replaceAll("0*$", "").replaceAll("\\.$", "");
@@ -357,11 +404,10 @@ public class GUI extends JPanel
 	
 	public class NumberAction extends AbstractAction
 	{
-		public NumberAction(String name, ImageIcon icon, String shortDescription, Integer mnemonic)
+		public NumberAction(String name, String shortDescription)
 		{
-			super(name, icon);
+			super(name);
 			putValue(SHORT_DESCRIPTION, shortDescription);
-		    putValue(MNEMONIC_KEY, mnemonic);
 		}
 		
 		@Override
@@ -376,11 +422,10 @@ public class GUI extends JPanel
 	public class DeleteAction extends AbstractAction
 	{
 		
-		public DeleteAction(String name, ImageIcon icon, String shortDescription, Integer mnemonic)
+		public DeleteAction(String name, String shortDescription)
 		{
-			super(name, icon);
+			super(name);
 			putValue(SHORT_DESCRIPTION, shortDescription);
-		    putValue(MNEMONIC_KEY, mnemonic);
 		}
 		
 		@Override
@@ -427,11 +472,10 @@ public class GUI extends JPanel
 	
 	public class OperatorAction extends AbstractAction
 	{
-		public OperatorAction(String name, ImageIcon icon, String shortDescription, Integer mnemonic)
+		public OperatorAction(String name, String shortDescription)
 		{
-			super(name, icon);
+			super(name);
 			putValue(SHORT_DESCRIPTION, shortDescription);
-		    putValue(MNEMONIC_KEY, mnemonic);
 		}
 		
 		@Override
@@ -500,13 +544,77 @@ public class GUI extends JPanel
 				}
 			}
 			
-			formattedTotal = formatResult(total);
+			formattedTotal = formatDouble(total);
 			changeDisplay(formattedTotal, INPUT);
 			prevOperator = operator;
 			typeOverFlag = true;
 			
 		}
 		
+	}
+	
+	public class MiscOperatorAction extends AbstractAction
+	{
+		public MiscOperatorAction(String name)
+		{
+			super(name);
+		}
+		
+		public MiscOperatorAction(String name, String shortDescription)
+		{
+			super(name);
+			putValue(SHORT_DESCRIPTION, shortDescription);
+		}
+		
+		public void actionPerformed(ActionEvent e)
+		{
+			String operator = e.getActionCommand();
+			System.out.println("Operator: " + operator);
+			
+			String formattedTotal = "";
+			
+			String userInput = getUserInput();
+			input = Double.parseDouble(userInput);
+			String formattedInput = formatDouble(input);
+			
+			changeDisplay("Clear", EXPRESSION);
+			changeDisplay("Clear", INPUT);
+			
+			switch (operator)
+			{
+				case "±":
+				{
+					total = calculator.multiply(input, -1);
+					break;
+				}
+				case "1/x":
+				{
+					total = calculator.divide(1, input);
+					break;
+				}
+				case "%":
+				{
+					
+					break;
+				}
+				case "√":
+				{
+					changeDisplay("sqrt(" + formattedInput + ")", EXPRESSION);
+					total = calculator.squareRoot(input);
+					break;
+				}
+				//Error:
+				default:
+				{
+					
+				}
+			}
+			
+			formattedTotal = formatDouble(total);
+			System.out.println(formattedTotal);
+			changeDisplay(formattedTotal, INPUT);
+			typeOverFlag = true;
+		}
 	}
 	
 }
