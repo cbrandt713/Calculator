@@ -1,0 +1,27 @@
+Describe Project
+List Issues
+5-10 minutes
+
+Things to think about:
+Powerpoint? - Keep slides simple
+Don't read
+Eye contact
+Don't be monotone
+Rehearse
+Be prepared
+Humor?
+Presence
+
+
+Final Paper - 30-80 pages
+1. Intro to project
+2. Installation instructions
+3. A user's manual, if applicable
+4. A fully documented design
+	A. Aspects of the project
+	B. How you handled them
+5. Classes, data structures, file structures
+6. The program (Not in page count)
+7. Test Plan + Test Results
+8. Summary and conclusions
+9. Bibliography (If Applicable)
