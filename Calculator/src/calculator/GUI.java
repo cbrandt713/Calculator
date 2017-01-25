@@ -95,7 +95,6 @@ public class GUI extends JPanel
 		
 	}
 	
-	
 	public static GUI getGUIInstance()
 	{
 		if (GUIObject == null)
@@ -484,67 +483,26 @@ public class GUI extends JPanel
 			
 			String operator = e.getActionCommand();
 			System.out.println("Operator: " + operator);
-			System.out.println("PrevOperator: " + prevOperator);
-			
-			String formattedTotal = "";
 			
 			String userInput = getUserInput();
 			input = Double.parseDouble(userInput);
+			calculator.pushOperand(input);
 			
 			if (operator.equals("\n")) operator = "=";
 			
+			calculator.pushOperator(operator);
+			
 			changeDisplay(userInput + " " + operator + " ", EXPRESSION);
 			changeDisplay("Clear", INPUT);
+			
+			total = calculator.doCalculation();
 			
 			if (operator.equals("="))
 			{
 				changeDisplay("Clear", EXPRESSION);
 			}		
 			
-			switch (prevOperator)
-			{
-				case "+":
-				{
-					total = calculator.add(total, input);
-					break;
-				}
-				case "-":
-				{
-					total = calculator.subtract(total, input);
-					break;
-				}
-				case "*":
-				{
-					total = calculator.multiply(total, input);
-					break;
-				}
-				case "/":
-				{
-					total = calculator.divide(total, input);
-					break;
-				}
-				//Prev operator not yet used:
-				case "":
-				{
-					total = input;
-					break;
-				}
-				//Do nothing:
-				case "\n":		
-				case "=":
-				{
-					total = input;
-					break;
-				}
-				//Error case:
-				default:
-				{
-					System.out.println("An unknown error has occurred");
-					break;
-				}
-			}
-			
-			formattedTotal = formatDouble(total);
+			String formattedTotal = formatDouble(total);
 			changeDisplay(formattedTotal, INPUT);
 			prevOperator = operator;
 			typeOverFlag = true;
@@ -577,28 +535,33 @@ public class GUI extends JPanel
 			input = Double.parseDouble(userInput);
 			String formattedInput = formatDouble(input);
 			
-			changeDisplay("Clear", EXPRESSION);
 			changeDisplay("Clear", INPUT);
 			
 			switch (operator)
 			{
 				case "±":
 				{
+					
 					total = calculator.multiply(input, -1);
 					break;
 				}
 				case "1/x":
 				{
+					changeDisplay("Clear", EXPRESSION);
+					changeDisplay("reciprocal(" + formattedInput + ")", EXPRESSION);
 					total = calculator.divide(1, input);
 					break;
 				}
 				case "%":
 				{
-					
+					double result = calculator.percent(total, input);
+					formattedTotal = formatDouble(result);
+					changeDisplay(formattedTotal, EXPRESSION);
 					break;
 				}
 				case "√":
 				{
+					changeDisplay("Clear", EXPRESSION);
 					changeDisplay("sqrt(" + formattedInput + ")", EXPRESSION);
 					total = calculator.squareRoot(input);
 					break;
@@ -606,12 +569,12 @@ public class GUI extends JPanel
 				//Error:
 				default:
 				{
-					
+					System.out.println("An unknown error has occurred");
 				}
 			}
 			
-			formattedTotal = formatDouble(total);
-			System.out.println(formattedTotal);
+			if (!operator.equals("%"))	formattedTotal = formatDouble(total);
+	
 			changeDisplay(formattedTotal, INPUT);
 			typeOverFlag = true;
 		}
