@@ -27,15 +27,13 @@ public class GUI extends JPanel
 	
 	//Calculator and Required Data:
 	private Calculator calculator;
-	private double input;
-	private double total;
+	private double m_input;
+	private double m_total;
 	
 	//GUI Data Objects:
 	private static GUI GUIObject;
-	private String displayText = "\n0";
-	private String prevOperator = "";
-	private boolean typeOverFlag;
-	private boolean firstInputFlag;
+	private boolean m_typeOverFlag;
+	private boolean m_firstInputFlag;
 	private EventQueue queue;
 	
 	//GUI Elements:
@@ -86,10 +84,10 @@ public class GUI extends JPanel
 		
 		//Create calculator
 		calculator = Calculator.getCalculatorInstance();
-		input = 0;
-		total = 0;
-		typeOverFlag = true;
-		firstInputFlag = true;
+		m_input = 0;
+		m_total = 0;
+		m_typeOverFlag = true;
+		m_firstInputFlag = true;
 		
 		queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
 		
@@ -107,7 +105,7 @@ public class GUI extends JPanel
 	
 	private void createDisplay()
 	{
-		display = new JTextArea(displayText);
+		display = new JTextArea("\n0");
 		display.setRows(2);
 		display.setEditable(false);
 		
@@ -326,58 +324,11 @@ public class GUI extends JPanel
 	
 	private String getUserInput()
 	{
+		String displayText = display.getText();
 		int newLine = displayText.indexOf('\n');
+		
 		System.out.println("User input: " + displayText.substring(newLine + 1));
 		return displayText.substring(newLine + 1);
-	}
-	
-	private void changeDisplay(String message, int lineNum)
-	{
-		int newLine = 0;
-		
-		try 
-		{
-			newLine = display.getLineEndOffset(0);
-		} 
-		catch (BadLocationException e) 
-		{
-			e.printStackTrace();
-		}
-		
-		
-		if (lineNum == EXPRESSION)
-		{
-			if (message.equals("Clear"))
-			{
-				display.setText(display.getText().substring(newLine - 1));
-			}
-			else
-			{
-				display.insert(message, newLine - 1);
-			}	
-		}
-		else
-		{
-			if (message.equals("Clear"))
-			{
-				display.setText(display.getText().substring(0, newLine));
-			}
-			
-			//display.getText().substring(newLine).equals("0")
-			else if (typeOverFlag)
-			{
-				display.setText(display.getText().substring(0, newLine));
-				display.insert(message, newLine);
-				typeOverFlag = false;
-			}
-			else 
-			{
-				int length = display.getText().length(); 
-				display.insert(message, length);
-			}
-		}
-		
-		displayText = display.getText();
 	}
 	
 	private void changeDisplay(double expression, int lineNum)
@@ -394,9 +345,88 @@ public class GUI extends JPanel
 		changeDisplay(exp, lineNum);
 	}
 	
-	private String formatDouble(double result)
+	private void changeDisplay(String message, int lineNum)
 	{
-		String res = ((Double) result).toString();
+		int newLineChar = 0;
+		
+		try 
+		{
+			newLineChar = display.getLineEndOffset(0);
+		} 
+		catch (BadLocationException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		
+		if (lineNum == EXPRESSION)
+		{
+			changeExpressionLine(message, newLineChar);
+		
+		}
+		else
+		{
+			changeInputLine(message, newLineChar);
+		}
+		
+	}
+	
+	private void changeExpressionLine(String a_message, int a_newLineChar)
+	{
+		if (a_message.equals("Clear"))
+		{
+			display.setText(display.getText().substring(a_newLineChar - 1));
+		}
+		else
+		{
+			display.insert(a_message, a_newLineChar - 1);
+		}	
+	}
+	
+	private void changeInputLine(String a_message, int a_newLineChar)
+	{
+		//Clear the Input Line:
+		if (a_message.equals("Clear"))
+		{
+			display.setText(display.getText().substring(0, a_newLineChar));
+		}
+		
+		//Backspace a character:
+		else if (a_message.equals("Backspace"))
+		{
+			//If the text on the input line is not blank, delete the last character
+			if (!display.getText().substring(a_newLineChar).equals(""))
+			{
+				display.setText(display.getText().substring(0, display.getText().length() - 1));
+			}
+			
+			//If the text is now blank, place a 0 on the input line and set the typeOverFlag
+			if (display.getText().substring(a_newLineChar).equals(""))
+			{
+				display.setText(display.getText() + "0");
+				m_typeOverFlag = true;
+			}	
+		}
+		
+		//Type over the text on the input line:
+		else if (m_typeOverFlag)
+		{
+			display.setText(display.getText().substring(0, a_newLineChar));
+			display.insert(a_message, a_newLineChar);
+			m_typeOverFlag = false;
+		}
+		
+		//If no special case, just append a character to the end of the input line:
+		else 
+		{
+			int length = display.getText().length(); 
+			display.insert(a_message, length);
+		}
+	}
+	
+	private String formatDouble(double a_result)
+	{
+		String res = ((Double) a_result).toString();
 		String s = res.indexOf(".") < 0 ? res : res.replaceAll("0*$", "").replaceAll("\\.$", "");
 		return s;
 	}
@@ -413,7 +443,16 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent e) 
 		{
 			System.out.println(e.getActionCommand());
+			
+			//Possible error: If user uses an operation before a number
+			if (m_firstInputFlag)
+			{
+				changeDisplay("Clear", EXPRESSION);
+				m_firstInputFlag = false;
+			}
+			
 			changeDisplay(e.getActionCommand(), INPUT);
+			
 		}
 		
 	}
@@ -445,67 +484,64 @@ public class GUI extends JPanel
 			{
 				changeDisplay("Clear", EXPRESSION);
 				changeDisplay("Clear", INPUT);
-				displayText = "\n0";
-				input = 0;
-				total = 0;
-				typeOverFlag = true;
+				changeDisplay("0", INPUT);
+				m_input = 0;
+				m_total = 0;
+				m_typeOverFlag = true;
 			}
 			//Clear Entry:
 			else if (e.getActionCommand().equals("CE"))
 			{
 				changeDisplay("Clear", INPUT);
-				input = 0;
+				changeDisplay("0", INPUT);
+				m_input = 0;
+				m_typeOverFlag = true;
 			}
 			//Backspace:
 			else
 			{
-				if (!displayText.equals(""))
-				{
-					displayText = displayText.substring(0, displayText.length() - 1);
-				}
+				changeDisplay("Backspace", INPUT);
 			}
 			
-			display.setText(displayText);
 		}
 	}
 	
 	public class OperatorAction extends AbstractAction
 	{
-		public OperatorAction(String name, String shortDescription)
+		public OperatorAction(String a_name, String a_shortDescription)
 		{
-			super(name);
-			putValue(SHORT_DESCRIPTION, shortDescription);
+			super(a_name);
+			putValue(SHORT_DESCRIPTION, a_shortDescription);
 		}
 		
 		@Override
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent a_event) 
 		{
+			//Find the given operator:
+			String operator = a_event.getActionCommand();
 			
-			String operator = e.getActionCommand();
-			System.out.println("Operator: " + operator);
-			
-			String userInput = getUserInput();
-			input = Double.parseDouble(userInput);
-			calculator.pushOperand(input);
-			
+			//Enter key is equivalent to the = operator.
 			if (operator.equals("\n")) operator = "=";
 			
 			calculator.pushOperator(operator);
+			System.out.println("Operator: " + operator);
 			
+			//Get user input and send to calculator:
+			String userInput = getUserInput();
+			m_input = Double.parseDouble(userInput);
+			calculator.pushOperand(m_input);
+			
+			//Show the input and operator on the expression line
 			changeDisplay(userInput + " " + operator + " ", EXPRESSION);
 			changeDisplay("Clear", INPUT);
 			
-			total = calculator.doCalculation();
+			m_total = calculator.doCalculation();
 			
-			if (operator.equals("="))
-			{
-				changeDisplay("Clear", EXPRESSION);
-			}		
-			
-			String formattedTotal = formatDouble(total);
+			//Format and display the total to the user:
+			String formattedTotal = formatDouble(m_total);
 			changeDisplay(formattedTotal, INPUT);
-			prevOperator = operator;
-			typeOverFlag = true;
+			
+			m_typeOverFlag = true;
 			
 		}
 		
@@ -513,11 +549,6 @@ public class GUI extends JPanel
 	
 	public class MiscOperatorAction extends AbstractAction
 	{
-		public MiscOperatorAction(String name)
-		{
-			super(name);
-		}
-		
 		public MiscOperatorAction(String name, String shortDescription)
 		{
 			super(name);
@@ -532,8 +563,8 @@ public class GUI extends JPanel
 			String formattedTotal = "";
 			
 			String userInput = getUserInput();
-			input = Double.parseDouble(userInput);
-			String formattedInput = formatDouble(input);
+			m_input = Double.parseDouble(userInput);
+			String formattedInput = formatDouble(m_input);
 			
 			changeDisplay("Clear", INPUT);
 			
@@ -542,19 +573,19 @@ public class GUI extends JPanel
 				case "±":
 				{
 					
-					total = calculator.multiply(input, -1);
+					m_total = calculator.multiply(m_input, -1);
 					break;
 				}
 				case "1/x":
 				{
 					changeDisplay("Clear", EXPRESSION);
 					changeDisplay("reciprocal(" + formattedInput + ")", EXPRESSION);
-					total = calculator.divide(1, input);
+					m_total = calculator.divide(1, m_input);
 					break;
 				}
 				case "%":
 				{
-					double result = calculator.percent(total, input);
+					double result = calculator.percent(m_total, m_input);
 					formattedTotal = formatDouble(result);
 					changeDisplay(formattedTotal, EXPRESSION);
 					break;
@@ -563,7 +594,7 @@ public class GUI extends JPanel
 				{
 					changeDisplay("Clear", EXPRESSION);
 					changeDisplay("sqrt(" + formattedInput + ")", EXPRESSION);
-					total = calculator.squareRoot(input);
+					m_total = calculator.squareRoot(m_input);
 					break;
 				}
 				//Error:
@@ -573,10 +604,10 @@ public class GUI extends JPanel
 				}
 			}
 			
-			if (!operator.equals("%"))	formattedTotal = formatDouble(total);
+			if (!operator.equals("%"))	formattedTotal = formatDouble(m_total);
 	
 			changeDisplay(formattedTotal, INPUT);
-			typeOverFlag = true;
+			m_typeOverFlag = true;
 		}
 	}
 	
