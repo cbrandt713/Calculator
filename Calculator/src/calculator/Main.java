@@ -11,6 +11,7 @@ public class Main {
 		
 		JFrame frame = new JFrame("Calculator");
 		frame.getContentPane().add(gui);
+		frame.setJMenuBar(gui.getJMenuBar());
 
         // Size the frame.
         frame.pack();

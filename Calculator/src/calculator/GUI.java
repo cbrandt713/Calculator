@@ -10,6 +10,9 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -38,6 +41,10 @@ public class GUI extends JPanel
 	
 	//GUI Elements:
 	private JTextArea display;
+	private JMenu menu;
+	private JMenuBar menuBar;
+	private JMenuItem basic;
+	private JMenuItem matrix;
 	
 	//Number Buttons:
 	private JButton numbers[];
@@ -66,21 +73,18 @@ public class GUI extends JPanel
 	private DeleteAction deleteAction;
 	private OperatorAction operatorAction;
 	private MiscOperatorAction miscOperatorAction;
+	private MenuItemAction menuItemAction;
 	
 	private GUI()
 	{
 		//Call JPanel constructor
 		super();
 		
-		//Set Layout of the body
-		setLayout(new GridBagLayout());
+		//Create the menu:
+		createMenu();
 		
 		//Create elements of the layout
-		createDisplay();
-		createNumbers();
-		createDeleteButtons();
-		createOperators();
-		createMiscOperators();
+		setBasicLayout();
 		
 		//Create calculator
 		calculator = Calculator.getCalculatorInstance();
@@ -103,10 +107,57 @@ public class GUI extends JPanel
 		return GUIObject;
 	}
 	
-	private void createDisplay()
+	private void setBasicLayout()
+	{	
+		//Set Layout of the body
+		setLayout(new GridBagLayout());
+		
+		//Create elements of the layout:
+		createDisplay(2);
+		createNumbers();
+		createDeleteButtons();
+		createOperators();
+		createMiscOperators();
+	}
+	
+	private void setMatrixLayout()
+	{
+		//Set Layout of the body
+		//setLayout(new GridBagLayout());
+		
+		//Create elements of the layout:
+		createDisplay(3);
+		createNumbers();
+		createDeleteButtons();
+		createOperators();
+		createMiscOperators();
+	}
+	
+	private void createMenu()
+	{
+		menuBar = new JMenuBar();
+		menu = new JMenu("View");
+		
+		menuBar.add(menu);
+		
+		menuItemAction = new MenuItemAction("Basic", "Show Basic Calculator");
+		basic = new JMenuItem(menuItemAction);
+		menu.add(basic);
+		
+		menuItemAction = new MenuItemAction("Matrix", "Show Matrix Calculator");
+		matrix = new JMenuItem(menuItemAction);
+		menu.add(matrix);
+	}
+	
+	public JMenuBar getJMenuBar()
+	{
+		return menuBar;
+	}
+	
+	private void createDisplay(int a_numRows)
 	{
 		display = new JTextArea("\n0");
-		display.setRows(2);
+		display.setRows(a_numRows);
 		display.setEditable(false);
 		
 		numberAction = new NumberAction("0", "Insert number");
@@ -549,10 +600,10 @@ public class GUI extends JPanel
 	
 	public class MiscOperatorAction extends AbstractAction
 	{
-		public MiscOperatorAction(String name, String shortDescription)
+		public MiscOperatorAction(String a_name, String a_shortDescription)
 		{
-			super(name);
-			putValue(SHORT_DESCRIPTION, shortDescription);
+			super(a_name);
+			putValue(SHORT_DESCRIPTION, a_shortDescription);
 		}
 		
 		public void actionPerformed(ActionEvent e)
@@ -609,6 +660,34 @@ public class GUI extends JPanel
 			changeDisplay(formattedTotal, INPUT);
 			m_typeOverFlag = true;
 		}
+	}
+	
+	public class MenuItemAction extends AbstractAction
+	{
+		public MenuItemAction(String a_name, String a_shortDescription)
+		{
+			super(a_name);
+			putValue(SHORT_DESCRIPTION, a_shortDescription);
+		}
+		@Override
+		public void actionPerformed(ActionEvent a_event) 
+		{	
+			removeAll();
+			
+			if (a_event.getActionCommand().equals("Basic"))
+			{
+				//setVisible(false);
+				setBasicLayout();	
+			}
+			else
+			{
+				setMatrixLayout();
+			}
+			
+			revalidate();
+			repaint();
+		}
+		
 	}
 	
 }
