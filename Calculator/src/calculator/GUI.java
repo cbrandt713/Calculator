@@ -1,21 +1,25 @@
 package calculator;
 
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 
@@ -41,6 +45,8 @@ public class GUI extends JPanel
 	
 	//GUI Elements:
 	private JTextArea display;
+	private myTextPane matrixDisplay;
+	private JFrame frame;
 	private JMenu menu;
 	private JMenuBar menuBar;
 	private JMenuItem basic;
@@ -77,7 +83,7 @@ public class GUI extends JPanel
 	
 	private GUI()
 	{
-		//Call JPanel constructor
+		//Call JFrame constructor
 		super();
 		
 		//Create the menu:
@@ -113,7 +119,7 @@ public class GUI extends JPanel
 		setLayout(new GridBagLayout());
 		
 		//Create elements of the layout:
-		createDisplay(2);
+		createBasicDisplay();
 		createNumbers();
 		createDeleteButtons();
 		createOperators();
@@ -122,15 +128,24 @@ public class GUI extends JPanel
 	
 	private void setMatrixLayout()
 	{
-		//Set Layout of the body
-		//setLayout(new GridBagLayout());
-		
 		//Create elements of the layout:
-		createDisplay(3);
+		createMatrixDisplay();
+		//drawMatrix(3, 3);
+		JButton createSquare = new JButton("Create Square");
+		createSquare.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				matrixDisplay.drawSquare(10, 10, 10);
+			}
+		});
+		add(createSquare);
 		createNumbers();
+		/*
 		createDeleteButtons();
 		createOperators();
 		createMiscOperators();
+		*/
 	}
 	
 	private void createMenu()
@@ -154,10 +169,10 @@ public class GUI extends JPanel
 		return menuBar;
 	}
 	
-	private void createDisplay(int a_numRows)
+	private void createBasicDisplay()
 	{
 		display = new JTextArea("\n0");
-		display.setRows(a_numRows);
+		display.setRows(2);
 		display.setEditable(false);
 		
 		numberAction = new NumberAction("0", "Insert number");
@@ -197,6 +212,21 @@ public class GUI extends JPanel
 		displayC.fill = GridBagConstraints.BOTH;
 		
 		add(display, displayC);
+	}
+	
+	private void createMatrixDisplay()
+	{
+		matrixDisplay = new myTextPane();
+		
+		GridBagConstraints displayC = new GridBagConstraints();
+		displayC.gridx = 0;
+		displayC.gridy = 0;
+		displayC.gridwidth = 5;
+		displayC.weightx = 1.0;
+		displayC.weighty = 1.0;
+		displayC.fill = GridBagConstraints.BOTH;
+		
+		add(matrixDisplay, displayC);
 	}
 	
 	private void createNumbers()
@@ -373,6 +403,11 @@ public class GUI extends JPanel
 		add(squareRoot, operatorC);
 	}
 	
+	private void drawMatrix(int a_rows, int a_columns)
+	{
+		matrixDisplay.drawSquare(10, 0, 0);	
+	}
+		
 	private String getUserInput()
 	{
 		String displayText = display.getText();
@@ -686,6 +721,37 @@ public class GUI extends JPanel
 			
 			revalidate();
 			repaint();
+			drawMatrix(3, 3);
+		}
+		
+		
+		
+	}
+	
+	public class myTextPane extends JTextPane
+	{
+		
+		private Graphics g;
+		
+		public myTextPane()
+		{
+			super();
+		}
+		
+		/*
+		@Override
+		public void paintComponent(Graphics g)
+		{
+			super.paintComponent(g);
+			g.drawRect(10, 10, 20, 20);
+		}
+		*/
+		
+		public void drawSquare(int a_sideLength, int a_x, int a_y)
+		{
+			g = super.getGraphics();
+			super.paintComponent(g);
+			g.drawRect(a_x, a_y, a_sideLength, a_sideLength);
 		}
 		
 	}
