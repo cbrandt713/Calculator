@@ -17,6 +17,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -51,6 +52,7 @@ public class GUI extends JPanel
 	private JMenuBar menuBar;
 	private JMenuItem basic;
 	private JMenuItem matrix;
+	private JScrollPane scrollPane;
 	
 	//Number Buttons:
 	private JButton numbers[];
@@ -130,22 +132,11 @@ public class GUI extends JPanel
 	{
 		//Create elements of the layout:
 		createMatrixDisplay();
-		//drawMatrix(3, 3);
-		JButton createSquare = new JButton("Create Square");
-		createSquare.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				matrixDisplay.drawSquare(10, 10, 10);
-			}
-		});
-		add(createSquare);
 		createNumbers();
-		/*
 		createDeleteButtons();
 		createOperators();
 		createMiscOperators();
-		*/
+		
 	}
 	
 	private void createMenu()
@@ -217,6 +208,8 @@ public class GUI extends JPanel
 	private void createMatrixDisplay()
 	{
 		matrixDisplay = new myTextPane();
+		scrollPane = new JScrollPane(matrixDisplay, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
 		GridBagConstraints displayC = new GridBagConstraints();
 		displayC.gridx = 0;
@@ -226,7 +219,7 @@ public class GUI extends JPanel
 		displayC.weighty = 1.0;
 		displayC.fill = GridBagConstraints.BOTH;
 		
-		add(matrixDisplay, displayC);
+		add(scrollPane, displayC);
 	}
 	
 	private void createNumbers()
@@ -405,7 +398,8 @@ public class GUI extends JPanel
 	
 	private void drawMatrix(int a_rows, int a_columns)
 	{
-		matrixDisplay.drawSquare(10, 0, 0);	
+		matrixDisplay = new myTextPane(a_rows, a_columns);
+		matrixDisplay.repaint();
 	}
 		
 	private String getUserInput()
@@ -721,7 +715,6 @@ public class GUI extends JPanel
 			
 			revalidate();
 			repaint();
-			drawMatrix(3, 3);
 		}
 		
 		
@@ -731,27 +724,36 @@ public class GUI extends JPanel
 	public class myTextPane extends JTextPane
 	{
 		
-		private Graphics g;
+		private int m_rows;
+		private int m_columns;
 		
 		public myTextPane()
 		{
 			super();
+			m_rows = 0;
+			m_columns = 0;
 		}
 		
-		/*
+		public myTextPane(int a_rows, int a_columns)
+		{
+			super();
+			m_rows = a_rows;
+			m_columns = a_columns;
+		}
+		
+		
 		@Override
 		public void paintComponent(Graphics g)
 		{
 			super.paintComponent(g);
-			g.drawRect(10, 10, 20, 20);
-		}
-		*/
-		
-		public void drawSquare(int a_sideLength, int a_x, int a_y)
-		{
-			g = super.getGraphics();
-			super.paintComponent(g);
-			g.drawRect(a_x, a_y, a_sideLength, a_sideLength);
+			for (int i = 0; i < m_rows; i++)
+			{
+				for (int j = 0; j < m_columns; j++)
+				{
+					g.drawRect((j * 30) + 10, (i *30) + 10, 20, 20);
+				}
+			}
+			
 		}
 		
 	}
