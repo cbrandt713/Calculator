@@ -1,5 +1,6 @@
 package calculator;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -10,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -19,7 +19,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
@@ -43,11 +42,13 @@ public class GUI extends JPanel
 	private boolean m_typeOverFlag;
 	private boolean m_firstInputFlag;
 	private EventQueue queue;
+	private Dimension basicSize;
+	private Dimension matrixSize;
 	
 	//GUI Elements:
 	private JTextArea display;
-	private myTextPane matrixDisplay;
 	private JFrame frame;
+	private myTextPane matrixDisplay;
 	private JMenu menu;
 	private JMenuBar menuBar;
 	private JMenuItem basic;
@@ -75,6 +76,9 @@ public class GUI extends JPanel
 	private JButton reciprocal;
 	private JButton squareRoot;
 	private JButton percent;
+	
+	//Matrix Buttons:
+	private JButton createMatrix;
 
 	//Action Elements:
 	private NumberAction numberAction;
@@ -82,17 +86,32 @@ public class GUI extends JPanel
 	private OperatorAction operatorAction;
 	private MiscOperatorAction miscOperatorAction;
 	private MenuItemAction menuItemAction;
+	private MatrixAction matrixAction;
 	
 	private GUI()
 	{
-		//Call JFrame constructor
+		//Call JPanel constructor
 		super();
 		
 		//Create the menu:
 		createMenu();
 		
+		frame = new JFrame("Calculator");
+		
 		//Create elements of the layout
-		setBasicLayout();
+		setMatrixLayout();
+		
+		frame.getContentPane().add(this);
+		frame.setJMenuBar(getJMenuBar());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+        // Size the frame.
+        frame.pack();
+        //basicSize = frame.getSize();
+        //System.out.println(basicSize);
+        
+        // Show the frame
+        frame.setVisible(true);
 		
 		//Create calculator
 		calculator = Calculator.getCalculatorInstance();
@@ -126,17 +145,23 @@ public class GUI extends JPanel
 		createDeleteButtons();
 		createOperators();
 		createMiscOperators();
+		
 	}
 	
 	private void setMatrixLayout()
 	{
+		
+		//Set Layout of the body
+		setLayout(new GridBagLayout());
+		
 		//Create elements of the layout:
+		//frame.setSize(400, 300);
 		createMatrixDisplay();
 		createNumbers();
 		createDeleteButtons();
 		createOperators();
-		createMiscOperators();
-		
+		createMatrixButtons();
+		//createMiscOperators();
 	}
 	
 	private void createMenu()
@@ -208,6 +233,8 @@ public class GUI extends JPanel
 	private void createMatrixDisplay()
 	{
 		matrixDisplay = new myTextPane();
+		matrixDisplay.setText("1\n\n\n2");
+		matrixDisplay.setEditable(false);
 		scrollPane = new JScrollPane(matrixDisplay, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
@@ -394,6 +421,21 @@ public class GUI extends JPanel
 		operatorC.gridy = 1;
 		
 		add(squareRoot, operatorC);
+	}
+	
+	private void createMatrixButtons()
+	{
+		matrixAction = new MatrixAction("Create", "Create new Matrix");
+		createMatrix = new JButton(matrixAction);
+		createMatrix.setFocusable(false);
+		
+		GridBagConstraints buttonC = new GridBagConstraints();
+		
+		buttonC.gridx = 4;
+		buttonC.gridy = 1;
+		
+		add(createMatrix, buttonC);
+		
 	}
 	
 	private void drawMatrix(int a_rows, int a_columns)
@@ -715,10 +757,31 @@ public class GUI extends JPanel
 			
 			revalidate();
 			repaint();
+		}	
+	}
+	
+	public class MatrixAction extends AbstractAction
+	{
+		public MatrixAction(String a_name, String a_shortDescription)
+		{
+			super(a_name);
+			putValue(SHORT_DESCRIPTION, a_shortDescription);
 		}
 		
-		
-		
+		@Override
+		public void actionPerformed(ActionEvent a_event)
+		{
+			String operation = a_event.getActionCommand();
+			
+			switch (operation)
+			{
+				case "Create":
+				{
+					matrixDisplay.setText("Matrix Size: _ x _ ");
+					matrixDisplay.setEditable(true);
+				}
+			}
+		}
 	}
 	
 	public class myTextPane extends JTextPane
