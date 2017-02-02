@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -48,7 +49,7 @@ public class GUI extends JPanel
 	//GUI Elements:
 	private JTextArea display;
 	private JFrame frame;
-	private myTextPane matrixDisplay;
+	private MatrixTextPane matrixDisplay;
 	private JMenu menu;
 	private JMenuBar menuBar;
 	private JMenuItem basic;
@@ -232,8 +233,8 @@ public class GUI extends JPanel
 	
 	private void createMatrixDisplay()
 	{
-		matrixDisplay = new myTextPane();
-		matrixDisplay.setText("1\n\n\n2");
+		matrixDisplay = new MatrixTextPane();
+		matrixDisplay.setText("\n\n\n\n");
 		matrixDisplay.setEditable(false);
 		scrollPane = new JScrollPane(matrixDisplay, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -440,7 +441,7 @@ public class GUI extends JPanel
 	
 	private void drawMatrix(int a_rows, int a_columns)
 	{
-		matrixDisplay = new myTextPane(a_rows, a_columns);
+		matrixDisplay = new MatrixTextPane(a_rows, a_columns);
 		matrixDisplay.repaint();
 	}
 		
@@ -772,54 +773,16 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event)
 		{
 			String operation = a_event.getActionCommand();
+			matrixDisplay.setMode(operation);
 			
 			switch (operation)
-			//BS Comment
 			{
 				case "Create":
 				{
-					matrixDisplay.setText("Matrix Size: _ x _ ");
-					matrixDisplay.setEditable(true);
+					matrixDisplay.createMatrix();	
 				}
 			}
 		}
-	}
-	
-	public class myTextPane extends JTextPane
-	{
-		
-		private int m_rows;
-		private int m_columns;
-		
-		public myTextPane()
-		{
-			super();
-			m_rows = 0;
-			m_columns = 0;
-		}
-		
-		public myTextPane(int a_rows, int a_columns)
-		{
-			super();
-			m_rows = a_rows;
-			m_columns = a_columns;
-		}
-		
-		
-		@Override
-		public void paintComponent(Graphics g)
-		{
-			super.paintComponent(g);
-			for (int i = 0; i < m_rows; i++)
-			{
-				for (int j = 0; j < m_columns; j++)
-				{
-					g.drawRect((j * 30) + 10, (i *30) + 10, 20, 20);
-				}
-			}
-			
-		}
-		
 	}
 	
 }
