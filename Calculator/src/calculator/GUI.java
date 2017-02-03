@@ -204,7 +204,6 @@ public class GUI extends JPanel
 		
 		for (Integer i = 0; i <= 9; i++)
 		{
-			
 			display.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
 			display.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
 		} 
@@ -437,12 +436,6 @@ public class GUI extends JPanel
 		
 		add(createMatrix, buttonC);
 		
-	}
-	
-	private void drawMatrix(int a_rows, int a_columns)
-	{
-		matrixDisplay = new MatrixTextPane(a_rows, a_columns);
-		matrixDisplay.repaint();
 	}
 		
 	private String getUserInput()
@@ -773,7 +766,6 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event)
 		{
 			String operation = a_event.getActionCommand();
-			matrixDisplay.setMode(operation);
 			
 			switch (operation)
 			{
