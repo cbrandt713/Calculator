@@ -12,6 +12,12 @@ import javax.swing.text.BadLocationException;
 
 public class MatrixTextPane extends JTextPane
 {
+	//Acceptable Modes for Text Input:
+	private final static int CREATE_ROWS = 0;
+	private final static int CREATE_COLUMNS = 1;
+	private final static int DRAW_MATRIX = 2;
+	private final static int EDIT_MATRIX = 3;
+	
 	//Matrix creation properties:
 	private int m_rows;
 	private int m_columns;
@@ -20,11 +26,19 @@ public class MatrixTextPane extends JTextPane
 	private int m_numsInput;
 	private String m_runningString;
 	
+	//Matrix Helper Strings:
+	private String m_blankMatrixText;
+	
+	//Data objects:
+	private Matrix[] m_matrices;
+	private int m_amtMatrices;
+	private int m_currentRow;
+	private int m_currentColumn;
+	
 	//Various:
 	private EnterAction enterAction;
 	private NumberAction numberAction;
-	private String m_mode;
-	private Graphics graphics;
+	private int m_mode;
 	
 	public MatrixTextPane()
 	{
@@ -33,8 +47,12 @@ public class MatrixTextPane extends JTextPane
 		m_columns = 0;
 		m_numsInput = 0;
 		m_runningString = "";
-		m_mode = "None";
-		graphics = getGraphics();
+		m_mode = -1;
+		
+		m_matrices = new Matrix[20];
+		m_amtMatrices = 0;
+		m_currentRow = 0;
+		m_currentColumn = 0;
 		
 		enterAction = new EnterAction("", "");
 		numberAction = new NumberAction("", "");
@@ -45,8 +63,11 @@ public class MatrixTextPane extends JTextPane
 			getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
 		} 
 		
+		getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
+		
 		getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
 		getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "enter");
+		
 		
 		getActionMap().put("enter", enterAction);
 		getActionMap().put("number", numberAction);
@@ -69,44 +90,76 @@ public class MatrixTextPane extends JTextPane
 	}
 	*/
 	
-	private void setMode(String a_mode)
+	private void setMode(int a_mode)
 	{
 		m_mode = a_mode;
 	}
 	
+	private int getMode()
+	{
+		return m_mode;
+	}
+	
 	public void createMatrix()
 	{
+		setMode(CREATE_ROWS);
 		setText("Matrix Size: _ rows X _ columns");
-		setMode("Create Rows");
+	}
+	
+	private void drawMatrix()
+	{
+		setMode(DRAW_MATRIX);
+		updateText();
+		editMatrix();
 	}
 	
 	private void editMatrix()
 	{
-		setMode("Draw Matrix");
+		setMode(EDIT_MATRIX);
+		m_matrices[m_amtMatrices++] = new Matrix(m_rows, m_columns);
 		updateText();
 	}
 	
-	private void updateGraphics()
+	private boolean tryParse(String a_input)
 	{
-		graphics = getGraphics();
+		try
+		{
+			Integer.parseInt(a_input);
+			return true;
+		}
+		catch (NumberFormatException a_exception)
+		{
+			return false;
+		}
+		
 	}
 	
-	private void repaintTextArea()
+	private boolean tryDoubleParse(String a_input)
 	{
-		repaint();
+		try
+		{
+			Double.parseDouble(a_input);
+			return true;
+		}
+		catch (NumberFormatException a_exception)
+		{
+			return false;
+		}
+		
 	}
+	
 	
 	public void updateText()
 	{
-		if (m_mode.equals("Create Rows"))
+		if (getMode() == CREATE_ROWS)
 		{
 			setText("Matrix Size: " + m_runningString + " rows x _ columns");
 		}
-		else if (m_mode.equals("Create Columns"))
+		else if (getMode() == CREATE_COLUMNS)
 		{
 			setText("Matrix Size: " + ((Integer)m_rows).toString() + " rows x " + m_runningString + " columns");
 		}
-		else if (m_mode.equals("Draw Matrix"))
+		else if (getMode() == DRAW_MATRIX)
 		{
 			//Start with current display of matrix size
 			m_runningString = getText();
@@ -125,8 +178,62 @@ public class MatrixTextPane extends JTextPane
 			}
 			
 			setText(m_runningString);
+			m_blankMatrixText = getText();
 			m_runningString = "";
 		}
+		else if (getMode() == EDIT_MATRIX)
+		{
+			
+			int loc = m_blankMatrixText.indexOf('[');
+			setText(m_blankMatrixText.substring(0, loc + 1) + m_runningString + m_blankMatrixText.substring(loc + 1));
+		}
+	}
+	
+	private void enterKeyPress()
+	{
+		//Only take acceptable numbers:
+		if (tryParse(m_runningString))
+		{
+			//Typing in the rows section:
+			if (getMode() == CREATE_ROWS)
+			{
+				m_rows = Integer.parseInt(m_runningString);
+				System.out.println("Input received: " + m_rows + " rows");
+				setMode(CREATE_COLUMNS);
+				m_numsInput = 0;
+				m_runningString = "";
+			}
+			//Typing in the columns section:
+			else if (getMode() == CREATE_COLUMNS)
+			{
+				m_columns = Integer.parseInt(m_runningString);
+				System.out.println("Input received: " + m_columns + " columns");
+				
+				m_numsInput = 0;
+				m_runningString = "";
+				drawMatrix();
+			}
+			//Typing inside the matrix cells:
+			else if (getMode() == EDIT_MATRIX)
+			{
+				m_matrices[m_amtMatrices - 1].setCell(m_currentRow, m_currentColumn, Double.parseDouble(m_runningString));
+				if (m_currentColumn < m_columns)
+				{
+					m_currentColumn++;
+				}
+				else if (m_currentRow < m_rows)
+				{
+					m_currentRow++;
+					m_currentColumn = 0;
+				}
+				else
+				{
+					m_currentRow = 0;
+					m_currentColumn = 0;
+				}
+			}
+		}
+		
 	}
 	
 	public class EnterAction extends AbstractAction 
@@ -141,38 +248,10 @@ public class MatrixTextPane extends JTextPane
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			System.out.println(a_event.getActionCommand());
 			//If the fired event is the Enter key:
 			if (a_event.getActionCommand().equals("\n"))
 			{	
-				//Only take acceptable numbers:
-				if (tryParse(m_runningString))
-				{
-					//Typing in the rows section:
-					if (m_mode.equals("Create Rows"))
-					{
-						m_rows = Integer.parseInt(m_runningString);
-						System.out.println("Input received: " + m_rows + " rows");
-						setMode("Create Columns");
-						m_numsInput = 0;
-						m_runningString = "";
-					}
-					//Typing in the columns section:
-					else if (m_mode.equals("Create Columns"))
-					{
-						m_columns = Integer.parseInt(m_runningString);
-						System.out.println("Input received: " + m_columns + " columns");
-						
-						m_numsInput = 0;
-						m_runningString = "";
-						editMatrix();
-						//updateGraphics();
-						//repaintTextArea();
-					}
-					
-					m_numsInput = 0;
-					m_runningString = "";
-				}
+				enterKeyPress();
 			}
 			//Backspace: renders strange symbol
 			else
@@ -184,20 +263,6 @@ public class MatrixTextPane extends JTextPane
 					updateText();
 				}			
 			}
-		}
-		
-		public boolean tryParse(String a_input)
-		{
-			try
-			{
-				Integer.parseInt(a_input);
-				return true;
-			}
-			catch (NumberFormatException a_exception)
-			{
-				return false;
-			}
-			
 		}
 		
 	}
@@ -218,7 +283,6 @@ public class MatrixTextPane extends JTextPane
 			m_numsInput++;
 			m_runningString += a_event.getActionCommand();
 			updateText();
-		
 		}
 		
 	}
