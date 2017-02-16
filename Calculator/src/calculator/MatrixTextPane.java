@@ -1,5 +1,6 @@
 package calculator;
 
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -13,10 +14,13 @@ import javax.swing.text.BadLocationException;
 public class MatrixTextPane extends JTextPane
 {
 	//Acceptable Modes for Text Input:
+	private final static int NONE = -1;
 	private final static int CREATE_ROWS = 0;
 	private final static int CREATE_COLUMNS = 1;
 	private final static int DRAW_MATRIX = 2;
 	private final static int EDIT_MATRIX = 3;
+	private final static int NAME_MATRIX = 4;
+	private final static int SHOW_MATRICES = 5;
 	
 	//Matrix creation properties:
 	private int m_rows;
@@ -27,7 +31,8 @@ public class MatrixTextPane extends JTextPane
 	private String m_runningString;
 	
 	//Matrix Helper Strings:
-	private String m_blankMatrixText;
+	private String m_matrixText;
+	private Character m_defaultName = 'A';
 	
 	//Data objects:
 	private Matrix[] m_matrices;
@@ -38,7 +43,10 @@ public class MatrixTextPane extends JTextPane
 	//Various:
 	private EnterAction enterAction;
 	private NumberAction numberAction;
+	private LetterAction letterAction;
+	private ArrowAction arrowAction;
 	private int m_mode;
+	private EventQueue queue;
 	
 	public MatrixTextPane()
 	{
@@ -47,48 +55,59 @@ public class MatrixTextPane extends JTextPane
 		m_columns = 0;
 		m_numsInput = 0;
 		m_runningString = "";
-		m_mode = -1;
+		m_mode = NONE;
 		
 		m_matrices = new Matrix[20];
 		m_amtMatrices = 0;
 		m_currentRow = 0;
 		m_currentColumn = 0;
 		
+		registerKeybinds();
+		
+		
+	}
+	
+	private void registerKeybinds()
+	{
+		
 		enterAction = new EnterAction("", "");
 		numberAction = new NumberAction("", "");
+		letterAction = new LetterAction("", "");
+		arrowAction = new ArrowAction("", "");
 		
+		//Register all the keybinds with the associated string:
+		//Note this syntax is necessary to use keybinds
 		for (Integer i = 0; i <= 9; i++)
 		{
 			getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
 			getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
 		} 
 		
-		getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
+		for (char letter = 'A'; letter <= 'Z'; letter++)
+		{
+			getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
+		}
 		
+		for (char letter = 'a'; letter <= 'z'; letter++)
+		{
+			getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
+		}
+		
+		getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
 		getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
 		getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "enter");
 		
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "arrow");
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "arrow");
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "arrow");
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "arrow");
 		
+		//Register the actions with their respective classes:
 		getActionMap().put("enter", enterAction);
 		getActionMap().put("number", numberAction);
-		
+		getActionMap().put("letter", letterAction);
+		getActionMap().put("arrow", arrowAction);
 	}
-	
-	/*
-	@Override
-	public void paintComponent(Graphics g)
-	{
-		super.paintComponent(g);
-		for (int i = 0; i < m_rows; i++)
-		{
-			for (int j = 0; j < m_columns; j++)
-			{
-				g.drawRect((j * 30) + 10, (i *30) + 30, 20, 20);
-			}
-		}
-		
-	}
-	*/
 	
 	private void setMode(int a_mode)
 	{
@@ -100,10 +119,17 @@ public class MatrixTextPane extends JTextPane
 		return m_mode;
 	}
 	
-	public void createMatrix()
+	
+	public void createRows()
 	{
 		setMode(CREATE_ROWS);
 		setText("Matrix Size: _ rows X _ columns");
+	}
+	
+	public void createColumns()
+	{
+		setMode(CREATE_COLUMNS);
+		updateText();
 	}
 	
 	private void drawMatrix()
@@ -118,6 +144,31 @@ public class MatrixTextPane extends JTextPane
 		setMode(EDIT_MATRIX);
 		m_matrices[m_amtMatrices++] = new Matrix(m_rows, m_columns);
 		updateText();
+	}
+	
+	private void nameMatrix()
+	{
+		setMode(NAME_MATRIX);
+		updateText();
+	}
+	
+	public void showMatrices()
+	{
+		setMode(SHOW_MATRICES);
+		setText("");
+		String line = "";
+		for (Integer i = 1; i < m_matrices.length + 1; i++)
+		{
+			if (m_matrices[i-1] != null)
+			{
+				line = i.toString() + ". " + m_matrices[i-1].getName() + "\n";
+			}
+			else
+			{
+				line = i.toString() + ". \n";
+			}
+			setText(getText() + line);
+		}
 	}
 	
 	private boolean tryParse(String a_input)
@@ -148,16 +199,15 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 	
-	
 	public void updateText()
 	{
 		if (getMode() == CREATE_ROWS)
 		{
-			setText("Matrix Size: " + m_runningString + " rows x _ columns");
+			setText("Matrix Size: " + m_runningString + " rows X _ columns");
 		}
 		else if (getMode() == CREATE_COLUMNS)
 		{
-			setText("Matrix Size: " + ((Integer)m_rows).toString() + " rows x " + m_runningString + " columns");
+			setText("Matrix Size: " + ((Integer)m_rows).toString() + " rows X " + m_runningString + " columns");
 		}
 		else if (getMode() == DRAW_MATRIX)
 		{
@@ -171,57 +221,81 @@ public class MatrixTextPane extends JTextPane
 				{
 					//Add a tab for every column
 					m_runningString += "\t";
-					if (j != m_columns - 1) m_runningString += "|"; 
+					if (j != m_columns - 1) m_runningString += "| "; 
 				}
 				//End the row with a closing brace:
 				m_runningString += " ]";
 			}
 			
 			setText(m_runningString);
-			m_blankMatrixText = getText();
+			m_matrixText = getText();
 			m_runningString = "";
 		}
 		else if (getMode() == EDIT_MATRIX)
 		{
-			
-			int loc = m_blankMatrixText.indexOf('[');
-			setText(m_blankMatrixText.substring(0, loc + 1) + m_runningString + m_blankMatrixText.substring(loc + 1));
+			int loc = 0;
+			for (int i = 0; i < m_currentRow + 1; i++)
+			{
+				loc = m_matrixText.indexOf('[', loc + 1) + 1;
+				for (int j = 0; j < m_currentColumn; j++)
+				{
+					loc = m_matrixText.indexOf('|', loc) + 1;
+				}
+			}
+			setText(m_matrixText.substring(0, loc + 1) + m_runningString + m_matrixText.substring(loc + 1));
+		}
+		else if (getMode() == NAME_MATRIX)
+		{
+			setText("Name Matrix (or \"Enter\" to skip):\n" + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
 		}
 	}
 	
 	private void enterKeyPress()
-	{
-		//Only take acceptable numbers:
-		if (tryParse(m_runningString))
+	{	
+		switch (getMode()) 
 		{
 			//Typing in the rows section:
-			if (getMode() == CREATE_ROWS)
+			case CREATE_ROWS:
 			{
-				m_rows = Integer.parseInt(m_runningString);
-				System.out.println("Input received: " + m_rows + " rows");
-				setMode(CREATE_COLUMNS);
-				m_numsInput = 0;
-				m_runningString = "";
+				//Only take acceptable numbers:
+				if (tryParse(m_runningString))
+				{
+					m_rows = Integer.parseInt(m_runningString);
+					m_numsInput = 0;
+					m_runningString = "";
+					createColumns();
+				}
+				break;
 			}
 			//Typing in the columns section:
-			else if (getMode() == CREATE_COLUMNS)
+			case CREATE_COLUMNS:
 			{
-				m_columns = Integer.parseInt(m_runningString);
-				System.out.println("Input received: " + m_columns + " columns");
-				
-				m_numsInput = 0;
-				m_runningString = "";
-				drawMatrix();
+				//Only take acceptable numbers:
+				if (tryParse(m_runningString))
+				{
+					m_columns = Integer.parseInt(m_runningString);
+					m_numsInput = 0;
+					m_runningString = "";
+					drawMatrix();
+				}
+				break;
 			}
-			//Typing inside the matrix cells:
-			else if (getMode() == EDIT_MATRIX)
+			case EDIT_MATRIX:
 			{
+				if (!tryDoubleParse(m_runningString))
+				{
+					break;
+				}
 				m_matrices[m_amtMatrices - 1].setCell(m_currentRow, m_currentColumn, Double.parseDouble(m_runningString));
-				if (m_currentColumn < m_columns)
+				m_runningString = "";
+				
+				m_matrixText = getText();
+				
+				if (m_currentColumn + 1 < m_columns)
 				{
 					m_currentColumn++;
 				}
-				else if (m_currentRow < m_rows)
+				else if (m_currentRow + 1< m_rows)
 				{
 					m_currentRow++;
 					m_currentColumn = 0;
@@ -230,10 +304,40 @@ public class MatrixTextPane extends JTextPane
 				{
 					m_currentRow = 0;
 					m_currentColumn = 0;
+					nameMatrix();
 				}
+				break;
 			}
+			case NAME_MATRIX:
+			{
+				//If nothing was entered, use default naming scheme:
+				if (m_runningString.equals(""))
+				{
+					m_runningString = (m_defaultName.toString());
+					m_defaultName++;
+				}
+				m_matrices[m_amtMatrices - 1].setName(m_runningString);
+				m_runningString = "";
+				
+				setText("Matrix Added Successfully!");
+			}
+			
+			
 		}
 		
+	}
+	
+	public void arrowPress(String a_direction)
+	{
+		if (getMode() != SHOW_MATRICES)
+		{
+			return;
+		}
+		
+		if (a_direction.equals("Down"))
+		{
+			
+		}
 	}
 	
 	public class EnterAction extends AbstractAction 
@@ -284,7 +388,44 @@ public class MatrixTextPane extends JTextPane
 			m_runningString += a_event.getActionCommand();
 			updateText();
 		}
+	}
+	
+	public class LetterAction extends AbstractAction
+	{
+
+		public LetterAction(String a_name, String a_shortDescription)
+		{
+			super(a_name);
+			putValue(SHORT_DESCRIPTION, a_shortDescription);
+		}
 		
+		
+		@Override
+		public void actionPerformed(ActionEvent a_event)
+		{
+			m_runningString += a_event.getActionCommand();
+			updateText();
+		}
+		
+	}
+	
+	public class ArrowAction extends AbstractAction
+	{
+		public ArrowAction(String a_name, String a_shortDescription)
+		{
+			super(a_name);
+			putValue(SHORT_DESCRIPTION, a_shortDescription);
+		}
+		
+		
+		@Override
+		public void actionPerformed(ActionEvent a_event)
+		{
+			KeyEvent ke = (KeyEvent) queue.getCurrentEvent();
+	        String keyStroke = ke.getKeyText( ke.getKeyCode() );
+	        arrowPress(keyStroke);
+	        System.out.println(keyStroke);
+		}
 	}
 	
 	

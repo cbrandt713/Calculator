@@ -6,12 +6,14 @@ public class Matrix
 	private int m_rows;
 	private int m_columns;
 	private double m_numbers[][];
+	private String m_name;
 	
 	public Matrix(int a_rows, int a_columns)
 	{
 		m_rows = a_rows;
 		m_columns = a_columns;
 		m_numbers = new double[m_rows][m_columns];
+		m_name = "";
 	}
 	
 	public int getRows()
@@ -22,6 +24,11 @@ public class Matrix
 	public int getColumns()
 	{
 		return m_columns;
+	}
+	
+	public String getName()
+	{
+		return m_name;
 	}
 	
 	public void setRows(int a_rows)
@@ -38,6 +45,11 @@ public class Matrix
 		{
 			m_columns = a_columns;
 		}
+	}
+	
+	public void setName(String name)
+	{
+		m_name = name;
 	}
 	
 	public void setCell(int a_row, int a_column, double a_value)

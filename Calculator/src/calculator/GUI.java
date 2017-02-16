@@ -80,6 +80,7 @@ public class GUI extends JPanel
 	
 	//Matrix Buttons:
 	private JButton createMatrix;
+	private JButton listMatrices;
 
 	//Action Elements:
 	private NumberAction numberAction;
@@ -436,6 +437,16 @@ public class GUI extends JPanel
 		
 		add(createMatrix, buttonC);
 		
+		matrixAction = new MatrixAction("List", "List current matrices");
+		listMatrices = new JButton(matrixAction);
+		listMatrices.setFocusable(false);
+		
+		buttonC.gridy = 2;
+		buttonC.fill = GridBagConstraints.BOTH;
+		
+		add(listMatrices, buttonC);
+		
+		
 	}
 		
 	private String getUserInput()
@@ -766,12 +777,19 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event)
 		{
 			String operation = a_event.getActionCommand();
+			matrixDisplay.setText("");
 			
 			switch (operation)
 			{
 				case "Create":
 				{
-					matrixDisplay.createMatrix();	
+					matrixDisplay.createRows();
+					break;
+				}
+				case "List":
+				{
+					matrixDisplay.showMatrices();
+					break;
 				}
 			}
 		}
