@@ -10,6 +10,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 
 public class MatrixTextPane extends JTextPane
 {
@@ -27,7 +28,6 @@ public class MatrixTextPane extends JTextPane
 	private int m_columns;
 	
 	//Matrix creation input:
-	private int m_numsInput;
 	private String m_runningString;
 	
 	//Matrix Helper Strings:
@@ -48,13 +48,15 @@ public class MatrixTextPane extends JTextPane
 	private int m_mode;
 	private EventQueue queue;
 	
+	private int m_arrowPointer;
+	
 	public MatrixTextPane()
 	{
 		super();
 		m_rows = 0;
 		m_columns = 0;
-		m_numsInput = 0;
 		m_runningString = "";
+		m_arrowPointer = 1;
 		m_mode = NONE;
 		
 		m_matrices = new Matrix[20];
@@ -64,6 +66,8 @@ public class MatrixTextPane extends JTextPane
 		
 		registerKeybinds();
 		
+		DefaultCaret caret = (DefaultCaret) getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 		
 	}
 	
@@ -161,11 +165,19 @@ public class MatrixTextPane extends JTextPane
 		{
 			if (m_matrices[i-1] != null)
 			{
-				line = i.toString() + ". " + m_matrices[i-1].getName() + "\n";
+				line = i.toString() + ". " + m_matrices[i-1].getName();
 			}
 			else
 			{
-				line = i.toString() + ". \n";
+				line = i.toString() + ".";
+			}
+			if (m_arrowPointer == i)
+			{
+				line += " <--\n";
+			}
+			else
+			{
+				line += "\n";
 			}
 			setText(getText() + line);
 		}
@@ -261,7 +273,6 @@ public class MatrixTextPane extends JTextPane
 				if (tryParse(m_runningString))
 				{
 					m_rows = Integer.parseInt(m_runningString);
-					m_numsInput = 0;
 					m_runningString = "";
 					createColumns();
 				}
@@ -274,7 +285,6 @@ public class MatrixTextPane extends JTextPane
 				if (tryParse(m_runningString))
 				{
 					m_columns = Integer.parseInt(m_runningString);
-					m_numsInput = 0;
 					m_runningString = "";
 					drawMatrix();
 				}
@@ -336,8 +346,13 @@ public class MatrixTextPane extends JTextPane
 		
 		if (a_direction.equals("Down"))
 		{
-			
+			if (m_arrowPointer < m_amtMatrices) m_arrowPointer++;
 		}
+		if (a_direction.equals("Up"))
+		{
+			if (m_arrowPointer > 1) m_arrowPointer--;
+		}
+		showMatrices();
 	}
 	
 	public class EnterAction extends AbstractAction 
@@ -363,7 +378,6 @@ public class MatrixTextPane extends JTextPane
 				if (!m_runningString.equals(""))
 				{
 					m_runningString = m_runningString.substring(0, m_runningString.length()-1);
-					m_numsInput--;
 					updateText();
 				}			
 			}
@@ -384,7 +398,6 @@ public class MatrixTextPane extends JTextPane
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
-			m_numsInput++;
 			m_runningString += a_event.getActionCommand();
 			updateText();
 		}

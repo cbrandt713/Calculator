@@ -47,7 +47,7 @@ public class GUI extends JPanel
 	private Dimension matrixSize;
 	
 	//GUI Elements:
-	private JTextArea display;
+	private BasicTextArea basicDisplay;
 	private JFrame frame;
 	private MatrixTextPane matrixDisplay;
 	private JMenu menu;
@@ -189,35 +189,35 @@ public class GUI extends JPanel
 	
 	private void createBasicDisplay()
 	{
-		display = new JTextArea("\n0");
-		display.setRows(2);
-		display.setEditable(false);
+		basicDisplay = new BasicTextArea("\n0");
+		basicDisplay.setRows(2);
+		basicDisplay.setEditable(false);
 		
 		numberAction = new NumberAction("0", "Insert number");
 		deleteAction = new DeleteAction("Clr", "Delete number");
 		operatorAction = new OperatorAction("+", "Add Numbers");
 		miscOperatorAction = new MiscOperatorAction("1/x", "Reciprocal");
 		
-		display.getActionMap().put("number", numberAction);
-		display.getActionMap().put("delete", deleteAction);
-		display.getActionMap().put("operation", operatorAction);
-		display.getActionMap().put("miscOperation", miscOperatorAction);
+		basicDisplay.getActionMap().put("number", numberAction);
+		basicDisplay.getActionMap().put("delete", deleteAction);
+		basicDisplay.getActionMap().put("operation", operatorAction);
+		basicDisplay.getActionMap().put("miscOperation", miscOperatorAction);
 		
 		for (Integer i = 0; i <= 9; i++)
 		{
-			display.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
-			display.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
+			basicDisplay.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
+			basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
 		} 
 		
-		display.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
-		display.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
-		display.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete");
-		display.getInputMap().put(KeyStroke.getKeyStroke('+'), "operation");
-		display.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
-		display.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
-		display.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
-		display.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
-		display.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('+'), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "operation");
 		
 		GridBagConstraints displayC = new GridBagConstraints();
 		
@@ -228,7 +228,7 @@ public class GUI extends JPanel
 		displayC.weightx = 1.0;
 		displayC.fill = GridBagConstraints.BOTH;
 		
-		add(display, displayC);
+		add(basicDisplay, displayC);
 	}
 	
 	private void createMatrixDisplay()
@@ -451,7 +451,7 @@ public class GUI extends JPanel
 		
 	private String getUserInput()
 	{
-		String displayText = display.getText();
+		String displayText = basicDisplay.getText();
 		int newLine = displayText.indexOf('\n');
 		
 		System.out.println("User input: " + displayText.substring(newLine + 1));
@@ -478,7 +478,7 @@ public class GUI extends JPanel
 		
 		try 
 		{
-			newLineChar = display.getLineEndOffset(0);
+			newLineChar = basicDisplay.getLineEndOffset(0);
 		} 
 		catch (BadLocationException e) 
 		{
@@ -502,11 +502,11 @@ public class GUI extends JPanel
 	{
 		if (a_message.equals("Clear"))
 		{
-			display.setText(display.getText().substring(a_newLineChar - 1));
+			basicDisplay.setText(basicDisplay.getText().substring(a_newLineChar - 1));
 		}
 		else
 		{
-			display.insert(a_message, a_newLineChar - 1);
+			basicDisplay.insert(a_message, a_newLineChar - 1);
 		}	
 	}
 	
@@ -515,22 +515,22 @@ public class GUI extends JPanel
 		//Clear the Input Line:
 		if (a_message.equals("Clear"))
 		{
-			display.setText(display.getText().substring(0, a_newLineChar));
+			basicDisplay.setText(basicDisplay.getText().substring(0, a_newLineChar));
 		}
 		
 		//Backspace a character:
 		else if (a_message.equals("Backspace"))
 		{
 			//If the text on the input line is not blank, delete the last character
-			if (!display.getText().substring(a_newLineChar).equals(""))
+			if (!basicDisplay.getText().substring(a_newLineChar).equals(""))
 			{
-				display.setText(display.getText().substring(0, display.getText().length() - 1));
+				basicDisplay.setText(basicDisplay.getText().substring(0, basicDisplay.getText().length() - 1));
 			}
 			
 			//If the text is now blank, place a 0 on the input line and set the typeOverFlag
-			if (display.getText().substring(a_newLineChar).equals(""))
+			if (basicDisplay.getText().substring(a_newLineChar).equals(""))
 			{
-				display.setText(display.getText() + "0");
+				basicDisplay.setText(basicDisplay.getText() + "0");
 				m_typeOverFlag = true;
 			}	
 		}
@@ -538,16 +538,16 @@ public class GUI extends JPanel
 		//Type over the text on the input line:
 		else if (m_typeOverFlag)
 		{
-			display.setText(display.getText().substring(0, a_newLineChar));
-			display.insert(a_message, a_newLineChar);
+			basicDisplay.setText(basicDisplay.getText().substring(0, a_newLineChar));
+			basicDisplay.insert(a_message, a_newLineChar);
 			m_typeOverFlag = false;
 		}
 		
 		//If no special case, just append a character to the end of the input line:
 		else 
 		{
-			int length = display.getText().length(); 
-			display.insert(a_message, length);
+			int length = basicDisplay.getText().length(); 
+			basicDisplay.insert(a_message, length);
 		}
 	}
 	
