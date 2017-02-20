@@ -24,15 +24,15 @@ import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 
+import calculator.BasicTextArea.DeleteAction;
+import calculator.BasicTextArea.NumberAction;
+import calculator.BasicTextArea.OperatorAction;
+
 //Increase gridx = move right
 //Increase gridy = move down
 //Starts top left corner (0,0)
 public class GUI extends JPanel
-{
-	//Display Line Number Constants:
-	public static final int EXPRESSION = 0;
-	public static final int INPUT = 1;
-	
+{	
 	//Calculator and Required Data:
 	private Calculator calculator;
 	private double m_input;
@@ -40,9 +40,8 @@ public class GUI extends JPanel
 	
 	//GUI Data Objects:
 	private static GUI GUIObject;
-	private boolean m_typeOverFlag;
-	private boolean m_firstInputFlag;
-	private EventQueue queue;
+
+
 	private Dimension basicSize;
 	private Dimension matrixSize;
 	
@@ -115,14 +114,9 @@ public class GUI extends JPanel
         // Show the frame
         frame.setVisible(true);
 		
-		//Create calculator
-		calculator = Calculator.getCalculatorInstance();
+		
 		m_input = 0;
 		m_total = 0;
-		m_typeOverFlag = true;
-		m_firstInputFlag = true;
-		
-		queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
 		
 	}
 	
@@ -192,33 +186,7 @@ public class GUI extends JPanel
 		basicDisplay = new BasicTextArea("\n0");
 		basicDisplay.setRows(2);
 		basicDisplay.setEditable(false);
-		
-		numberAction = new NumberAction("0", "Insert number");
-		deleteAction = new DeleteAction("Clr", "Delete number");
-		operatorAction = new OperatorAction("+", "Add Numbers");
-		miscOperatorAction = new MiscOperatorAction("1/x", "Reciprocal");
-		
-		basicDisplay.getActionMap().put("number", numberAction);
-		basicDisplay.getActionMap().put("delete", deleteAction);
-		basicDisplay.getActionMap().put("operation", operatorAction);
-		basicDisplay.getActionMap().put("miscOperation", miscOperatorAction);
-		
-		for (Integer i = 0; i <= 9; i++)
-		{
-			basicDisplay.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
-			basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
-		} 
-		
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('+'), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "operation");
-		
+				
 		GridBagConstraints displayC = new GridBagConstraints();
 		
 		displayC.gridx = 0;
@@ -271,7 +239,7 @@ public class GUI extends JPanel
 				numC.fill = GridBagConstraints.HORIZONTAL;
 			}
 			
-			numberAction = new NumberAction(i.toString(), "Insert number");
+			numberAction = basicDisplay.new NumberAction(i.toString(), "Insert number");
 			numbers[i] = new JButton(numberAction);
 			numbers[i].setFocusable(false);
 			
@@ -283,7 +251,7 @@ public class GUI extends JPanel
 			add(numbers[i], numC);
 		}
 		
-		numberAction = new NumberAction(".", "Decimal");
+		numberAction = basicDisplay.new NumberAction(".", "Decimal");
 		decimal = new JButton(numberAction);
 		decimal.setFocusable(false);
 		
@@ -298,7 +266,7 @@ public class GUI extends JPanel
 	
 	private void createDeleteButtons()
 	{
-		deleteAction = new DeleteAction("←", "Delete number");
+		deleteAction = basicDisplay.new DeleteAction("←", "Delete number");
 		backspace = new JButton(deleteAction);
 		backspace.setFocusable(false);
 	
@@ -309,7 +277,7 @@ public class GUI extends JPanel
 		
 		add(backspace, backspaceC);
 		
-		deleteAction = new DeleteAction("Clr", "Clear All Input");
+		deleteAction = basicDisplay.new DeleteAction("Clr", "Clear All Input");
 		clear = new JButton(deleteAction);
 		clear.setFocusable(false);
 		
@@ -320,7 +288,7 @@ public class GUI extends JPanel
 		
 		add(clear, clearC);
 		
-		deleteAction = new DeleteAction("CE", "Clear Entry");
+		deleteAction = basicDisplay.new DeleteAction("CE", "Clear Entry");
 		clearEntry = new JButton(deleteAction);
 		clearEntry.setFocusable(false);
 		
@@ -331,7 +299,7 @@ public class GUI extends JPanel
 	
 	private void createOperators()
 	{
-		operatorAction = new OperatorAction("+", "Add numbers");
+		operatorAction = basicDisplay.new OperatorAction("+", "Add numbers");
 		addition = new JButton(operatorAction);
 		addition.setFocusable(false);
 		
@@ -344,7 +312,7 @@ public class GUI extends JPanel
 		
 		add(addition, operatorC);
 		
-		operatorAction = new OperatorAction("-", "Subtract numbers");
+		operatorAction = basicDisplay.new OperatorAction("-", "Subtract numbers");
 		subtraction = new JButton(operatorAction);
 		subtraction.setFocusable(false);
 		
@@ -352,7 +320,7 @@ public class GUI extends JPanel
 		
 		add(subtraction, operatorC);
 
-		operatorAction = new OperatorAction("*", "Multiply numbers");
+		operatorAction = basicDisplay.new OperatorAction("*", "Multiply numbers");
 		multiplication = new JButton(operatorAction);
 		multiplication.setFocusable(false);
 		
@@ -360,7 +328,7 @@ public class GUI extends JPanel
 		
 		add(multiplication, operatorC);
 		
-		operatorAction = new OperatorAction("/", "Divide numbers");
+		operatorAction = basicDisplay.new OperatorAction("/", "Divide numbers");
 		division = new JButton(operatorAction);
 		division.setFocusable(false);
 		
@@ -368,7 +336,7 @@ public class GUI extends JPanel
 		
 		add(division, operatorC);
 		
-		operatorAction = new OperatorAction("=", "Find Total");
+		operatorAction = basicDisplay.new OperatorAction("=", "Find Total");
 		equals = new JButton(operatorAction);
 		equals.setFocusable(false);
 		
@@ -445,117 +413,6 @@ public class GUI extends JPanel
 		buttonC.fill = GridBagConstraints.BOTH;
 		
 		add(listMatrices, buttonC);
-		
-		
-	}
-		
-	private String getUserInput()
-	{
-		String displayText = basicDisplay.getText();
-		int newLine = displayText.indexOf('\n');
-		
-		System.out.println("User input: " + displayText.substring(newLine + 1));
-		return displayText.substring(newLine + 1);
-	}
-	
-	private void changeDisplay(double expression, int lineNum)
-	{
-		String exp = ((Double) expression).toString();
-		
-		changeDisplay(exp, lineNum);
-	}
-	
-	private void changeDisplay(int expression, int lineNum)
-	{
-		String exp = ((Integer) expression).toString();
-		
-		changeDisplay(exp, lineNum);
-	}
-	
-	private void changeDisplay(String message, int lineNum)
-	{
-		int newLineChar = 0;
-		
-		try 
-		{
-			newLineChar = basicDisplay.getLineEndOffset(0);
-		} 
-		catch (BadLocationException e) 
-		{
-			e.printStackTrace();
-		}
-		
-		
-		if (lineNum == EXPRESSION)
-		{
-			changeExpressionLine(message, newLineChar);
-		
-		}
-		else
-		{
-			changeInputLine(message, newLineChar);
-		}
-		
-	}
-	
-	private void changeExpressionLine(String a_message, int a_newLineChar)
-	{
-		if (a_message.equals("Clear"))
-		{
-			basicDisplay.setText(basicDisplay.getText().substring(a_newLineChar - 1));
-		}
-		else
-		{
-			basicDisplay.insert(a_message, a_newLineChar - 1);
-		}	
-	}
-	
-	private void changeInputLine(String a_message, int a_newLineChar)
-	{
-		//Clear the Input Line:
-		if (a_message.equals("Clear"))
-		{
-			basicDisplay.setText(basicDisplay.getText().substring(0, a_newLineChar));
-		}
-		
-		//Backspace a character:
-		else if (a_message.equals("Backspace"))
-		{
-			//If the text on the input line is not blank, delete the last character
-			if (!basicDisplay.getText().substring(a_newLineChar).equals(""))
-			{
-				basicDisplay.setText(basicDisplay.getText().substring(0, basicDisplay.getText().length() - 1));
-			}
-			
-			//If the text is now blank, place a 0 on the input line and set the typeOverFlag
-			if (basicDisplay.getText().substring(a_newLineChar).equals(""))
-			{
-				basicDisplay.setText(basicDisplay.getText() + "0");
-				m_typeOverFlag = true;
-			}	
-		}
-		
-		//Type over the text on the input line:
-		else if (m_typeOverFlag)
-		{
-			basicDisplay.setText(basicDisplay.getText().substring(0, a_newLineChar));
-			basicDisplay.insert(a_message, a_newLineChar);
-			m_typeOverFlag = false;
-		}
-		
-		//If no special case, just append a character to the end of the input line:
-		else 
-		{
-			int length = basicDisplay.getText().length(); 
-			basicDisplay.insert(a_message, length);
-		}
-	}
-	
-	private String formatDouble(double a_result)
-	{
-		String res = ((Double) a_result).toString();
-		String s = res.indexOf(".") < 0 ? res : res.replaceAll("0*$", "").replaceAll("\\.$", "");
-		return s;
 	}
 	
 	public class NumberAction extends AbstractAction
@@ -600,7 +457,7 @@ public class GUI extends JPanel
 			
 			if (e.getSource() instanceof JTextArea)
 			{
-			 	KeyEvent ke = (KeyEvent)queue.getCurrentEvent();
+			 	KeyEvent ke = (KeyEvent) queue.getCurrentEvent();
 		        keyStroke = ke.getKeyText( ke.getKeyCode() );
 		        System.out.println(keyStroke);
 			}
@@ -682,59 +539,9 @@ public class GUI extends JPanel
 			putValue(SHORT_DESCRIPTION, a_shortDescription);
 		}
 		
-		public void actionPerformed(ActionEvent e)
+		public void actionPerformed(ActionEvent a_event)
 		{
-			String operator = e.getActionCommand();
-			System.out.println("Operator: " + operator);
-			
-			String formattedTotal = "";
-			
-			String userInput = getUserInput();
-			m_input = Double.parseDouble(userInput);
-			String formattedInput = formatDouble(m_input);
-			
-			changeDisplay("Clear", INPUT);
-			
-			switch (operator)
-			{
-				case "±":
-				{
-					
-					m_total = calculator.multiply(m_input, -1);
-					break;
-				}
-				case "1/x":
-				{
-					changeDisplay("Clear", EXPRESSION);
-					changeDisplay("reciprocal(" + formattedInput + ")", EXPRESSION);
-					m_total = calculator.divide(1, m_input);
-					break;
-				}
-				case "%":
-				{
-					double result = calculator.percent(m_total, m_input);
-					formattedTotal = formatDouble(result);
-					changeDisplay(formattedTotal, EXPRESSION);
-					break;
-				}
-				case "√":
-				{
-					changeDisplay("Clear", EXPRESSION);
-					changeDisplay("sqrt(" + formattedInput + ")", EXPRESSION);
-					m_total = calculator.squareRoot(m_input);
-					break;
-				}
-				//Error:
-				default:
-				{
-					System.out.println("An unknown error has occurred");
-				}
-			}
-			
-			if (!operator.equals("%"))	formattedTotal = formatDouble(m_total);
-	
-			changeDisplay(formattedTotal, INPUT);
-			m_typeOverFlag = true;
+			basicDisplay.miscOperationPerformed(a_event.getActionCommand());
 		}
 	}
 	
