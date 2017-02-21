@@ -234,7 +234,7 @@ public class MatrixTextPane extends JTextPane
 		{
 			m_runningString = "";
 		}		
-		else
+		else if (!m_runningString.equals(""))
 		{
 			m_runningString = m_runningString.substring(0, m_runningString.length()-1);
 		}

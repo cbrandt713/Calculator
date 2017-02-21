@@ -34,11 +34,6 @@ public class GUI extends JPanel
 	private final static int BASIC = 0;
 	private final static int MATRIX = 1;
 	
-	//Calculator and Required Data:
-	private Calculator calculator;
-	private double m_input;
-	private double m_total;
-	
 	//GUI Data Objects:
 	private static GUI GUIObject;
 	private int m_GUIState;
@@ -100,27 +95,11 @@ public class GUI extends JPanel
 		//Create the menu:
 		createMenu();
 		
-		frame = new JFrame("Calculator");
-		
 		//Create elements of the layout
 		setMatrixLayout();
 		
-		frame.getContentPane().add(this);
-		frame.setJMenuBar(getJMenuBar());
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-        // Size the frame.
-        frame.pack();
-        //basicSize = frame.getSize();
-        //System.out.println(basicSize);
-        
-        // Show the frame
-        frame.setVisible(true);
-		
-		
-		m_input = 0;
-		m_total = 0;
-		
+		//Create Frame to host GUI:
+		createFrame();	
 	}
 	
 	public static GUI getGUIInstance()
@@ -131,6 +110,21 @@ public class GUI extends JPanel
 		}
 		
 		return GUIObject;
+	}
+	
+	private void createFrame()
+	{
+		frame = new JFrame("Calculator");
+		
+		frame.getContentPane().add(this);
+		frame.setJMenuBar(getJMenuBar());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+        // Size the frame.
+        frame.pack();
+        
+        // Show the frame
+        frame.setVisible(true);
 	}
 	
 	private void setBasicLayout()
