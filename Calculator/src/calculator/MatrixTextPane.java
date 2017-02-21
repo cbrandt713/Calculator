@@ -41,10 +41,6 @@ public class MatrixTextPane extends JTextPane
 	private int m_currentColumn;
 	
 	//Various:
-	private EnterAction enterAction;
-	private NumberAction numberAction;
-	private LetterAction letterAction;
-	private ArrowAction arrowAction;
 	private int m_mode;
 	private EventQueue queue;
 	
@@ -74,43 +70,7 @@ public class MatrixTextPane extends JTextPane
 	private void registerKeybinds()
 	{
 		
-		enterAction = new EnterAction("", "");
-		numberAction = new NumberAction("", "");
-		letterAction = new LetterAction("", "");
-		arrowAction = new ArrowAction("", "");
 		
-		//Register all the keybinds with the associated string:
-		//Note this syntax is necessary to use keybinds
-		for (Integer i = 0; i <= 9; i++)
-		{
-			getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
-			getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
-		} 
-		
-		for (char letter = 'A'; letter <= 'Z'; letter++)
-		{
-			getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
-		}
-		
-		for (char letter = 'a'; letter <= 'z'; letter++)
-		{
-			getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
-		}
-		
-		getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
-		getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-		getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "enter");
-		
-		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "arrow");
-		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "arrow");
-		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "arrow");
-		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "arrow");
-		
-		//Register the actions with their respective classes:
-		getActionMap().put("enter", enterAction);
-		getActionMap().put("number", numberAction);
-		getActionMap().put("letter", letterAction);
-		getActionMap().put("arrow", arrowAction);
 	}
 	
 	private void setMode(int a_mode)
@@ -262,7 +222,27 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
-	private void enterKeyPress()
+	public void numberActionPerformed(ActionEvent a_event)
+	{
+		m_runningString += a_event.getActionCommand();
+		updateText();
+	}
+	
+	public void deleteActionPerformed(ActionEvent a_event)
+	{
+		if (a_event.getActionCommand().equals("Clr") || a_event.getActionCommand().equals("CE"))
+		{
+			m_runningString = "";
+		}		
+		else
+		{
+			m_runningString = m_runningString.substring(0, m_runningString.length()-1);
+		}
+		
+		updateText();
+	}
+	
+	public void enterActionPerformed(ActionEvent a_event)
 	{	
 		switch (getMode()) 
 		{
@@ -337,109 +317,31 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 	
-	public void arrowPress(String a_direction)
+	public void arrowActionPerformed(ActionEvent a_event)
 	{
+		KeyEvent ke = (KeyEvent) queue.getCurrentEvent();
+        String direction = ke.getKeyText( ke.getKeyCode() );
+     
 		if (getMode() != SHOW_MATRICES)
 		{
 			return;
 		}
 		
-		if (a_direction.equals("Down"))
+		if (direction.equals("Down"))
 		{
 			if (m_arrowPointer < m_amtMatrices) m_arrowPointer++;
 		}
-		if (a_direction.equals("Up"))
+		if (direction.equals("Up"))
 		{
 			if (m_arrowPointer > 1) m_arrowPointer--;
 		}
 		showMatrices();
 	}
 	
-	public class EnterAction extends AbstractAction 
+	public void letterActionPerformed(ActionEvent a_event)
 	{
-		
-		public EnterAction(String a_name, String a_shortDescription)
-		{
-			super(a_name);
-			putValue(SHORT_DESCRIPTION, a_shortDescription);
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent a_event) 
-		{
-			//If the fired event is the Enter key:
-			if (a_event.getActionCommand().equals("\n"))
-			{	
-				enterKeyPress();
-			}
-			//Backspace: renders strange symbol
-			else
-			{	
-				if (!m_runningString.equals(""))
-				{
-					m_runningString = m_runningString.substring(0, m_runningString.length()-1);
-					updateText();
-				}			
-			}
-		}
-		
+		m_runningString += a_event.getActionCommand();
+		updateText();
 	}
-	
-	public class NumberAction extends AbstractAction
-	{
-
-		public NumberAction(String a_name, String a_shortDescription)
-		{
-			super(a_name);
-			putValue(SHORT_DESCRIPTION, a_shortDescription);
-		}
-		
-		
-		@Override
-		public void actionPerformed(ActionEvent a_event)
-		{
-			m_runningString += a_event.getActionCommand();
-			updateText();
-		}
-	}
-	
-	public class LetterAction extends AbstractAction
-	{
-
-		public LetterAction(String a_name, String a_shortDescription)
-		{
-			super(a_name);
-			putValue(SHORT_DESCRIPTION, a_shortDescription);
-		}
-		
-		
-		@Override
-		public void actionPerformed(ActionEvent a_event)
-		{
-			m_runningString += a_event.getActionCommand();
-			updateText();
-		}
-		
-	}
-	
-	public class ArrowAction extends AbstractAction
-	{
-		public ArrowAction(String a_name, String a_shortDescription)
-		{
-			super(a_name);
-			putValue(SHORT_DESCRIPTION, a_shortDescription);
-		}
-		
-		
-		@Override
-		public void actionPerformed(ActionEvent a_event)
-		{
-			KeyEvent ke = (KeyEvent) queue.getCurrentEvent();
-	        String keyStroke = ke.getKeyText( ke.getKeyCode() );
-	        arrowPress(keyStroke);
-	        System.out.println(keyStroke);
-		}
-	}
-	
 	
 }

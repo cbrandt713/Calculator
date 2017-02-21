@@ -23,16 +23,17 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
-
-import calculator.BasicTextArea.DeleteAction;
-import calculator.BasicTextArea.NumberAction;
-import calculator.BasicTextArea.OperatorAction;
+import javax.swing.text.JTextComponent;
 
 //Increase gridx = move right
 //Increase gridy = move down
 //Starts top left corner (0,0)
 public class GUI extends JPanel
 {	
+	//GUI State Indicator Constants:
+	private final static int BASIC = 0;
+	private final static int MATRIX = 1;
+	
 	//Calculator and Required Data:
 	private Calculator calculator;
 	private double m_input;
@@ -40,8 +41,7 @@ public class GUI extends JPanel
 	
 	//GUI Data Objects:
 	private static GUI GUIObject;
-
-
+	private int m_GUIState;
 	private Dimension basicSize;
 	private Dimension matrixSize;
 	
@@ -83,11 +83,14 @@ public class GUI extends JPanel
 
 	//Action Elements:
 	private NumberAction numberAction;
+	private EnterAction enterAction;
 	private DeleteAction deleteAction;
 	private OperatorAction operatorAction;
 	private MiscOperatorAction miscOperatorAction;
 	private MenuItemAction menuItemAction;
 	private MatrixAction matrixAction;
+	private LetterAction letterAction;
+	private ArrowAction arrowAction;
 	
 	private GUI()
 	{
@@ -135,6 +138,8 @@ public class GUI extends JPanel
 		//Set Layout of the body
 		setLayout(new GridBagLayout());
 		
+		m_GUIState = BASIC;
+		
 		//Create elements of the layout:
 		createBasicDisplay();
 		createNumbers();
@@ -149,6 +154,8 @@ public class GUI extends JPanel
 		
 		//Set Layout of the body
 		setLayout(new GridBagLayout());
+		
+		m_GUIState = MATRIX;
 		
 		//Create elements of the layout:
 		//frame.setSize(400, 300);
@@ -181,12 +188,19 @@ public class GUI extends JPanel
 		return menuBar;
 	}
 	
+	public int getGUIState()
+	{
+		return m_GUIState;
+	}
+	
 	private void createBasicDisplay()
 	{
 		basicDisplay = new BasicTextArea("\n0");
 		basicDisplay.setRows(2);
 		basicDisplay.setEditable(false);
 				
+		createBasicKeybinds();
+		
 		GridBagConstraints displayC = new GridBagConstraints();
 		
 		displayC.gridx = 0;
@@ -199,6 +213,33 @@ public class GUI extends JPanel
 		add(basicDisplay, displayC);
 	}
 	
+	private void createBasicKeybinds()
+	{
+		numberAction = new NumberAction("", "");
+		deleteAction = new DeleteAction("", "");
+		operatorAction = new OperatorAction("", "");
+		
+		basicDisplay.getActionMap().put("number", numberAction);
+		basicDisplay.getActionMap().put("delete", deleteAction);
+		basicDisplay.getActionMap().put("operation", operatorAction);
+		
+		for (Integer i = 0; i <= 9; i++)
+		{
+			basicDisplay.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
+			basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
+		} 
+		
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('+'), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
+		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "operation");
+	}
+	
 	private void createMatrixDisplay()
 	{
 		matrixDisplay = new MatrixTextPane();
@@ -206,6 +247,8 @@ public class GUI extends JPanel
 		matrixDisplay.setEditable(false);
 		scrollPane = new JScrollPane(matrixDisplay, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		createMatrixKeybinds();
 		
 		GridBagConstraints displayC = new GridBagConstraints();
 		displayC.gridx = 0;
@@ -216,6 +259,49 @@ public class GUI extends JPanel
 		displayC.fill = GridBagConstraints.BOTH;
 		
 		add(scrollPane, displayC);
+	}
+	
+	private void createMatrixKeybinds()
+	{
+		enterAction = new EnterAction("", "");
+		numberAction = new NumberAction("", "");
+		deleteAction = new DeleteAction("", "");
+		letterAction = new LetterAction("", "");
+		arrowAction = new ArrowAction("", "");
+		
+		//Register all the keybinds with the associated string:
+		//Note this syntax is necessary to use keybinds
+		for (Integer i = 0; i <= 9; i++)
+		{
+			matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
+			matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
+		} 
+		
+		for (char letter = 'A'; letter <= 'Z'; letter++)
+		{
+			matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
+		}
+		
+		for (char letter = 'a'; letter <= 'z'; letter++)
+		{
+			matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
+		}
+		
+		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
+		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
+		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
+		
+		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "arrow");
+		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "arrow");
+		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "arrow");
+		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "arrow");
+		
+		//Register the actions with their respective classes:
+		matrixDisplay.getActionMap().put("enter", enterAction);
+		matrixDisplay.getActionMap().put("number", numberAction);
+		matrixDisplay.getActionMap().put("delete", deleteAction);
+		matrixDisplay.getActionMap().put("letter", letterAction);
+		matrixDisplay.getActionMap().put("arrow", arrowAction);
 	}
 	
 	private void createNumbers()
@@ -239,7 +325,7 @@ public class GUI extends JPanel
 				numC.fill = GridBagConstraints.HORIZONTAL;
 			}
 			
-			numberAction = basicDisplay.new NumberAction(i.toString(), "Insert number");
+			numberAction = new NumberAction(i.toString(), "Insert number");
 			numbers[i] = new JButton(numberAction);
 			numbers[i].setFocusable(false);
 			
@@ -251,7 +337,7 @@ public class GUI extends JPanel
 			add(numbers[i], numC);
 		}
 		
-		numberAction = basicDisplay.new NumberAction(".", "Decimal");
+		numberAction = new NumberAction(".", "Decimal");
 		decimal = new JButton(numberAction);
 		decimal.setFocusable(false);
 		
@@ -266,7 +352,7 @@ public class GUI extends JPanel
 	
 	private void createDeleteButtons()
 	{
-		deleteAction = basicDisplay.new DeleteAction("←", "Delete number");
+		deleteAction = new DeleteAction("←", "Delete number");
 		backspace = new JButton(deleteAction);
 		backspace.setFocusable(false);
 	
@@ -277,7 +363,7 @@ public class GUI extends JPanel
 		
 		add(backspace, backspaceC);
 		
-		deleteAction = basicDisplay.new DeleteAction("Clr", "Clear All Input");
+		deleteAction = new DeleteAction("Clr", "Clear All Input");
 		clear = new JButton(deleteAction);
 		clear.setFocusable(false);
 		
@@ -288,7 +374,7 @@ public class GUI extends JPanel
 		
 		add(clear, clearC);
 		
-		deleteAction = basicDisplay.new DeleteAction("CE", "Clear Entry");
+		deleteAction = new DeleteAction("CE", "Clear Entry");
 		clearEntry = new JButton(deleteAction);
 		clearEntry.setFocusable(false);
 		
@@ -299,7 +385,7 @@ public class GUI extends JPanel
 	
 	private void createOperators()
 	{
-		operatorAction = basicDisplay.new OperatorAction("+", "Add numbers");
+		operatorAction = new OperatorAction("+", "Add numbers");
 		addition = new JButton(operatorAction);
 		addition.setFocusable(false);
 		
@@ -312,7 +398,7 @@ public class GUI extends JPanel
 		
 		add(addition, operatorC);
 		
-		operatorAction = basicDisplay.new OperatorAction("-", "Subtract numbers");
+		operatorAction = new OperatorAction("-", "Subtract numbers");
 		subtraction = new JButton(operatorAction);
 		subtraction.setFocusable(false);
 		
@@ -320,7 +406,7 @@ public class GUI extends JPanel
 		
 		add(subtraction, operatorC);
 
-		operatorAction = basicDisplay.new OperatorAction("*", "Multiply numbers");
+		operatorAction = new OperatorAction("*", "Multiply numbers");
 		multiplication = new JButton(operatorAction);
 		multiplication.setFocusable(false);
 		
@@ -328,7 +414,7 @@ public class GUI extends JPanel
 		
 		add(multiplication, operatorC);
 		
-		operatorAction = basicDisplay.new OperatorAction("/", "Divide numbers");
+		operatorAction = new OperatorAction("/", "Divide numbers");
 		division = new JButton(operatorAction);
 		division.setFocusable(false);
 		
@@ -336,7 +422,7 @@ public class GUI extends JPanel
 		
 		add(division, operatorC);
 		
-		operatorAction = basicDisplay.new OperatorAction("=", "Find Total");
+		operatorAction = new OperatorAction("=", "Find Total");
 		equals = new JButton(operatorAction);
 		equals.setFocusable(false);
 		
@@ -424,21 +510,29 @@ public class GUI extends JPanel
 		}
 		
 		@Override
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent a_event) 
 		{
-			System.out.println(e.getActionCommand());
-			
-			//Possible error: If user uses an operation before a number
-			if (m_firstInputFlag)
-			{
-				changeDisplay("Clear", EXPRESSION);
-				m_firstInputFlag = false;
-			}
-			
-			changeDisplay(e.getActionCommand(), INPUT);
-			
+			if (getGUIState() == BASIC) basicDisplay.numberActionPerformed(a_event);
+			else matrixDisplay.numberActionPerformed(a_event);
 		}
 		
+	}
+	
+	public class EnterAction extends AbstractAction
+	{
+		
+		public EnterAction(String name, String shortDescription)
+		{
+			super(name);
+			putValue(SHORT_DESCRIPTION, shortDescription);
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent a_event) 
+		{
+			if (getGUIState() == BASIC) basicDisplay.enterActionPerformed(a_event);
+			else matrixDisplay.enterActionPerformed(a_event);
+		}
 	}
 	
 	public class DeleteAction extends AbstractAction
@@ -451,42 +545,10 @@ public class GUI extends JPanel
 		}
 		
 		@Override
-		public void actionPerformed(ActionEvent e) 
+		public void actionPerformed(ActionEvent a_event) 
 		{
-			String keyStroke = "";
-			
-			if (e.getSource() instanceof JTextArea)
-			{
-			 	KeyEvent ke = (KeyEvent) queue.getCurrentEvent();
-		        keyStroke = ke.getKeyText( ke.getKeyCode() );
-		        System.out.println(keyStroke);
-			}
-				
-			System.out.println(e.getActionCommand());
-			//Clear:
-			if (e.getActionCommand().equals("Clr") || keyStroke.equals("Delete"))
-			{
-				changeDisplay("Clear", EXPRESSION);
-				changeDisplay("Clear", INPUT);
-				changeDisplay("0", INPUT);
-				m_input = 0;
-				m_total = 0;
-				m_typeOverFlag = true;
-			}
-			//Clear Entry:
-			else if (e.getActionCommand().equals("CE"))
-			{
-				changeDisplay("Clear", INPUT);
-				changeDisplay("0", INPUT);
-				m_input = 0;
-				m_typeOverFlag = true;
-			}
-			//Backspace:
-			else
-			{
-				changeDisplay("Backspace", INPUT);
-			}
-			
+			if (getGUIState() == BASIC) basicDisplay.deleteActionPerformed(a_event);
+			else matrixDisplay.deleteActionPerformed(a_event);
 		}
 	}
 	
@@ -501,34 +563,8 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			//Find the given operator:
-			String operator = a_event.getActionCommand();
-			
-			//Enter key is equivalent to the = operator.
-			if (operator.equals("\n")) operator = "=";
-			
-			calculator.pushOperator(operator);
-			System.out.println("Operator: " + operator);
-			
-			//Get user input and send to calculator:
-			String userInput = getUserInput();
-			m_input = Double.parseDouble(userInput);
-			calculator.pushOperand(m_input);
-			
-			//Show the input and operator on the expression line
-			changeDisplay(userInput + " " + operator + " ", EXPRESSION);
-			changeDisplay("Clear", INPUT);
-			
-			m_total = calculator.doCalculation();
-			
-			//Format and display the total to the user:
-			String formattedTotal = formatDouble(m_total);
-			changeDisplay(formattedTotal, INPUT);
-			
-			m_typeOverFlag = true;
-			
+			if (getGUIState() == BASIC) basicDisplay.operatorActionPerformed(a_event);
 		}
-		
 	}
 	
 	public class MiscOperatorAction extends AbstractAction
@@ -541,7 +577,7 @@ public class GUI extends JPanel
 		
 		public void actionPerformed(ActionEvent a_event)
 		{
-			basicDisplay.miscOperationPerformed(a_event.getActionCommand());
+			if (getGUIState() == BASIC) basicDisplay.miscOperatorActionPerformed(a_event);
 		}
 	}
 	
@@ -559,7 +595,6 @@ public class GUI extends JPanel
 			
 			if (a_event.getActionCommand().equals("Basic"))
 			{
-				//setVisible(false);
 				setBasicLayout();	
 			}
 			else
@@ -599,6 +634,41 @@ public class GUI extends JPanel
 					break;
 				}
 			}
+		}
+	}
+	
+	
+	public class LetterAction extends AbstractAction
+	{
+
+		public LetterAction(String a_name, String a_shortDescription)
+		{
+			super(a_name);
+			putValue(SHORT_DESCRIPTION, a_shortDescription);
+		}
+		
+		
+		@Override
+		public void actionPerformed(ActionEvent a_event)
+		{
+			matrixDisplay.letterActionPerformed(a_event);
+		}
+		
+	}
+	
+	public class ArrowAction extends AbstractAction
+	{
+		public ArrowAction(String a_name, String a_shortDescription)
+		{
+			super(a_name);
+			putValue(SHORT_DESCRIPTION, a_shortDescription);
+		}
+		
+		
+		@Override
+		public void actionPerformed(ActionEvent a_event)
+		{
+			if (getGUIState() == MATRIX) matrixDisplay.arrowActionPerformed(a_event);
 		}
 	}
 	
