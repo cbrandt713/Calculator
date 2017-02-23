@@ -226,7 +226,7 @@ public class BasicTextArea extends JTextArea {
 		changeDisplay(userInput + " " + operator + " ", EXPRESSION);
 		changeDisplay("Clear", INPUT);
 		
-		m_total = calculator.doCalculation();
+		m_total = calculator.doBasicCalculation();
 		
 		//Format and display the total to the user:
 		String formattedTotal = formatDouble(m_total);

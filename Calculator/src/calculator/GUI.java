@@ -1,16 +1,10 @@
 package calculator;
 
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,11 +13,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
+
 
 //Increase gridx = move right
 //Increase gridy = move down
@@ -41,9 +32,9 @@ public class GUI extends JPanel
 	private Dimension matrixSize;
 	
 	//GUI Elements:
-	private BasicTextArea basicDisplay;
+	private BasicTextArea m_basicDisplay;
 	private JFrame frame;
-	private MatrixTextPane matrixDisplay;
+	private MatrixTextPane m_matrixDisplay;
 	private JMenu menu;
 	private JMenuBar menuBar;
 	private JMenuItem basic;
@@ -75,6 +66,7 @@ public class GUI extends JPanel
 	//Matrix Buttons:
 	private JButton createMatrix;
 	private JButton listMatrices;
+	private JButton rref;
 
 	//Action Elements:
 	private NumberAction numberAction;
@@ -189,9 +181,9 @@ public class GUI extends JPanel
 	
 	private void createBasicDisplay()
 	{
-		basicDisplay = new BasicTextArea("\n0");
-		basicDisplay.setRows(2);
-		basicDisplay.setEditable(false);
+		m_basicDisplay = new BasicTextArea("\n0");
+		m_basicDisplay.setRows(2);
+		m_basicDisplay.setEditable(false);
 				
 		createBasicKeybinds();
 		
@@ -204,7 +196,7 @@ public class GUI extends JPanel
 		displayC.weightx = 1.0;
 		displayC.fill = GridBagConstraints.BOTH;
 		
-		add(basicDisplay, displayC);
+		add(m_basicDisplay, displayC);
 	}
 	
 	private void createBasicKeybinds()
@@ -213,33 +205,33 @@ public class GUI extends JPanel
 		deleteAction = new DeleteAction("", "");
 		operatorAction = new OperatorAction("", "");
 		
-		basicDisplay.getActionMap().put("number", numberAction);
-		basicDisplay.getActionMap().put("delete", deleteAction);
-		basicDisplay.getActionMap().put("operation", operatorAction);
+		m_basicDisplay.getActionMap().put("number", numberAction);
+		m_basicDisplay.getActionMap().put("delete", deleteAction);
+		m_basicDisplay.getActionMap().put("operation", operatorAction);
 		
 		for (Integer i = 0; i <= 9; i++)
 		{
-			basicDisplay.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
-			basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
+			m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
+			m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
 		} 
 		
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('+'), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
-		basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "operation");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('+'), "operation");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "operation");
 	}
 	
 	private void createMatrixDisplay()
 	{
-		matrixDisplay = new MatrixTextPane();
-		matrixDisplay.setText("\n\n\n\n");
-		matrixDisplay.setEditable(false);
-		scrollPane = new JScrollPane(matrixDisplay, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		m_matrixDisplay = new MatrixTextPane();
+		m_matrixDisplay.setText("\n\n\n\n");
+		m_matrixDisplay.setEditable(false);
+		scrollPane = new JScrollPane(m_matrixDisplay, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
 		createMatrixKeybinds();
@@ -267,35 +259,35 @@ public class GUI extends JPanel
 		//Note this syntax is necessary to use keybinds
 		for (Integer i = 0; i <= 9; i++)
 		{
-			matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
-			matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
+			m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(i.toString()), "number");
+			m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("NUMPAD" + i.toString()), "number");
 		} 
 		
 		for (char letter = 'A'; letter <= 'Z'; letter++)
 		{
-			matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
+			m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
 		}
 		
 		for (char letter = 'a'; letter <= 'z'; letter++)
 		{
-			matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
+			m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
 		}
 		
-		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
-		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
-		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
 		
-		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "arrow");
-		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "arrow");
-		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "arrow");
-		matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "arrow");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "arrow");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "arrow");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "arrow");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "arrow");
 		
 		//Register the actions with their respective classes:
-		matrixDisplay.getActionMap().put("enter", enterAction);
-		matrixDisplay.getActionMap().put("number", numberAction);
-		matrixDisplay.getActionMap().put("delete", deleteAction);
-		matrixDisplay.getActionMap().put("letter", letterAction);
-		matrixDisplay.getActionMap().put("arrow", arrowAction);
+		m_matrixDisplay.getActionMap().put("enter", enterAction);
+		m_matrixDisplay.getActionMap().put("number", numberAction);
+		m_matrixDisplay.getActionMap().put("delete", deleteAction);
+		m_matrixDisplay.getActionMap().put("letter", letterAction);
+		m_matrixDisplay.getActionMap().put("arrow", arrowAction);
 	}
 	
 	private void createNumbers()
@@ -493,6 +485,15 @@ public class GUI extends JPanel
 		buttonC.fill = GridBagConstraints.BOTH;
 		
 		add(listMatrices, buttonC);
+		
+		matrixAction = new MatrixAction("RREF", "Row-Reduced Echelon Form of a Matrix");
+		rref = new JButton(matrixAction);
+		rref.setFocusable(false);
+		
+		buttonC.gridy = 3;
+		
+		add(rref, buttonC);
+		
 	}
 	
 	public class NumberAction extends AbstractAction
@@ -506,8 +507,8 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			if (getGUIState() == BASIC) basicDisplay.numberActionPerformed(a_event);
-			else matrixDisplay.numberActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicDisplay.numberActionPerformed(a_event);
+			else m_matrixDisplay.numberActionPerformed(a_event);
 		}
 		
 	}
@@ -524,8 +525,8 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			if (getGUIState() == BASIC) basicDisplay.enterActionPerformed(a_event);
-			else matrixDisplay.enterActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicDisplay.enterActionPerformed(a_event);
+			else m_matrixDisplay.enterActionPerformed(a_event);
 		}
 	}
 	
@@ -541,8 +542,8 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			if (getGUIState() == BASIC) basicDisplay.deleteActionPerformed(a_event);
-			else matrixDisplay.deleteActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicDisplay.deleteActionPerformed(a_event);
+			else m_matrixDisplay.deleteActionPerformed(a_event);
 		}
 	}
 	
@@ -557,7 +558,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			if (getGUIState() == BASIC) basicDisplay.operatorActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicDisplay.operatorActionPerformed(a_event);
 		}
 	}
 	
@@ -571,7 +572,7 @@ public class GUI extends JPanel
 		
 		public void actionPerformed(ActionEvent a_event)
 		{
-			if (getGUIState() == BASIC) basicDisplay.miscOperatorActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicDisplay.miscOperatorActionPerformed(a_event);
 		}
 	}
 	
@@ -613,18 +614,23 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event)
 		{
 			String operation = a_event.getActionCommand();
-			matrixDisplay.setText("");
+			m_matrixDisplay.setText("");
 			
 			switch (operation)
 			{
 				case "Create":
 				{
-					matrixDisplay.createRows();
+					m_matrixDisplay.createRows();
 					break;
 				}
 				case "List":
 				{
-					matrixDisplay.showMatrices();
+					m_matrixDisplay.showMatrices();
+					break;
+				}
+				case "RREF":
+				{
+					m_matrixDisplay.RREF();
 					break;
 				}
 			}
@@ -645,7 +651,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
-			matrixDisplay.letterActionPerformed(a_event);
+			m_matrixDisplay.letterActionPerformed(a_event);
 		}
 		
 	}
@@ -662,7 +668,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
-			if (getGUIState() == MATRIX) matrixDisplay.arrowActionPerformed(a_event);
+			if (getGUIState() == MATRIX) m_matrixDisplay.arrowActionPerformed(a_event);
 		}
 	}
 	

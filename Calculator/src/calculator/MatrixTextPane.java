@@ -43,8 +43,10 @@ public class MatrixTextPane extends JTextPane
 	//Various:
 	private int m_mode;
 	private EventQueue queue;
-	
 	private int m_arrowPointer;
+	
+	//Calculator and Required Data:
+	private Calculator calculator;
 	
 	public MatrixTextPane()
 	{
@@ -60,16 +62,10 @@ public class MatrixTextPane extends JTextPane
 		m_currentRow = 0;
 		m_currentColumn = 0;
 		
-		registerKeybinds();
+		calculator = Calculator.getCalculatorInstance();
 		
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-		
-	}
-	
-	private void registerKeybinds()
-	{
-		
 		
 	}
 	
@@ -141,6 +137,11 @@ public class MatrixTextPane extends JTextPane
 			}
 			setText(getText() + line);
 		}
+	}
+	
+	public void RREF()
+	{
+		calculator.RREF(m_matrices[0]);
 	}
 	
 	private boolean tryParse(String a_input)
