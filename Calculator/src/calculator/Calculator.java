@@ -130,60 +130,102 @@ public class Calculator {
 	}
 	
 	//Add the rows in a_matrix in index a_fromIndex to the row in a_toIndex
-	public double[] addRow(Matrix a_matrix, int a_fromIndex, int a_toIndex, boolean a_subtract)
+	public Fraction[] addRow(Fraction[] fromRow, Fraction[] toRow, boolean a_subtract)
 	{
-		double[] fromRow = a_matrix.getRow(a_fromIndex);
-		double[] toRow = a_matrix.getRow(a_toIndex);
-		
-		double[] resultRow = new double[fromRow.length];
+		Fraction[] resultRow = new Fraction[fromRow.length];
 		
 		for (int i = 0; i < fromRow.length; i++)
 		{
 			if (a_subtract)
 			{ 
-				resultRow[i] = fromRow[i] - toRow[i];
+				resultRow[i] = fromRow[i].subtract(toRow[i]);
 			}
 			else
 			{
-				resultRow[i] = fromRow[i] + toRow[i];
+				resultRow[i] = fromRow[i].add(toRow[i]);
 			}
 		}
 		
-		a_matrix.setRow(a_toIndex, resultRow);
 		return resultRow;
 		
 	}
 	
-	public double[] multiplyRow(Matrix a_matrix, int a_rowIndex, double a_multBy, boolean a_divide)
+	public Fraction[] multiplyRow(Fraction[] a_row, Fraction a_multBy, boolean a_divide)
 	{
-		double [] row = a_matrix.getRow(a_rowIndex);
+		if (a_divide) a_multBy = a_multBy.reciprocal(); 
 		
-		if (a_divide) a_multBy = (1 / a_multBy); 
+		Fraction[] newRow = new Fraction[a_row.length];
 		
-		for (int i = 0; i < row.length; i++)
+		for (int i = 0; i < a_row.length; i++)
 		{
-			row[i] *= a_multBy;
+			newRow[i] = a_row[i].multiply(a_multBy);
 		}
 		
-		a_matrix.setRow(a_rowIndex, row);
-		
-		return row;
+		return newRow;
 	}
 	
 	public Matrix RREF(Matrix a_matrix)
 	{
-		int lead = 0;
 		int numRows = a_matrix.getRows();
 		int numCols = a_matrix.getColumns();
 		
+		System.out.println("To string:");
+		System.out.println(a_matrix.toString());
 		
-		System.out.println("Original matrix:");
-		a_matrix.outputMatrix();
+		//Copy the original matrix:
+		Matrix rref = new Matrix(a_matrix);
 		
-		Matrix rref = a_matrix;
+		//Go through each column: start at the leftmost column
+		for (int rowIndex = 0; rowIndex < numRows; rowIndex++)
+		{
+			int columnIndex = rowIndex;
+			int i;
+			//Check for column of zeroes:
+			for (i = columnIndex; i < numCols; i++)
+			{
+				if (!rref.isColumnZeroes(i))
+				{
+					break;
+				}
+			}
+			
+			//Break from last loop at non-zero column. Use this column:
+			columnIndex = i;
+			
+			//Create leading one Step:
+			
+			//Get the cell to create the leading one
+			Fraction cellValue = rref.getCell(rowIndex, columnIndex);
+			//divide the whole row by that value to create a one:
+			Fraction[] leadOneRow = multiplyRow(rref.getRow(rowIndex), cellValue, true);
+			rref.setRow(rowIndex, leadOneRow);
+			
+			//Create zeroes above and below step:
+			//Find value to create the zero. Multiply lead one row by this value
+			//Then subtract the produced row from the current row
+			
+			for (int j = 0; j < numRows; j++)
+			{
+				if (j == rowIndex) continue;
+				
+				Fraction multVal = rref.getCell(j, columnIndex);
+				Fraction[] producedRow = multiplyRow(leadOneRow, multVal, false);
+				Fraction[] resultRow = addRow(rref.getRow(j), producedRow, true);
+				
+				rref.setRow(j, resultRow);
+			}
+			
+		}
 		
 		
-		for (int row = 0; row < rref.getRows(); row++)
+		
+		System.out.println("RREF matrix:");
+		System.out.println(rref.toString());
+		
+		return rref;
+		
+		/*
+		for (int row = 0; row < numRows; row++)
 		{
 			if (rref.getColumns() <= lead)
 			{
@@ -207,25 +249,35 @@ public class Calculator {
 			
 			rref.swapRows(i, row);
 			
-			if (rref.getCell(row, lead) != 0) multiplyRow(rref, row, rref.getCell(row, lead), true);
+			double[] rowToMultiply;
+			
+			if (rref.getCell(row, lead) != 0)
+			{
+				rowToMultiply = a_matrix.getRow(row);
+				rowToMultiply = multiplyRow(rowToMultiply, rref.getCell(row, lead), true);
+			}
 			
 			for (int j = i; j < numRows; j++)
 			{
 				 if (j != row)
 				 {
+					 double [] originalRow = a_matrix.getRow(row);
 					 double multNum = rref.getCell(j, lead);
-					 multiplyRow(rref, row, multNum, false);
-					 addRow(rref, row, j, true);
+					 
+					 double[] resultRow = multiplyRow(originalRow, multNum, false);
+					 double[] toRow = a_matrix.getRow(j);
+					 
+					 resultRow = addRow(resultRow, toRow, true);
+					 rref.setRow(row, resultRow);
 				 }
 			}
 			
 			lead++;
 		}
+		*/
 		
-		System.out.println("RREF matrix:");
-		rref.outputMatrix();
 		
-		return rref;
+		
 	}
 	
 	

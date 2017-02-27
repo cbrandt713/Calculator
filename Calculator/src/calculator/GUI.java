@@ -273,6 +273,7 @@ public class GUI extends JPanel
 			m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke(letter), "letter");
 		}
 		
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "number");
 		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
 		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
 		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");

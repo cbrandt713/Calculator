@@ -115,7 +115,7 @@ public class MatrixTextPane extends JTextPane
 	public void showMatrices()
 	{
 		setMode(SHOW_MATRICES);
-		setText("");
+		setText("Select Matrix:\n");
 		String line = "";
 		for (Integer i = 1; i < m_matrices.length + 1; i++)
 		{
@@ -141,7 +141,14 @@ public class MatrixTextPane extends JTextPane
 	
 	public void RREF()
 	{
-		calculator.RREF(m_matrices[0]);
+		Fraction[][] test = new Fraction[][]
+				{{new Fraction(3), new Fraction(4), new Fraction(5), new Fraction(23)},
+				{new Fraction(5), new Fraction(-2), new Fraction(-4), new Fraction(-1)},
+				{new Fraction(2), new Fraction(5), new Fraction(3), new Fraction(4)}
+				};
+		m_matrices[0] = new Matrix(test);
+		setText(calculator.RREF(m_matrices[0]).toString());
+		
 	}
 	
 	private boolean tryParse(String a_input)
@@ -169,7 +176,19 @@ public class MatrixTextPane extends JTextPane
 		{
 			return false;
 		}
-		
+	}
+	
+	private boolean tryFractionParse(String a_input)
+	{
+		try
+		{
+			Fraction.parseFraction(a_input);
+			return true;
+		}
+		catch (NumberFormatException a_exception)
+		{
+			return false;
+		}
 	}
 	
 	public void updateText()
@@ -273,11 +292,11 @@ public class MatrixTextPane extends JTextPane
 			}
 			case EDIT_MATRIX:
 			{
-				if (!tryDoubleParse(m_runningString))
+				if (!tryFractionParse(m_runningString))
 				{
 					break;
 				}
-				m_matrices[m_amtMatrices - 1].setCell(m_currentRow, m_currentColumn, Double.parseDouble(m_runningString));
+				m_matrices[m_amtMatrices - 1].setCell(m_currentRow, m_currentColumn, Fraction.parseFraction(m_runningString));
 				m_runningString = "";
 				
 				m_matrixText = getText();

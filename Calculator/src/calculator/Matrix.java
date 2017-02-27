@@ -5,15 +5,40 @@ public class Matrix
 	//Java does not support unsigned, as such do not allow negative numbers
 	private int m_rows;
 	private int m_columns;
-	private double m_numbers[][];
+	private Fraction m_numbers[][];
 	private String m_name;
 	
+	//Regular Constructor:
 	public Matrix(int a_rows, int a_columns)
 	{
 		setRows(a_rows);
 		setColumns(a_columns);
-		m_numbers = new double[m_rows][m_columns];
-		m_name = "";
+		m_numbers = new Fraction[m_rows][m_columns];
+		setName("");
+	}
+	
+	//Regular Constructor:
+	public Matrix(Fraction[][] a_matrix)
+	{
+		setRows(a_matrix.length);
+		setColumns(a_matrix[0].length);
+		m_numbers = a_matrix;
+		setName("");
+	}
+	
+	//Copy Constructor:
+	public Matrix(Matrix a_other)
+	{
+		setRows(a_other.getRows());
+		setColumns(a_other.getColumns());
+		this.m_numbers = new Fraction[m_rows][m_columns];
+		setName("Copy_" + a_other.getName());
+		
+		//Copy each row into this matrix:
+		for (int i = 0; i < a_other.getRows(); i++)
+		{
+			this.setRow(i, a_other.getRow(i));
+		}
 	}
 	
 	public int getRows()
@@ -26,12 +51,12 @@ public class Matrix
 		return m_columns;
 	}
 	
-	public double[] getRow(int a_row)
+	public Fraction[] getRow(int a_row)
 	{
 		return m_numbers[a_row];
 	}
 	
-	public void setRow(int a_row, double[] a_values)
+	public void setRow(int a_row, Fraction[] a_values)
 	{
 		m_numbers[a_row] = a_values;
 	}
@@ -57,15 +82,15 @@ public class Matrix
 		m_name = name;
 	}
 	
-	public void setCell(int a_row, int a_column, double a_value)
+	public void setCell(int a_row, int a_column, Fraction a_value)
 	{
 		if (cellExists(a_row, a_column)) m_numbers[a_row][a_column] = a_value;
 	}
 	
-	public double getCell(int a_row, int a_column)
+	public Fraction getCell(int a_row, int a_column)
 	{
 		if (cellExists(a_row, a_column)) return m_numbers[a_row][a_column];
-		else return -Double.MAX_VALUE;
+		else return new Fraction(0, 0);
 	}
 	
 	public boolean cellExists(int a_row, int a_column)
@@ -86,6 +111,29 @@ public class Matrix
 		else return true;
 	}
 	
+	public boolean isRowZeroes(int a_row)
+	{
+		Fraction[] row = getRow(a_row);
+		
+		for (int i = 0; i < row.length; i++)
+		{
+			if (!row[i].equals(0)) return false;
+		}
+		
+		return true;
+	}
+	
+	public boolean isColumnZeroes(int a_column)
+	{
+		
+		for (int i = 0; i < getRows(); i++)
+		{
+			if (!getRow(i)[a_column].equals(0)) return false;
+		}
+		
+		return true;
+	}
+	
 	//Rows passes in by index: starting at 0, ending at RowCount - 1
 	public void swapRows(int a_firstRow, int a_secondRow)
 	{
@@ -93,24 +141,31 @@ public class Matrix
 		if (!rowExists(a_firstRow) || !rowExists(a_secondRow)) return;
 		
 		//Store the first and second rows:
-		double[] firstRow = getRow(a_firstRow);
-		double[] secondRow = getRow(a_secondRow);
+		Fraction[] firstRow = getRow(a_firstRow);
+		Fraction[] secondRow = getRow(a_secondRow);
 		
 		//Do the swap:
 		setRow(a_secondRow, firstRow);
 		setRow(a_firstRow, secondRow);	
 	}
 	
-	public void outputMatrix()
+	@Override
+	public String toString()
 	{
+		String matrixString = "";
+		
 		for (int i = 0; i < getRows(); i++)
 		{
-			for (int j = 0; j < getColumns(); j++)
+			matrixString += "[";
+			for (int j = 0; j < getColumns() - 1; j++)
 			{
-				System.out.print(m_numbers[i][j] + " ");
+				matrixString += m_numbers[i][j].toString() + " | ";
 			}
-			System.out.println();
+			matrixString += m_numbers[i][getColumns() - 1].toString();
+			matrixString += "]\n";
 		}
+		
+		return matrixString;
 	}
 
 }

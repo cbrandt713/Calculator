@@ -10,6 +10,7 @@ public class Main
 	{
 		
 		GUI gui = GUI.getGUIInstance();
+		
         
 	}
 
