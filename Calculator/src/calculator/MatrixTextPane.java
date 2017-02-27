@@ -21,7 +21,11 @@ public class MatrixTextPane extends JTextPane
 	private final static int DRAW_MATRIX = 2;
 	private final static int EDIT_MATRIX = 3;
 	private final static int NAME_MATRIX = 4;
-	private final static int SHOW_MATRICES = 5;
+	private final static int SELECT_MATRIX = 5;
+	private final static int RREF = 100;
+	
+	private int m_mode;
+	private String m_operation;
 	
 	//Matrix creation properties:
 	private int m_rows;
@@ -41,7 +45,6 @@ public class MatrixTextPane extends JTextPane
 	private int m_currentColumn;
 	
 	//Various:
-	private int m_mode;
 	private EventQueue queue;
 	private int m_arrowPointer;
 	
@@ -56,6 +59,7 @@ public class MatrixTextPane extends JTextPane
 		m_runningString = "";
 		m_arrowPointer = 1;
 		m_mode = NONE;
+		m_operation = "";
 		
 		m_matrices = new Matrix[20];
 		m_amtMatrices = 0;
@@ -112,9 +116,9 @@ public class MatrixTextPane extends JTextPane
 		updateText();
 	}
 	
-	public void showMatrices()
+	public void selectMatrix()
 	{
-		setMode(SHOW_MATRICES);
+		setMode(SELECT_MATRIX);
 		setText("Select Matrix:\n");
 		String line = "";
 		for (Integer i = 1; i < m_matrices.length + 1; i++)
@@ -139,6 +143,27 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
+	public void doOperation()
+	{
+		switch (m_operation)
+		{
+			case "RREF":
+			{
+				setMode(RREF);
+				break;
+			}
+			case "":
+			default:
+			{
+				System.out.println("An unknown error has occurred.");
+				break;
+			}
+		}
+		
+		updateText();
+		
+	}
+	
 	public void RREF()
 	{
 		Fraction[][] test = new Fraction[][]
@@ -147,8 +172,10 @@ public class MatrixTextPane extends JTextPane
 				{new Fraction(2), new Fraction(5), new Fraction(3), new Fraction(4)}
 				};
 		m_matrices[0] = new Matrix(test);
-		setText(calculator.RREF(m_matrices[0]).toString());
+		m_matrices[0].setName("A");
 		
+		m_operation = "RREF";
+		selectMatrix();
 	}
 	
 	private boolean tryParse(String a_input)
@@ -239,6 +266,10 @@ public class MatrixTextPane extends JTextPane
 		else if (getMode() == NAME_MATRIX)
 		{
 			setText("Name Matrix (or \"Enter\" to skip):\n" + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
+		}
+		else if (getMode() == RREF)
+		{
+			setText(calculator.RREF(m_matrices[m_arrowPointer - 1]).toString());
 		}
 	}
 	
@@ -342,7 +373,7 @@ public class MatrixTextPane extends JTextPane
 		KeyEvent ke = (KeyEvent) queue.getCurrentEvent();
         String direction = ke.getKeyText( ke.getKeyCode() );
      
-		if (getMode() != SHOW_MATRICES)
+		if (getMode() != SELECT_MATRIX)
 		{
 			return;
 		}
@@ -355,7 +386,7 @@ public class MatrixTextPane extends JTextPane
 		{
 			if (m_arrowPointer > 1) m_arrowPointer--;
 		}
-		showMatrices();
+		selectMatrix();
 	}
 	
 	public void letterActionPerformed(ActionEvent a_event)

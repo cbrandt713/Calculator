@@ -626,7 +626,7 @@ public class GUI extends JPanel
 				}
 				case "List":
 				{
-					m_matrixDisplay.showMatrices();
+					m_matrixDisplay.selectMatrix();
 					break;
 				}
 				case "RREF":

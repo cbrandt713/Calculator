@@ -18,8 +18,7 @@ public class Calculator {
 	{
 		if (calcObj == null)
 		{
-			calcObj = new Calculator();
-			
+			calcObj = new Calculator();	
 		}
 		
 		return calcObj;
@@ -164,13 +163,104 @@ public class Calculator {
 		return newRow;
 	}
 	
+	public Matrix addMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
+	{
+		//Make sure the matrices are of compatible size:
+		if (a_LHS.getRows() != a_RHS.getRows() || a_LHS.getColumns() != a_RHS.getColumns())
+		{
+			throw new MatrixException("Sizes do not match", a_LHS, a_RHS); 
+		}
+		
+		//The sum will now be of the same size as either element:
+		Matrix sum = new Matrix(a_LHS.getRows(), a_LHS.getColumns());
+		
+		//Matrices are added element-wise:
+		//Loop through the matrix, add each element.
+		for (int row = 0; row < sum.getRows(); row++)
+		{
+			for (int column = 0; column < sum.getColumns(); column++)
+			{
+				//The value is simply the current element of each matrix added together.
+				Fraction value = new Fraction();
+				value = a_LHS.getCell(row, column).add(a_RHS.getCell(row, column));
+				sum.setCell(row, column, value);
+			}
+		}
+		
+		return sum;
+	}
+	
+	public Matrix subtractMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
+	{
+		//Copy the values of the Right Hand Side so as to not actually alter it:
+		Matrix newRHS = new Matrix(a_RHS);
+		
+		//Take the opposite of every number in the copied RHS:
+		for (int row = 0; row < a_RHS.getRows(); row++)
+		{
+			for (int column = 0; column < a_RHS.getColumns(); column++)
+			{
+				Fraction current = newRHS.getCell(row, column);
+				newRHS.setCell(row, column, current.multiply(-1));
+			}
+		}
+		
+		//Now add the two matrices like normal. This functions the same as subtraction:
+		return addMatrices(a_LHS, newRHS);
+	}
+	
+	public Matrix multiplyMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
+	{
+		//The amount of columns in the LHS must match number of rows in the RHS:
+		if (a_LHS.getColumns() != a_RHS.getRows())
+		{
+			throw new MatrixException("Invalid dimensions", a_LHS, a_RHS);
+		}
+		
+		//The new product will have the rows of the LHS and the columns of the RHS.
+		Matrix product = new Matrix(a_LHS.getRows(), a_RHS.getColumns());
+		
+		for (int row = 0; row < product.getRows(); row++)
+		{	
+			Fraction[] LHSrow = a_LHS.getRow(row);
+			for (int column = 0; column < product.getColumns(); column++)
+			{
+				Fraction[] RHScolumn = a_RHS.getColumn(column);
+				
+				//Run the across the "row" index of LHS, and down the "column" index of RHS.
+				Fraction current = multiplyRowByColumn(LHSrow, RHScolumn);
+				
+				product.setCell(row, column, current);
+			}
+		}
+			
+		return product;
+	}
+	
+	private Fraction multiplyRowByColumn(Fraction[] a_row, Fraction[] a_column)
+	{
+		int length = a_row.length;
+		
+		Fraction[] products = new Fraction[length];
+		
+		for (int i = 0; i < length; i++)
+		{
+			Fraction product = a_row[i].multiply(a_column[i]);
+		}
+		
+		Fraction total = new Fraction(0);
+		for (int i = 0; i < length; i++)
+		{
+			total.add(products[i]);
+		}
+		
+		return total;
+	}
+	
 	public Matrix RREF(Matrix a_matrix)
 	{
 		int numRows = a_matrix.getRows();
 		int numCols = a_matrix.getColumns();
-		
-		System.out.println("To string:");
-		System.out.println(a_matrix.toString());
 		
 		//Copy the original matrix:
 		Matrix rref = new Matrix(a_matrix);
@@ -217,69 +307,20 @@ public class Calculator {
 			
 		}
 		
-		
-		
-		System.out.println("RREF matrix:");
-		System.out.println(rref.toString());
-		
-		return rref;
-		
-		/*
-		for (int row = 0; row < numRows; row++)
-		{
-			if (rref.getColumns() <= lead)
-			{
-				return rref;
-			}
-			int i = row;
-			
-			while (rref.getCell(i, lead) == 0)
-			{
-				i++;
-				if (numRows == i)
-				{
-					i = row;
-					lead++;
-					if (numCols == lead)
-					{
-						return rref;
-					}
-				}
-			}
-			
-			rref.swapRows(i, row);
-			
-			double[] rowToMultiply;
-			
-			if (rref.getCell(row, lead) != 0)
-			{
-				rowToMultiply = a_matrix.getRow(row);
-				rowToMultiply = multiplyRow(rowToMultiply, rref.getCell(row, lead), true);
-			}
-			
-			for (int j = i; j < numRows; j++)
-			{
-				 if (j != row)
-				 {
-					 double [] originalRow = a_matrix.getRow(row);
-					 double multNum = rref.getCell(j, lead);
-					 
-					 double[] resultRow = multiplyRow(originalRow, multNum, false);
-					 double[] toRow = a_matrix.getRow(j);
-					 
-					 resultRow = addRow(resultRow, toRow, true);
-					 rref.setRow(row, resultRow);
-				 }
-			}
-			
-			lead++;
-		}
-		*/
-		
-		
+		return rref;	
 		
 	}
 	
-	
+	public Matrix invertMatrix(Matrix a_matrix) throws MatrixException
+	{
+		//Check for square matrix:
+		if (!a_matrix.isSquareMatrix())
+		{
+			throw new MatrixException("Not a square matrix", a_matrix);
+		}
+		
+		return new Matrix(0, 0);
+		
+	}
 
 }

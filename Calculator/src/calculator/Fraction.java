@@ -123,6 +123,16 @@ public class Fraction
 		return multiply(new Fraction(a_wholeNumber));
 	}
 	
+	public Fraction divide(Fraction a_other)
+	{
+		return multiply(a_other.reciprocal());
+	}
+	
+	public Fraction divide(int a_wholeNumber)
+	{
+		return multiply(new Fraction(1, a_wholeNumber));
+	}
+	
 	public boolean equals(Fraction a_other)
 	{
 		if (m_numerator == a_other.m_numerator && m_denominator == a_other.m_denominator) return true;

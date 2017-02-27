@@ -58,7 +58,32 @@ public class Matrix
 	
 	public void setRow(int a_row, Fraction[] a_values)
 	{
+		if (a_values.length != getColumns()) return;
 		m_numbers[a_row] = a_values;
+	}
+	
+	public Fraction[] getColumn(int a_column)
+	{
+		Fraction[] column = new Fraction[getRows()];
+		
+		//Go through each row and get it's "a_column"th element.
+		for (int i = 0; i < getRows(); i++)
+		{
+			column[i] = getRow(i)[a_column];
+		}
+		
+		return column;
+	}
+	
+	public void setColumn(int a_column, Fraction[] a_values)
+	{
+		if (a_values.length != getRows()) return;
+		
+		//Go through each row (i), and set the element of "a_column" to the "i"th element of a_values:
+		for (int i = 0; i < getRows(); i++)
+		{
+			m_numbers[i][a_column] = a_values[i];
+		}
 	}
 	
 	public String getName()
@@ -67,12 +92,13 @@ public class Matrix
 	}
 	
 	//Inconsistent state: create new Matrix!
-	public void setRows(int a_rows)
+	//Possibly delete these? Keep private for now
+	private void setRows(int a_rows)
 	{
 		m_rows = (a_rows > 0) ? a_rows : 1;
 	}
 	
-	public void setColumns(int a_columns)
+	private void setColumns(int a_columns)
 	{
 		m_columns = (a_columns > 0) ? a_columns : 1;
 	}
@@ -132,6 +158,11 @@ public class Matrix
 		}
 		
 		return true;
+	}
+	
+	public boolean isSquareMatrix()
+	{
+		return (getRows() == getColumns());
 	}
 	
 	//Rows passes in by index: starting at 0, ending at RowCount - 1
