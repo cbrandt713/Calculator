@@ -214,13 +214,13 @@ public class BasicTextArea extends JTextArea {
 		//Enter key is equivalent to the = operator.
 		if (operator.equals("\n")) operator = "=";
 		
-		calculator.pushOperator(operator);
+		calculator.setOperator(operator);
 		System.out.println("Operator: " + operator);
 		
 		//Get user input and send to calculator:
 		String userInput = getUserInput();
 		m_input = Double.parseDouble(userInput);
-		calculator.pushOperand(m_input);
+		calculator.setInput(m_input);
 		
 		//Show the input and operator on the expression line
 		changeDisplay(userInput + " " + operator + " ", EXPRESSION);

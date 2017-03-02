@@ -154,18 +154,14 @@ public class Fraction
 	
 	public static Fraction parseFraction(String a_input) throws NumberFormatException
 	{
-		//Check for the '/' or '\' character
-		int split = a_input.indexOf('/');
-		
-		if (split == -1)
+		//Check for the '/' character
+		if (a_input.indexOf('/') == -1)
 		{
-			split = a_input.indexOf('\\');
-			
-			if (split == -1)
-			{
-				throw new NumberFormatException();
-			}
+			int value = Integer.parseInt(a_input);
+			return new Fraction(value);
 		}
+		
+		int split = a_input.indexOf('/');
 		
 		int numerator = Integer.parseInt(a_input.substring(0, split));
 		int denominator = Integer.parseInt(a_input.substring(split + 1));

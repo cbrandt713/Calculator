@@ -23,6 +23,7 @@ public class MatrixTextPane extends JTextPane
 	private final static int NAME_MATRIX = 4;
 	private final static int SELECT_MATRIX = 5;
 	private final static int RREF = 100;
+	private final static int EXCEPTION = 900;
 	
 	private int m_mode;
 	private String m_operation;
@@ -47,6 +48,8 @@ public class MatrixTextPane extends JTextPane
 	//Various:
 	private EventQueue queue;
 	private int m_arrowPointer;
+	private Matrix m_selectedMatrix;
+	private MatrixException m_caughtException;
 	
 	//Calculator and Required Data:
 	private Calculator calculator;
@@ -62,6 +65,7 @@ public class MatrixTextPane extends JTextPane
 		m_operation = "";
 		
 		m_matrices = new Matrix[20];
+		m_selectedMatrix = null;
 		m_amtMatrices = 0;
 		m_currentRow = 0;
 		m_currentColumn = 0;
@@ -70,6 +74,14 @@ public class MatrixTextPane extends JTextPane
 		
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		
+		Fraction[][] test = new Fraction[][]
+				{{new Fraction(3), new Fraction(4), new Fraction(5), new Fraction(23)},
+				{new Fraction(5), new Fraction(-2), new Fraction(-4), new Fraction(-1)},
+				{new Fraction(2), new Fraction(5), new Fraction(3), new Fraction(4)}
+				};
+			m_matrices[m_amtMatrices] = new Matrix(test);
+			m_matrices[m_amtMatrices++].setName("MyExample");
 		
 	}
 	
@@ -145,37 +157,32 @@ public class MatrixTextPane extends JTextPane
 	
 	public void doOperation()
 	{
-		switch (m_operation)
+		if (m_selectedMatrix == null) 
 		{
-			case "RREF":
-			{
-				setMode(RREF);
-				break;
-			}
-			case "":
-			default:
-			{
-				System.out.println("An unknown error has occurred.");
-				break;
-			}
+			selectMatrix();
+			return;
+		}
+		
+		calculator.setOperator(m_operation);
+		calculator.setMatrixInput(m_selectedMatrix);
+		try 
+		{
+			calculator.doMatrixOperation();
+		} 
+		catch (MatrixException exception) 
+		{
+			setMode(EXCEPTION);
+			m_caughtException = exception;
 		}
 		
 		updateText();
 		
 	}
 	
-	public void RREF()
+	public void RREFButton()
 	{
-		Fraction[][] test = new Fraction[][]
-				{{new Fraction(3), new Fraction(4), new Fraction(5), new Fraction(23)},
-				{new Fraction(5), new Fraction(-2), new Fraction(-4), new Fraction(-1)},
-				{new Fraction(2), new Fraction(5), new Fraction(3), new Fraction(4)}
-				};
-		m_matrices[0] = new Matrix(test);
-		m_matrices[0].setName("A");
-		
 		m_operation = "RREF";
-		selectMatrix();
+		doOperation();	
 	}
 	
 	private boolean tryParse(String a_input)
@@ -220,78 +227,94 @@ public class MatrixTextPane extends JTextPane
 	
 	public void updateText()
 	{
-		if (getMode() == CREATE_ROWS)
+		switch (getMode())
 		{
-			setText("Matrix Size: " + m_runningString + " rows X _ columns");
-		}
-		else if (getMode() == CREATE_COLUMNS)
-		{
-			setText("Matrix Size: " + ((Integer)m_rows).toString() + " rows X " + m_runningString + " columns");
-		}
-		else if (getMode() == DRAW_MATRIX)
-		{
-			//Start with current display of matrix size
-			m_runningString = getText();
-			for (int i = 0; i < m_rows; i++)
+			case CREATE_ROWS:
 			{
-				//Begin a new row and add an opening brace for each row:
-				m_runningString += "\n[ ";
-				for (int j = 0; j < m_columns; j++)
-				{
-					//Add a tab for every column
-					m_runningString += "\t";
-					if (j != m_columns - 1) m_runningString += "| "; 
-				}
-				//End the row with a closing brace:
-				m_runningString += " ]";
+				setText("Matrix Size: " + m_runningString + " rows X _ columns");
+				break;
 			}
-			
-			setText(m_runningString);
-			m_matrixText = getText();
-			m_runningString = "";
-		}
-		else if (getMode() == EDIT_MATRIX)
-		{
-			int loc = 0;
-			for (int i = 0; i < m_currentRow + 1; i++)
+			case CREATE_COLUMNS:
 			{
-				loc = m_matrixText.indexOf('[', loc + 1) + 1;
-				for (int j = 0; j < m_currentColumn; j++)
+				setText("Matrix Size: " + ((Integer)m_rows).toString() + " rows X " + m_runningString + " columns");
+				break;
+			}
+			case DRAW_MATRIX:
+			{
+				//Start with current display of matrix size
+				m_runningString = getText();
+				for (int i = 0; i < m_rows; i++)
 				{
-					loc = m_matrixText.indexOf('|', loc) + 1;
+					//Begin a new row and add an opening brace for each row:
+					m_runningString += "\n[ ";
+					for (int j = 0; j < m_columns; j++)
+					{
+						//Add a tab for every column
+						m_runningString += "\t";
+						if (j != m_columns - 1) m_runningString += "| "; 
+					}
+					//End the row with a closing brace:
+					m_runningString += " ]";
+				}
+				
+				setText(m_runningString);
+				m_matrixText = getText();
+				m_runningString = "";
+				
+				break;
+			}
+			case EDIT_MATRIX:
+			{
+				int loc = 0;
+				for (int i = 0; i < m_currentRow + 1; i++)
+				{
+					loc = m_matrixText.indexOf('[', loc + 1) + 1;
+					for (int j = 0; j < m_currentColumn; j++)
+					{
+						loc = m_matrixText.indexOf('|', loc) + 1;
+					}
+				}
+				setText(m_matrixText.substring(0, loc + 1) + m_runningString + m_matrixText.substring(loc + 1));
+				
+				break;
+			}
+			case NAME_MATRIX:
+			{
+				setText("Name Matrix (or \"Enter\" to skip):\n" + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
+				break;
+			}
+			case SELECT_MATRIX:
+			{
+				if (m_operation.equals("")) 
+				{
+					setText(m_selectedMatrix.getName());
+				}
+				else 
+				{
+					//doOperation();
+				}
+				break;
+			}
+			case RREF:
+			{
+				setText("RREF(" + m_selectedMatrix.getName() + ") = \n" + calculator.RREF(m_selectedMatrix).toString());
+				break;
+			}
+			case EXCEPTION:
+			{
+				setText(m_caughtException.getMessage() + "\nMatrices: ");
+				
+				String[] offenders = m_caughtException.getOffendingMatrices();
+				
+				for (String matrixName : offenders)
+				{
+					setText(getText() + matrixName + " ");
 				}
 			}
-			setText(m_matrixText.substring(0, loc + 1) + m_runningString + m_matrixText.substring(loc + 1));
-		}
-		else if (getMode() == NAME_MATRIX)
-		{
-			setText("Name Matrix (or \"Enter\" to skip):\n" + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
-		}
-		else if (getMode() == RREF)
-		{
-			setText(calculator.RREF(m_matrices[m_arrowPointer - 1]).toString());
-		}
-	}
-	
-	public void numberActionPerformed(ActionEvent a_event)
-	{
-		m_runningString += a_event.getActionCommand();
-		updateText();
-	}
-	
-	public void deleteActionPerformed(ActionEvent a_event)
-	{
-		if (a_event.getActionCommand().equals("Clr") || a_event.getActionCommand().equals("CE"))
-		{
-			m_runningString = "";
-		}		
-		else if (!m_runningString.equals(""))
-		{
-			m_runningString = m_runningString.substring(0, m_runningString.length()-1);
 		}
 		
-		updateText();
 	}
+	
 	
 	public void enterActionPerformed(ActionEvent a_event)
 	{	
@@ -362,10 +385,37 @@ public class MatrixTextPane extends JTextPane
 				
 				setText("Matrix Added Successfully!");
 			}
+			case SELECT_MATRIX:
+			{
+				m_selectedMatrix = m_matrices[m_arrowPointer-1];
+				calculator.setMatrixInput(m_selectedMatrix);
+				updateText();
+			}
 			
 			
 		}
 		
+	}
+
+	public void numberActionPerformed(ActionEvent a_event)
+	{
+		m_runningString += a_event.getActionCommand();
+		updateText();
+	}
+	
+	public void deleteActionPerformed(ActionEvent a_event)
+	{
+		System.out.println("In method");
+		if (a_event.getActionCommand().equals("Clr") || a_event.getActionCommand().equals("CE"))
+		{
+			m_runningString = "";
+		}		
+		else if (!m_runningString.equals(""))
+		{
+			m_runningString = m_runningString.substring(0, m_runningString.length()-1);
+		}
+		
+		updateText();
 	}
 	
 	public void arrowActionPerformed(ActionEvent a_event)
@@ -393,6 +443,12 @@ public class MatrixTextPane extends JTextPane
 	{
 		m_runningString += a_event.getActionCommand();
 		updateText();
+	}
+
+	public void operatorActionPerformed(ActionEvent a_event) 
+	{
+		m_operation = a_event.getActionCommand();
+		doOperation();
 	}
 	
 }

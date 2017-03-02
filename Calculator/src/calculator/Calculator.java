@@ -5,13 +5,19 @@ import java.util.Vector;
 public class Calculator {
 	
 	private static Calculator calcObj = null;
-	private Vector<Double> operands;
-	private Vector<String> operators;
+	private double m_total;
+	private double m_input;
+	private String m_operator;
+	private Matrix m_matrixResult;
+	private Matrix m_matrixInput;
 	
 	private Calculator()
 	{
-		operands = new Vector<Double>();
-		operators = new Vector<String>();
+		m_total = -Double.MAX_VALUE;
+		m_input = -Double.MAX_VALUE;
+		m_operator = "";
+		m_matrixResult = new Matrix(0, 0);
+		m_matrixInput = new Matrix(0, 0);
 	}
 	
 	public static Calculator getCalculatorInstance()
@@ -27,39 +33,36 @@ public class Calculator {
 	public double doBasicCalculation()
 	{
 		//If less than two operands, no calculation. Return original value.
-		if (operands.size() < 2)
+		if (m_total == -Double.MAX_VALUE && m_input == -Double.MAX_VALUE)
 		{
-			return operands.get(0);
+			return m_input;
 		}
 		
-		double total = operands.get(0);
-		double input = operands.get(1);
-		
-		switch (operators.get(0))
+		switch (m_operator)
 		{
 			case "+":
 			{
-				total = add(total, input);
+				m_total = add(m_total, m_input);
 				break;
 			}
 			case "-":
 			{
-				total = subtract(total, input);
+				m_total = subtract(m_total, m_input);
 				break;
 			}
 			case "*":
 			{
-				total = multiply(total, input);
+				m_total = multiply(m_total, m_input);
 				break;
 			}
 			case "/":
 			{
-				total = divide(total, input);
+				m_total = divide(m_total, m_input);
 				break;
 			}	
 			case "=":
 			{
-				total = input;
+				m_total = m_input;
 				break;
 			}
 			//Error case:
@@ -70,30 +73,50 @@ public class Calculator {
 			}
 		}
 		
-		operands.remove(0);
-		operands.remove(0);
-		operands.add(total);
+		m_operator = "";
 		
-		operators.remove(0);
-		
-		return total;
-		
+		return m_total;
 	}
 	
-	public void pushOperator(String operator)
+	public Matrix doMatrixOperation() throws MatrixException
 	{
-		operators.addElement(operator);
+		
+		switch (m_operator)
+		{
+			case "+":
+			{
+				m_matrixResult = addMatrices(m_matrixResult, m_matrixInput);
+			}
+			case "RREF":
+			{
+				
+				m_matrixResult = RREF(m_matrixInput);
+				break;
+			}
+			case "":
+			default:
+			{
+				System.out.println("An unknown error has occurred.");
+				break;
+			}
+		}
+		
+		return m_matrixResult;
 	}
 	
-	public void pushOperand(double operand)
+	public void setOperator(String a_operator)
 	{
-		operands.addElement(operand);
+		m_operator = a_operator;
 	}
 	
-	public void pushOperand(int operand)
+	public void setInput(double a_input)
 	{
-		double op = (double) operand;
-		pushOperand(op);
+		m_input = a_input;
+	}
+	
+	public void setMatrixInput(Matrix a_operand)
+	{
+		m_matrixInput = a_operand;
 	}
 	
 	public double add(double LHS, double RHS)

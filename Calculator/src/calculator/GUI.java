@@ -1,5 +1,6 @@
 package calculator;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,6 +35,7 @@ public class GUI extends JPanel
 	//GUI Elements:
 	private BasicTextArea m_basicDisplay;
 	private JFrame frame;
+	private JPanel m_noWrapPanel;
 	private MatrixTextPane m_matrixDisplay;
 	private JMenu menu;
 	private JMenuBar menuBar;
@@ -231,7 +233,9 @@ public class GUI extends JPanel
 		m_matrixDisplay = new MatrixTextPane();
 		m_matrixDisplay.setText("\n\n\n\n");
 		m_matrixDisplay.setEditable(false);
-		scrollPane = new JScrollPane(m_matrixDisplay, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		m_noWrapPanel = new JPanel( new BorderLayout() );
+		m_noWrapPanel.add(m_matrixDisplay);
+		scrollPane = new JScrollPane(m_noWrapPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
 		createMatrixKeybinds();
@@ -560,6 +564,7 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event) 
 		{
 			if (getGUIState() == BASIC) m_basicDisplay.operatorActionPerformed(a_event);
+			else m_matrixDisplay.operatorActionPerformed(a_event);
 		}
 	}
 	
@@ -631,7 +636,7 @@ public class GUI extends JPanel
 				}
 				case "RREF":
 				{
-					m_matrixDisplay.RREF();
+					m_matrixDisplay.RREFButton();
 					break;
 				}
 			}
