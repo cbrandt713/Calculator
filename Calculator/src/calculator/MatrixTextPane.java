@@ -1,15 +1,9 @@
 package calculator;
 
 import java.awt.EventQueue;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
-import javax.swing.AbstractAction;
 import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 
 public class MatrixTextPane extends JTextPane
@@ -23,8 +17,21 @@ public class MatrixTextPane extends JTextPane
 	private final static int NAME_MATRIX = 4;
 	private final static int SELECT_MATRIX = 5;
 	private final static int RREF = 100;
+	private final static int ADD = 101;
+	private final static int SUBTRACT = 102;
+	private final static int MULTIPLY = 103;
+	private final static int DIVIDE = 104;
+	private final static int INVERSE = 105;
+	private final static int GENERIC_OPERATION = 200;
+	private final static int DISPLAY_RESULT = 201;
 	private final static int EXCEPTION = 900;
 	
+	public enum OperationArguments
+	{
+		UNARY, BINARY;
+	}
+	private OperationArguments m_amtOperands;
+	private int m_amtSelected;
 	private int m_mode;
 	private String m_operation;
 	
@@ -34,6 +41,7 @@ public class MatrixTextPane extends JTextPane
 	
 	//Matrix creation input:
 	private String m_runningString;
+	private String m_storedString;
 	
 	//Matrix Helper Strings:
 	private String m_matrixText;
@@ -41,14 +49,14 @@ public class MatrixTextPane extends JTextPane
 	
 	//Data objects:
 	private Matrix[] m_matrices;
+	private Matrix m_selectedMatrix;
+	private Matrix m_answerMatrix;
 	private int m_amtMatrices;
 	private int m_currentRow;
 	private int m_currentColumn;
 	
 	//Various:
-	private EventQueue queue;
 	private int m_arrowPointer;
-	private Matrix m_selectedMatrix;
 	private MatrixException m_caughtException;
 	
 	//Calculator and Required Data:
@@ -56,19 +64,13 @@ public class MatrixTextPane extends JTextPane
 	
 	public MatrixTextPane()
 	{
+		
 		super();
-		m_rows = 0;
-		m_columns = 0;
-		m_runningString = "";
-		m_arrowPointer = 1;
-		m_mode = NONE;
-		m_operation = "";
 		
 		m_matrices = new Matrix[20];
-		m_selectedMatrix = null;
 		m_amtMatrices = 0;
-		m_currentRow = 0;
-		m_currentColumn = 0;
+		
+		setDefaultValues();
 		
 		calculator = Calculator.getCalculatorInstance();
 		
@@ -85,6 +87,25 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 	
+	//Helper method used by the constructor to initialize and the
+	//"Clear" button to reset the calculator to default settings.
+	private void setDefaultValues()
+	{
+		m_rows = 0;
+		m_columns = 0;
+		m_runningString = "";
+		m_arrowPointer = 1;
+		m_mode = NONE;
+		m_operation = "";
+		m_answerMatrix = null;
+		m_selectedMatrix = null;		
+		m_currentRow = 0;
+		m_currentColumn = 0;
+		m_amtSelected = 0;
+		m_amtOperands = OperationArguments.UNARY;
+		m_storedString = "";
+	}
+	
 	private void setMode(int a_mode)
 	{
 		m_mode = a_mode;
@@ -94,7 +115,6 @@ public class MatrixTextPane extends JTextPane
 	{
 		return m_mode;
 	}
-	
 	
 	public void createRows()
 	{
@@ -163,11 +183,59 @@ public class MatrixTextPane extends JTextPane
 			return;
 		}
 		
+		if (m_operation.equals("+") || m_operation.equals("-") 
+				|| m_operation.equals("*") || m_operation.equals("/"))
+		{
+			m_amtOperands = OperationArguments.BINARY;
+		}
+		else
+		{
+			m_amtOperands = OperationArguments.UNARY;
+		}
+		
+		
 		calculator.setOperator(m_operation);
-		calculator.setMatrixInput(m_selectedMatrix);
+		calculator.setMatrixInput(m_selectedMatrix);		
+		
+		/*
+		switch(m_operation)
+		{
+			case "+":
+			{
+				setMode(ADD);
+				break;
+			}
+			case "RREF":
+			{
+				setMode(RREF);
+				break;
+			}
+			default:
+			{
+				System.out.println("Unknown error in doOperation");
+				break;
+			}
+		}
+		*/
+		
+		setMode(GENERIC_OPERATION);
+		
+		updateText();
+		
+		if (m_amtOperands == OperationArguments.BINARY && m_amtSelected < 2)
+		{
+			return;
+		}
+		
+		if (m_amtOperands == OperationArguments.UNARY && m_amtSelected != 1)
+		{
+			return;
+		}
+		
 		try 
 		{
-			calculator.doMatrixOperation();
+			setMode(DISPLAY_RESULT);
+			m_answerMatrix = calculator.doMatrixOperation();
 		} 
 		catch (MatrixException exception) 
 		{
@@ -229,6 +297,11 @@ public class MatrixTextPane extends JTextPane
 	{
 		switch (getMode())
 		{
+			case NONE:
+			{
+				setText("");
+				break;
+			}
 			case CREATE_ROWS:
 			{
 				setText("Matrix Size: " + m_runningString + " rows X _ columns");
@@ -291,13 +364,53 @@ public class MatrixTextPane extends JTextPane
 				}
 				else 
 				{
-					//doOperation();
+					doOperation();
 				}
 				break;
 			}
+			/*
 			case RREF:
 			{
-				setText("RREF(" + m_selectedMatrix.getName() + ") = \n" + calculator.RREF(m_selectedMatrix).toString());
+				setText("RREF(" + m_selectedMatrix.getName() + ") = \n");
+				break;
+			}
+			case ADD:
+			{
+				if (m_amtSelected == 1)
+				{
+					setText(m_selectedMatrix.getName() + " + ");
+					m_storedString = getText();
+				}
+				if (m_amtSelected == 2)
+				{
+					setText(m_storedString + m_selectedMatrix.getName() + " = \n");
+				}
+				break;
+			}
+			*/
+			case GENERIC_OPERATION:
+			{
+				if (m_amtOperands == OperationArguments.UNARY)
+				{
+					setText(m_operation + "(" + m_selectedMatrix.getName() + ") = \n");
+				}
+				else
+				{
+					if (m_amtSelected == 1)
+					{
+						setText(m_selectedMatrix.getName() + " " + m_operation + " ");
+						m_storedString = getText();
+					}
+					else
+					{
+						setText(m_storedString + m_selectedMatrix.getName() + " = \n");
+					}
+				}
+				break;
+			}
+			case DISPLAY_RESULT:
+			{
+				setText(getText() + m_answerMatrix.toString());
 				break;
 			}
 			case EXCEPTION:
@@ -384,15 +497,24 @@ public class MatrixTextPane extends JTextPane
 				m_runningString = "";
 				
 				setText("Matrix Added Successfully!");
+				
+				break;
 			}
 			case SELECT_MATRIX:
 			{
+				m_amtSelected++;
 				m_selectedMatrix = m_matrices[m_arrowPointer-1];
 				calculator.setMatrixInput(m_selectedMatrix);
 				updateText();
+				
+				break;
 			}
-			
-			
+			default:
+			{
+				System.out.println("Unknown error in enter action");
+				
+				break;
+			}
 		}
 		
 	}
@@ -405,11 +527,15 @@ public class MatrixTextPane extends JTextPane
 	
 	public void deleteActionPerformed(ActionEvent a_event)
 	{
-		System.out.println("In method");
-		if (a_event.getActionCommand().equals("Clr") || a_event.getActionCommand().equals("CE"))
+		if (a_event.getActionCommand().equals("Clr"))
+		{
+			setDefaultValues();
+			updateText();
+		}
+		else if (a_event.getActionCommand().equals("CE"))
 		{
 			m_runningString = "";
-		}		
+		}
 		else if (!m_runningString.equals(""))
 		{
 			m_runningString = m_runningString.substring(0, m_runningString.length()-1);
@@ -420,8 +546,8 @@ public class MatrixTextPane extends JTextPane
 	
 	public void arrowActionPerformed(ActionEvent a_event)
 	{
-		KeyEvent ke = (KeyEvent) queue.getCurrentEvent();
-        String direction = ke.getKeyText( ke.getKeyCode() );
+		KeyEvent ke = (KeyEvent) EventQueue.getCurrentEvent();
+        String direction = KeyEvent.getKeyText( ke.getKeyCode() );
      
 		if (getMode() != SELECT_MATRIX)
 		{

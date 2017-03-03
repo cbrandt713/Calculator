@@ -10,14 +10,16 @@ public class Calculator {
 	private String m_operator;
 	private Matrix m_matrixResult;
 	private Matrix m_matrixInput;
+	private Matrix m_matrixInput2;
 	
 	private Calculator()
 	{
 		m_total = -Double.MAX_VALUE;
 		m_input = -Double.MAX_VALUE;
 		m_operator = "";
-		m_matrixResult = new Matrix(0, 0);
-		m_matrixInput = new Matrix(0, 0);
+		m_matrixResult = null;
+		m_matrixInput = null;
+		m_matrixInput2 = null;
 	}
 	
 	public static Calculator getCalculatorInstance()
@@ -29,6 +31,23 @@ public class Calculator {
 		
 		return calcObj;
 	}
+	
+	public void setOperator(String a_operator)
+	{
+		m_operator = a_operator;
+	}
+	
+	public void setInput(double a_input)
+	{
+		m_input = a_input;
+	}
+	
+	public void setMatrixInput(Matrix a_operand)
+	{
+		if (m_matrixInput == null) m_matrixInput = a_operand;
+		else m_matrixInput2 = a_operand;
+	}
+	
 	
 	public double doBasicCalculation()
 	{
@@ -83,11 +102,19 @@ public class Calculator {
 		
 		switch (m_operator)
 		{
+			//Binary operations. Requires two operands.
 			case "+":
+			case "-":
+			case "*":
+			case "/":
 			{
-				m_matrixResult = addMatrices(m_matrixResult, m_matrixInput);
+				m_matrixResult = matrixBinaryOperation();
+				break;
 			}
+			//Unary operation:
 			case "RREF":
+			case "REF":
+			case "Inverse":
 			{
 				
 				m_matrixResult = RREF(m_matrixInput);
@@ -101,22 +128,26 @@ public class Calculator {
 			}
 		}
 		
+		m_matrixInput = m_matrixResult;
+		m_matrixInput2 = null;
+		
 		return m_matrixResult;
 	}
 	
-	public void setOperator(String a_operator)
+	public Matrix matrixBinaryOperation() throws MatrixException
 	{
-		m_operator = a_operator;
-	}
-	
-	public void setInput(double a_input)
-	{
-		m_input = a_input;
-	}
-	
-	public void setMatrixInput(Matrix a_operand)
-	{
-		m_matrixInput = a_operand;
+		if (m_matrixInput == null || m_matrixInput2 == null)
+		{
+			return new Matrix(0, 0);
+		}
+		
+		
+		if (m_operator.equals("+")) m_matrixResult = addMatrices(m_matrixInput, m_matrixInput2);
+		else if (m_operator.equals("-")) m_matrixResult = subtractMatrices(m_matrixInput, m_matrixInput2);
+		else if (m_operator.equals("*")) m_matrixResult = multiplyMatrices(m_matrixInput, m_matrixInput2);
+		else m_matrixResult = divideMatrices(m_matrixInput, m_matrixInput2);
+		
+		return m_matrixResult;
 	}
 	
 	public double add(double LHS, double RHS)
@@ -232,6 +263,28 @@ public class Calculator {
 		return addMatrices(a_LHS, newRHS);
 	}
 	
+	
+	private Fraction multiplyRowByColumn(Fraction[] a_row, Fraction[] a_column)
+	{
+		int length = a_row.length;
+		
+		Fraction[] products = new Fraction[length];
+		
+		for (int i = 0; i < length; i++)
+		{
+			Fraction product = a_row[i].multiply(a_column[i]);
+			products[i] = product;
+		}
+		
+		Fraction total = new Fraction(0);
+		for (int i = 0; i < length; i++)
+		{
+			total.add(products[i]);
+		}
+		
+		return total;
+	}
+	
 	public Matrix multiplyMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
 	{
 		//The amount of columns in the LHS must match number of rows in the RHS:
@@ -260,25 +313,11 @@ public class Calculator {
 		return product;
 	}
 	
-	private Fraction multiplyRowByColumn(Fraction[] a_row, Fraction[] a_column)
+	public Matrix divideMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
 	{
-		int length = a_row.length;
-		
-		Fraction[] products = new Fraction[length];
-		
-		for (int i = 0; i < length; i++)
-		{
-			Fraction product = a_row[i].multiply(a_column[i]);
-		}
-		
-		Fraction total = new Fraction(0);
-		for (int i = 0; i < length; i++)
-		{
-			total.add(products[i]);
-		}
-		
-		return total;
+		return new Matrix(0, 0);
 	}
+
 	
 	public Matrix RREF(Matrix a_matrix)
 	{
