@@ -22,8 +22,6 @@ public class BasicTextArea extends JTextArea {
 	private double m_input;
 	private double m_total;
 	
-	private EventQueue queue;
-	
 	//Calculator and Required Data:
 	private Calculator calculator;
 	
@@ -35,10 +33,7 @@ public class BasicTextArea extends JTextArea {
 		m_firstInputFlag = true;
 		
 		//Create calculator
-		calculator = Calculator.getCalculatorInstance();
-		
-		queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-		
+		calculator = Calculator.getCalculatorInstance();	
 	}
 	
 	private String getUserInput()
@@ -175,8 +170,8 @@ public class BasicTextArea extends JTextArea {
 		
 		if (a_event.getSource() instanceof JTextArea)
 		{
-		 	KeyEvent ke = (KeyEvent) queue.getCurrentEvent();
-	        keyStroke = ke.getKeyText( ke.getKeyCode() );
+		 	KeyEvent ke = (KeyEvent) EventQueue.getCurrentEvent();
+	        keyStroke = KeyEvent.getKeyText( ke.getKeyCode() );
 	        System.out.println(keyStroke);
 		}
 			
@@ -215,7 +210,6 @@ public class BasicTextArea extends JTextArea {
 		if (operator.equals("\n")) operator = "=";
 		
 		calculator.setOperator(operator);
-		System.out.println("Operator: " + operator);
 		
 		//Get user input and send to calculator:
 		String userInput = getUserInput();

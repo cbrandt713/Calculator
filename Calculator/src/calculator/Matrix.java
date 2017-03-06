@@ -15,6 +15,17 @@ public class Matrix
 		setColumns(a_columns);
 		m_numbers = new Fraction[m_rows][m_columns];
 		setName("");
+		
+		//Initialize each element to 0:
+		for (int row = 0; row < a_rows; row++)
+		{
+			for (int column = 0; column < a_columns; column++)
+			{
+				Fraction current = new Fraction();
+				m_numbers[row][column] = current;
+			}
+		}
+		
 	}
 	
 	//Regular Constructor:
@@ -35,9 +46,13 @@ public class Matrix
 		setName("Copy_" + a_other.getName());
 		
 		//Copy each row into this matrix:
-		for (int i = 0; i < a_other.getRows(); i++)
+		for (int row = 0; row < a_other.getRows(); row++)
 		{
-			this.setRow(i, a_other.getRow(i));
+			for (int column = 0; column < a_other.getColumns(); column++)
+			{
+				Fraction current = new Fraction(a_other.getCell(row, column));
+				this.m_numbers[row][column] = current;
+			}
 		}
 	}
 	
@@ -111,6 +126,12 @@ public class Matrix
 	public void setCell(int a_row, int a_column, Fraction a_value)
 	{
 		if (cellExists(a_row, a_column)) m_numbers[a_row][a_column] = a_value;
+	}
+	
+	public void setCell(int a_row, int a_column, int a_value)
+	{
+		Fraction value = new Fraction(a_value);
+		if (cellExists(a_row, a_column)) m_numbers[a_row][a_column] = value;
 	}
 	
 	public Fraction getCell(int a_row, int a_column)

@@ -113,11 +113,14 @@ public class Calculator {
 			}
 			//Unary operation:
 			case "RREF":
+			{
+				m_matrixResult = RREF(m_matrixInput);
+				break;
+			}
 			case "REF":
 			case "Inverse":
 			{
-				
-				m_matrixResult = RREF(m_matrixInput);
+				m_matrixResult = invertMatrix(m_matrixInput);
 				break;
 			}
 			case "":
@@ -140,7 +143,6 @@ public class Calculator {
 		{
 			return new Matrix(0, 0);
 		}
-		
 		
 		if (m_operator.equals("+")) m_matrixResult = addMatrices(m_matrixInput, m_matrixInput2);
 		else if (m_operator.equals("-")) m_matrixResult = subtractMatrices(m_matrixInput, m_matrixInput2);
@@ -246,21 +248,29 @@ public class Calculator {
 	
 	public Matrix subtractMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
 	{
-		//Copy the values of the Right Hand Side so as to not actually alter it:
-		Matrix newRHS = new Matrix(a_RHS);
-		
-		//Take the opposite of every number in the copied RHS:
-		for (int row = 0; row < a_RHS.getRows(); row++)
+		//Make sure the matrices are of compatible size:
+		if (a_LHS.getRows() != a_RHS.getRows() || a_LHS.getColumns() != a_RHS.getColumns())
 		{
-			for (int column = 0; column < a_RHS.getColumns(); column++)
+			throw new MatrixException("Sizes do not match", a_LHS, a_RHS); 
+		}
+		
+		//The sum will now be of the same size as either element:
+		Matrix difference = new Matrix(a_LHS.getRows(), a_LHS.getColumns());
+		
+		//Matrices are added element-wise:
+		//Loop through the matrix, add each element.
+		for (int row = 0; row < difference.getRows(); row++)
+		{
+			for (int column = 0; column < difference.getColumns(); column++)
 			{
-				Fraction current = newRHS.getCell(row, column);
-				newRHS.setCell(row, column, current.multiply(-1));
+				//The value is simply the current element of each matrix subtracted together.
+				Fraction value = new Fraction();
+				value = a_LHS.getCell(row, column).subtract(a_RHS.getCell(row, column));
+				difference.setCell(row, column, value);
 			}
 		}
 		
-		//Now add the two matrices like normal. This functions the same as subtraction:
-		return addMatrices(a_LHS, newRHS);
+		return difference;
 	}
 	
 	
@@ -279,7 +289,7 @@ public class Calculator {
 		Fraction total = new Fraction(0);
 		for (int i = 0; i < length; i++)
 		{
-			total.add(products[i]);
+			total = total.add(products[i]);
 		}
 		
 		return total;
@@ -313,9 +323,17 @@ public class Calculator {
 		return product;
 	}
 	
+	//Matrix definition does not formally exist.
+	//For consistency's sake, we will define matrix definition as multiplying a_LHS by
+	//the inverse of a_RHS.
 	public Matrix divideMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
 	{
-		return new Matrix(0, 0);
+		//Create the inverse of the right hand side.
+		a_RHS = invertMatrix(a_RHS);
+		
+		//Multiply the left hand side by the inverse of the right-hand side.
+		return multiplyMatrices(a_LHS, a_RHS);
+		
 	}
 
 	
@@ -375,13 +393,53 @@ public class Calculator {
 	
 	public Matrix invertMatrix(Matrix a_matrix) throws MatrixException
 	{
+		int amtRows = a_matrix.getRows();
+		int amtColumns = a_matrix.getColumns();
+		
 		//Check for square matrix:
 		if (!a_matrix.isSquareMatrix())
 		{
 			throw new MatrixException("Not a square matrix", a_matrix);
 		}
 		
-		return new Matrix(0, 0);
+		//Create a joint matrix of size rows x (2x) columns
+		Matrix jointMatrix = new Matrix(amtRows, amtColumns * 2);
+		
+		//Populate the left half square matrix with the input matrix:
+		for (int row = 0; row < amtRows; row++)
+		{
+			for (int column = 0; column < amtColumns; column++)
+			{
+				jointMatrix.setCell(row, column, a_matrix.getCell(row, column));
+			}
+		}
+		
+		//Populate the right half with the identity matrix:
+		for (int row = 0; row < amtRows; row++)
+		{
+			for (int column = amtColumns; column < jointMatrix.getColumns(); column++)
+			{
+				if (row == (column - amtColumns))
+				jointMatrix.setCell(row, column, 1);
+			}
+		}
+		
+		//Perform an RREF on this matrix:
+		jointMatrix = RREF(jointMatrix);
+		
+		//The left half should be the identity matrix, the right half is the inverse we want:
+		Matrix inverse = new Matrix(amtRows, amtColumns);
+		
+		for (int row = 0; row < amtRows; row++)
+		{
+			for (int column = 0; column < amtColumns; column++)
+			{
+				int colIndex = column + amtColumns;
+				inverse.setCell(row, column, jointMatrix.getCell(row, colIndex));
+			}
+		}
+		
+		return inverse;
 		
 	}
 

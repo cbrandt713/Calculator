@@ -77,13 +77,38 @@ public class MatrixTextPane extends JTextPane
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 		
-		Fraction[][] test = new Fraction[][]
-				{{new Fraction(3), new Fraction(4), new Fraction(5), new Fraction(23)},
-				{new Fraction(5), new Fraction(-2), new Fraction(-4), new Fraction(-1)},
-				{new Fraction(2), new Fraction(5), new Fraction(3), new Fraction(4)}
-				};
-			m_matrices[m_amtMatrices] = new Matrix(test);
-			m_matrices[m_amtMatrices++].setName("MyExample");
+		Fraction[][] test = new Fraction[][] {
+			{new Fraction(3), new Fraction(4), new Fraction(5), new Fraction(23)},
+			{new Fraction(5), new Fraction(-2), new Fraction(-4), new Fraction(-1)},
+			{new Fraction(2), new Fraction(5), new Fraction(3), new Fraction(4)}
+		};
+		m_matrices[m_amtMatrices] = new Matrix(test);
+		m_matrices[m_amtMatrices++].setName("RREFExample");
+			
+		Fraction[][] inverseExample = new Fraction[][] {
+			{new Fraction(1), new Fraction(3), new Fraction(3)},
+			{new Fraction(1), new Fraction(4), new Fraction(3)},
+			{new Fraction(1), new Fraction(3), new Fraction(4)}
+		};
+		
+		m_matrices[m_amtMatrices] = new Matrix(inverseExample);
+		m_matrices[m_amtMatrices++].setName("InverseExample");
+		
+		Fraction[][] one = new Fraction[][] {
+			{new Fraction(2), new Fraction(5)},
+			{new Fraction(6), new Fraction(3)}
+		};
+		
+		m_matrices[m_amtMatrices] = new Matrix(one);
+		m_matrices[m_amtMatrices++].setName("A");
+		
+		Fraction[][] two = new Fraction[][] {
+			{new Fraction(3), new Fraction(6)},
+			{new Fraction(7), new Fraction(9)}
+		};
+		
+		m_matrices[m_amtMatrices] = new Matrix(two);
+		m_matrices[m_amtMatrices++].setName("B");				
 		
 	}
 	
@@ -251,6 +276,12 @@ public class MatrixTextPane extends JTextPane
 	{
 		m_operation = "RREF";
 		doOperation();	
+	}
+	
+	public void inverseButton()
+	{
+		m_operation = "Inverse";
+		doOperation();
 	}
 	
 	private boolean tryParse(String a_input)
@@ -421,6 +452,7 @@ public class MatrixTextPane extends JTextPane
 				
 				for (String matrixName : offenders)
 				{
+					if (matrixName != null)
 					setText(getText() + matrixName + " ");
 				}
 			}

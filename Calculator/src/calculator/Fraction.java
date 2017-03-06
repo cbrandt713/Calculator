@@ -32,6 +32,12 @@ public class Fraction
 		reduce();
 	}
 	
+	public Fraction(Fraction a_other)
+	{
+		m_numerator = a_other.getNumerator();
+		m_denominator = a_other.getDenominator();
+	}
+	
 	public int getNumerator()
 	{
 		return m_numerator;

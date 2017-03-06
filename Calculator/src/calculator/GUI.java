@@ -69,6 +69,7 @@ public class GUI extends JPanel
 	private JButton createMatrix;
 	private JButton listMatrices;
 	private JButton rref;
+	private JButton inverse;
 
 	//Action Elements:
 	private NumberAction numberAction;
@@ -491,13 +492,22 @@ public class GUI extends JPanel
 		
 		add(listMatrices, buttonC);
 		
-		matrixAction = new MatrixAction("RREF", "Row-Reduced Echelon Form of a Matrix");
+		matrixAction = new MatrixAction("RREF", "Row-Reduced Echelon Form");
 		rref = new JButton(matrixAction);
 		rref.setFocusable(false);
 		
 		buttonC.gridy = 3;
 		
 		add(rref, buttonC);
+		
+		matrixAction = new MatrixAction("A⁻¹", "Inverse of a Matrix");
+		inverse = new JButton(matrixAction);
+		inverse.setFocusable(false);
+		
+		buttonC.gridx = 3;
+		buttonC.gridy = 1;
+		
+		add(inverse, buttonC);
 		
 	}
 	
@@ -622,6 +632,8 @@ public class GUI extends JPanel
 			String operation = a_event.getActionCommand();
 			m_matrixDisplay.setText("");
 			
+			System.out.println(operation);
+			
 			switch (operation)
 			{
 				case "Create":
@@ -639,6 +651,12 @@ public class GUI extends JPanel
 					m_matrixDisplay.RREFButton();
 					break;
 				}
+				case "A⁻¹":
+				{
+					m_matrixDisplay.inverseButton();
+					break;
+				}
+				
 			}
 		}
 	}
