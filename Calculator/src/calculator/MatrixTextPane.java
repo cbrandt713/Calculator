@@ -217,31 +217,8 @@ public class MatrixTextPane extends JTextPane
 		{
 			m_amtOperands = OperationArguments.UNARY;
 		}
-		
-		
-		calculator.setOperator(m_operation);
-		calculator.setMatrixInput(m_selectedMatrix);		
-		
-		/*
-		switch(m_operation)
-		{
-			case "+":
-			{
-				setMode(ADD);
-				break;
-			}
-			case "RREF":
-			{
-				setMode(RREF);
-				break;
-			}
-			default:
-			{
-				System.out.println("Unknown error in doOperation");
-				break;
-			}
-		}
-		*/
+			
+		calculator.setOperator(m_operation);		
 		
 		setMode(GENERIC_OPERATION);
 		
@@ -261,6 +238,9 @@ public class MatrixTextPane extends JTextPane
 		{
 			setMode(DISPLAY_RESULT);
 			m_answerMatrix = calculator.doMatrixOperation();
+			m_answerMatrix.setName("Ans");
+			m_selectedMatrix = m_answerMatrix;
+			m_amtSelected = 1;
 		} 
 		catch (MatrixException exception) 
 		{
@@ -399,26 +379,6 @@ public class MatrixTextPane extends JTextPane
 				}
 				break;
 			}
-			/*
-			case RREF:
-			{
-				setText("RREF(" + m_selectedMatrix.getName() + ") = \n");
-				break;
-			}
-			case ADD:
-			{
-				if (m_amtSelected == 1)
-				{
-					setText(m_selectedMatrix.getName() + " + ");
-					m_storedString = getText();
-				}
-				if (m_amtSelected == 2)
-				{
-					setText(m_storedString + m_selectedMatrix.getName() + " = \n");
-				}
-				break;
-			}
-			*/
 			case GENERIC_OPERATION:
 			{
 				if (m_amtOperands == OperationArguments.UNARY)
@@ -605,6 +565,15 @@ public class MatrixTextPane extends JTextPane
 
 	public void operatorActionPerformed(ActionEvent a_event) 
 	{
+		//In the case that we are using the "/" operator to indicate a fraction:
+		if (getMode() == EDIT_MATRIX)
+		{
+			m_runningString += a_event.getActionCommand();
+			updateText();
+			return;
+		}
+		
+		//Otherwise we are using the generic meaning of the operator:
 		m_operation = a_event.getActionCommand();
 		doOperation();
 	}

@@ -136,6 +136,7 @@ public class GUI extends JPanel
 		createOperators();
 		createMiscOperators();
 		
+		basicSize = new Dimension(253, 224);	
 	}
 	
 	private void setMatrixLayout()
@@ -153,7 +154,8 @@ public class GUI extends JPanel
 		createDeleteButtons();
 		createOperators();
 		createMatrixButtons();
-		//createMiscOperators();
+		
+		matrixSize = new Dimension(285, 281);
 	}
 	
 	private void createMenu()
@@ -259,6 +261,7 @@ public class GUI extends JPanel
 		deleteAction = new DeleteAction("", "");
 		letterAction = new LetterAction("", "");
 		arrowAction = new ArrowAction("", "");
+		operatorAction = new OperatorAction("", "");
 		
 		//Register all the keybinds with the associated string:
 		//Note this syntax is necessary to use keybinds
@@ -280,6 +283,11 @@ public class GUI extends JPanel
 		
 		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "number");
 		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('.'), "number");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('+'), "operation");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
+		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
 		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
 		m_matrixDisplay.getInputMap().put(KeyStroke.getKeyStroke("BACK_SPACE"), "delete");
 		
@@ -294,6 +302,7 @@ public class GUI extends JPanel
 		m_matrixDisplay.getActionMap().put("delete", deleteAction);
 		m_matrixDisplay.getActionMap().put("letter", letterAction);
 		m_matrixDisplay.getActionMap().put("arrow", arrowAction);
+		m_matrixDisplay.getActionMap().put("operation", operatorAction);
 	}
 	
 	private void createNumbers()
@@ -612,6 +621,9 @@ public class GUI extends JPanel
 			{
 				setMatrixLayout();
 			}
+			
+			if (m_GUIState == BASIC) frame.setSize(basicSize);
+			else frame.setSize(matrixSize);
 			
 			revalidate();
 			repaint();
