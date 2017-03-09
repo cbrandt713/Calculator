@@ -158,9 +158,9 @@ public class Matrix
 		else return true;
 	}
 	
-	public boolean isRowZeroes(int a_row)
+	public boolean isRowZeroes(int a_rowIndex)
 	{
-		Fraction[] row = getRow(a_row);
+		Fraction[] row = getRow(a_rowIndex);
 		
 		for (int i = 0; i < row.length; i++)
 		{
@@ -170,15 +170,38 @@ public class Matrix
 		return true;
 	}
 	
-	public boolean isColumnZeroes(int a_column)
+	public boolean isColumnZeroes(int a_columnIndex)
 	{
-		
 		for (int i = 0; i < getRows(); i++)
 		{
-			if (!getRow(i)[a_column].equals(0)) return false;
+			if (!getRow(i)[a_columnIndex].equals(0)) return false;
 		}
 		
 		return true;
+	}
+	
+	public int amountZeroesInRow(int a_rowIndex)
+	{
+		int count = 0;
+		Fraction[] row = getRow(a_rowIndex);
+		
+		for (int i = 0; i < row.length; i++)
+		{
+			if (row[i].equals(0)) count++;
+		}
+		
+		return count;
+	}
+	
+	public int amountZeroesInColumn(int a_columnIndex)
+	{
+		int count = 0;
+		for (int i = 0; i < getRows(); i++)
+		{
+			if (getRow(i)[a_columnIndex].equals(0)) count++;
+		}
+		
+		return count;
 	}
 	
 	public boolean isSquareMatrix()

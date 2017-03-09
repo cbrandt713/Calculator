@@ -45,7 +45,7 @@ public class MatrixTextPane extends JTextPane
 	
 	//Matrix Helper Strings:
 	private String m_matrixText;
-	private Character m_defaultName = 'A';
+	private Character m_defaultName;
 	
 	//Data objects:
 	private Matrix[] m_matrices;
@@ -69,10 +69,11 @@ public class MatrixTextPane extends JTextPane
 		
 		m_matrices = new Matrix[20];
 		m_amtMatrices = 0;
-		
-		setDefaultValues();
+		m_defaultName = 'A';
 		
 		calculator = Calculator.getCalculatorInstance();
+		
+		setDefaultValues();
 		
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
@@ -100,7 +101,7 @@ public class MatrixTextPane extends JTextPane
 		};
 		
 		m_matrices[m_amtMatrices] = new Matrix(one);
-		m_matrices[m_amtMatrices++].setName("A");
+		m_matrices[m_amtMatrices++].setName("Add1");
 		
 		Fraction[][] two = new Fraction[][] {
 			{new Fraction(3), new Fraction(6)},
@@ -108,7 +109,7 @@ public class MatrixTextPane extends JTextPane
 		};
 		
 		m_matrices[m_amtMatrices] = new Matrix(two);
-		m_matrices[m_amtMatrices++].setName("B");				
+		m_matrices[m_amtMatrices++].setName("Add2");				
 		
 	}
 	
@@ -129,6 +130,8 @@ public class MatrixTextPane extends JTextPane
 		m_amtSelected = 0;
 		m_amtOperands = OperationArguments.UNARY;
 		m_storedString = "";
+		
+		calculator.resetInputs();
 	}
 	
 	private void setMode(int a_mode)
@@ -252,17 +255,6 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 	
-	public void RREFButton()
-	{
-		m_operation = "RREF";
-		doOperation();	
-	}
-	
-	public void inverseButton()
-	{
-		m_operation = "Inverse";
-		doOperation();
-	}
 	
 	private boolean tryParse(String a_input)
 	{
@@ -576,6 +568,22 @@ public class MatrixTextPane extends JTextPane
 		//Otherwise we are using the generic meaning of the operator:
 		m_operation = a_event.getActionCommand();
 		doOperation();
+	}
+
+	public void matrixActionPerformed(ActionEvent a_event) 
+	{
+		
+		setText("");
+		String operation = a_event.getActionCommand();
+		
+		if (operation.equals("Create")) createRows();
+		else if (operation.equals("List")) selectMatrix();
+		else 
+		{
+			m_operation = operation;
+			doOperation();
+		}
+		
 	}
 	
 }

@@ -14,12 +14,7 @@ public class Calculator {
 	
 	private Calculator()
 	{
-		m_total = -Double.MAX_VALUE;
-		m_input = -Double.MAX_VALUE;
-		m_operator = "";
-		m_matrixResult = null;
-		m_matrixInput = null;
-		m_matrixInput2 = null;
+		resetInputs();
 	}
 	
 	public static Calculator getCalculatorInstance()
@@ -40,6 +35,17 @@ public class Calculator {
 	public void setInput(double a_input)
 	{
 		m_input = a_input;
+	}
+	
+	
+	public void resetInputs()
+	{
+		m_total = -Double.MAX_VALUE;
+		m_input = -Double.MAX_VALUE;
+		m_operator = "";
+		m_matrixResult = null;
+		m_matrixInput = null;
+		m_matrixInput2 = null;
 	}
 	
 	public void setMatrixInput(Matrix a_operand)
@@ -118,6 +124,10 @@ public class Calculator {
 				break;
 			}
 			case "REF":
+			{
+				m_matrixResult = REF(m_matrixInput);
+				break;
+			}
 			case "Inverse":
 			{
 				m_matrixResult = invertMatrix(m_matrixInput);
@@ -333,9 +343,59 @@ public class Calculator {
 		
 		//Multiply the left hand side by the inverse of the right-hand side.
 		return multiplyMatrices(a_LHS, a_RHS);
-		
 	}
 
+	public Matrix REF(Matrix a_matrix)
+	{
+		int numRows = a_matrix.getRows();
+		int numCols = a_matrix.getColumns();
+		
+		//Copy the original matrix:
+		Matrix ref = new Matrix(a_matrix);
+		
+		//Go through each column: start at the leftmost column
+		for (int rowIndex = 0; rowIndex < numRows; rowIndex++)
+		{
+			int columnIndex = rowIndex;
+			int i;
+			//Check for column of zeroes:
+			for (i = columnIndex; i < numCols; i++)
+			{
+				if (!ref.isColumnZeroes(i))
+				{
+					break;
+				}
+			}
+			
+			//Break from last loop at non-zero column. Use this column:
+			columnIndex = i;
+			
+			//Create leading one Step:
+			
+			//Get the cell to create the leading one
+			Fraction cellValue = ref.getCell(rowIndex, columnIndex);
+			
+			//divide the whole row by that value to create a one:
+			Fraction[] leadOneRow = multiplyRow(ref.getRow(rowIndex), cellValue, true);
+			ref.setRow(rowIndex, leadOneRow);
+			
+			//Create zeroes below step:
+			//Find value to create the zero. Multiply lead one row by this value
+			//Then subtract the produced row from the current row
+			
+			for (int j = rowIndex + 1; j < numRows; j++)
+			{
+				Fraction multVal = ref.getCell(j, columnIndex);
+				Fraction[] producedRow = multiplyRow(leadOneRow, multVal, false);
+				Fraction[] resultRow = addRow(ref.getRow(j), producedRow, true);
+				
+				ref.setRow(j, resultRow);
+			}
+			
+		}
+		
+		return ref;	
+	}
 	
 	public Matrix RREF(Matrix a_matrix)
 	{
@@ -345,7 +405,7 @@ public class Calculator {
 		//Copy the original matrix:
 		Matrix rref = new Matrix(a_matrix);
 		
-		//Go through each column: start at the leftmost column
+		//Go through each row: start at the top:
 		for (int rowIndex = 0; rowIndex < numRows; rowIndex++)
 		{
 			int columnIndex = rowIndex;
@@ -388,7 +448,6 @@ public class Calculator {
 		}
 		
 		return rref;	
-		
 	}
 	
 	public Matrix invertMatrix(Matrix a_matrix) throws MatrixException
@@ -441,6 +500,76 @@ public class Calculator {
 		
 		return inverse;
 		
+	}
+	
+	public Fraction determinant2by2(Matrix a_matrix) throws MatrixException
+	{
+		if (a_matrix.getRows() != 2 && a_matrix.getColumns() != 2)
+		{
+			throw new MatrixException("Not a 2 by 2 matrix", a_matrix);
+		}
+		
+		Fraction LHS = a_matrix.getCell(0, 0).multiply(a_matrix.getCell(1, 1));
+		Fraction RHS = a_matrix.getCell(0, 1).multiply(a_matrix.getCell(1, 0));
+		return LHS.subtract(RHS);
+	}
+	
+	public Fraction determinant(Matrix a_matrix) throws MatrixException
+	{
+		if (!a_matrix.isSquareMatrix())
+		{
+			throw new MatrixException("Not a square matrix", a_matrix);
+		}
+		
+		int amtRows = a_matrix.getRows();
+		
+		if (amtRows == 2) return determinant2by2(a_matrix);
+		
+		Fraction determinant = new Fraction();
+		
+		int highestCount = 0;
+		int highestIndex = 0;
+		boolean isRow = true;
+		
+		//Optimization: Pick the row or column with most zeroes:
+		for (int index = 0; index < amtRows; index++)
+		{
+			int amountZeroes = a_matrix.amountZeroesInRow(index);
+			if (amountZeroes > highestCount)
+			{
+				highestCount = amountZeroes;
+				highestIndex = index;
+				isRow = true;
+			}
+			
+			amountZeroes = a_matrix.amountZeroesInColumn(index);
+			if (amountZeroes > highestCount)
+			{
+				highestCount = amountZeroes;
+				highestIndex = index;
+				isRow = false;
+			}
+			
+		}
+		
+		//We now have the row/column to pivot on.
+		//The below index is the row/column to delete! It may refer to column OR row index.
+		//If isRow is true, then it refers to column. If false, it refers to row.
+		for (int index = 0; index < amtRows; index++)
+		{
+			Fraction multValue;
+			
+			//Each iteration must create a submatrix of dimension n-1:
+			Matrix subMatrix = new Matrix(amtRows - 1, amtRows - 1);
+			
+			//If this is the pivot row/column, this value is the multiplied value.
+			if (index == highestIndex && isRow) multValue = new Fraction(a_matrix.getCell(highestIndex, index));
+			else if (index == highestIndex && !isRow) multValue = new Fraction(a_matrix.getCell(index, highestIndex));
+			
+		}
+		
+		
+		return determinant;
 	}
 
 }

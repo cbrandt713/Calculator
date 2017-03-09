@@ -69,7 +69,12 @@ public class GUI extends JPanel
 	private JButton createMatrix;
 	private JButton listMatrices;
 	private JButton rref;
+	private JButton ref;
 	private JButton inverse;
+	private JButton determinant;
+	private JButton rank;
+	private JButton scalar;
+	private JButton transpose;
 
 	//Action Elements:
 	private NumberAction numberAction;
@@ -81,6 +86,11 @@ public class GUI extends JPanel
 	private MatrixAction matrixAction;
 	private LetterAction letterAction;
 	private ArrowAction arrowAction;
+	
+	public static void main(String[] args)
+	{
+		GUI gui = getGUIInstance();	
+	}
 	
 	private GUI()
 	{
@@ -174,12 +184,12 @@ public class GUI extends JPanel
 		menu.add(matrix);
 	}
 	
-	public JMenuBar getJMenuBar()
+	private JMenuBar getJMenuBar()
 	{
 		return menuBar;
 	}
 	
-	public int getGUIState()
+	private int getGUIState()
 	{
 		return m_GUIState;
 	}
@@ -234,7 +244,7 @@ public class GUI extends JPanel
 	private void createMatrixDisplay()
 	{
 		m_matrixDisplay = new MatrixTextPane();
-		m_matrixDisplay.setText("\n\n\n\n");
+		m_matrixDisplay.setText("\n\n\n\n\n\n");
 		m_matrixDisplay.setEditable(false);
 		m_noWrapPanel = new JPanel( new BorderLayout() );
 		m_noWrapPanel.add(m_matrixDisplay);
@@ -246,7 +256,7 @@ public class GUI extends JPanel
 		GridBagConstraints displayC = new GridBagConstraints();
 		displayC.gridx = 0;
 		displayC.gridy = 0;
-		displayC.gridwidth = 5;
+		displayC.gridwidth = 6;
 		displayC.weightx = 1.0;
 		displayC.weighty = 1.0;
 		displayC.fill = GridBagConstraints.BOTH;
@@ -518,6 +528,47 @@ public class GUI extends JPanel
 		
 		add(inverse, buttonC);
 		
+		matrixAction = new MatrixAction("REF", "Reduced Echelon Form");
+		ref = new JButton(matrixAction);
+		ref.setFocusable(false);
+		
+		buttonC.gridx = 5;
+		buttonC.gridy = 1;
+		
+		add(ref, buttonC);
+		
+		matrixAction = new MatrixAction("Det", "Determinant");
+		determinant = new JButton(matrixAction);
+		determinant.setFocusable(false);
+		
+		buttonC.gridy = 2;
+		
+		add(determinant, buttonC);
+		
+		matrixAction = new MatrixAction("Rank", "Rank of matrix");
+		rank = new JButton(matrixAction);
+		rank.setFocusable(false);
+		
+		buttonC.gridy = 3;
+		
+		add(rank, buttonC);
+		
+		matrixAction = new MatrixAction("Scalar", "Multiply matrix by scalar");
+		scalar = new JButton(matrixAction);
+		scalar.setFocusable(false);
+		
+		buttonC.gridy = 4;
+		
+		add(scalar, buttonC);
+		
+		matrixAction = new MatrixAction("Transpose", "Transpose Matrix");
+		transpose = new JButton(matrixAction);
+		transpose.setFocusable(false);
+		
+		buttonC.gridy = 5;
+		
+		add(transpose, buttonC);
+		
 	}
 	
 	public class NumberAction extends AbstractAction
@@ -641,35 +692,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
-			String operation = a_event.getActionCommand();
-			m_matrixDisplay.setText("");
-			
-			System.out.println(operation);
-			
-			switch (operation)
-			{
-				case "Create":
-				{
-					m_matrixDisplay.createRows();
-					break;
-				}
-				case "List":
-				{
-					m_matrixDisplay.selectMatrix();
-					break;
-				}
-				case "RREF":
-				{
-					m_matrixDisplay.RREFButton();
-					break;
-				}
-				case "A⁻¹":
-				{
-					m_matrixDisplay.inverseButton();
-					break;
-				}
-				
-			}
+			m_matrixDisplay.matrixActionPerformed(a_event);
 		}
 	}
 	
