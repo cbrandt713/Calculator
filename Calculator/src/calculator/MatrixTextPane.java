@@ -16,12 +16,7 @@ public class MatrixTextPane extends JTextPane
 	private final static int EDIT_MATRIX = 3;
 	private final static int NAME_MATRIX = 4;
 	private final static int SELECT_MATRIX = 5;
-	private final static int RREF = 100;
-	private final static int ADD = 101;
-	private final static int SUBTRACT = 102;
-	private final static int MULTIPLY = 103;
-	private final static int DIVIDE = 104;
-	private final static int INVERSE = 105;
+	private final static int SCALAR = 100;
 	private final static int GENERIC_OPERATION = 200;
 	private final static int DISPLAY_RESULT = 201;
 	private final static int EXCEPTION = 900;
@@ -51,9 +46,12 @@ public class MatrixTextPane extends JTextPane
 	private Matrix[] m_matrices;
 	private Matrix m_selectedMatrix;
 	private Matrix m_answerMatrix;
+	private Fraction m_answerFraction;
+	private Fraction m_scalarFraction;
 	private int m_amtMatrices;
 	private int m_currentRow;
 	private int m_currentColumn;
+	public boolean m_answerIsMatrix;
 	
 	//Various:
 	private int m_arrowPointer;
@@ -109,8 +107,18 @@ public class MatrixTextPane extends JTextPane
 		};
 		
 		m_matrices[m_amtMatrices] = new Matrix(two);
-		m_matrices[m_amtMatrices++].setName("Add2");				
+		m_matrices[m_amtMatrices++].setName("Add2");	
 		
+		
+		Fraction[][] determinant = new Fraction[][] {
+			{new Fraction(3), new Fraction(0), new Fraction(2), new Fraction(-1)},
+			{new Fraction(1), new Fraction(2), new Fraction(0), new Fraction(-2)},
+			{new Fraction(4), new Fraction(0), new Fraction(6), new Fraction(-3)},
+			{new Fraction(5), new Fraction(0), new Fraction(2), new Fraction(0)}
+		};
+		
+		m_matrices[m_amtMatrices] = new Matrix(determinant);
+		m_matrices[m_amtMatrices++].setName("DeterminantExample");
 	}
 	
 	//Helper method used by the constructor to initialize and the
@@ -124,12 +132,14 @@ public class MatrixTextPane extends JTextPane
 		m_mode = NONE;
 		m_operation = "";
 		m_answerMatrix = null;
-		m_selectedMatrix = null;		
+		m_selectedMatrix = null;
+		m_answerFraction = null;
 		m_currentRow = 0;
 		m_currentColumn = 0;
 		m_amtSelected = 0;
 		m_amtOperands = OperationArguments.UNARY;
 		m_storedString = "";
+		m_answerIsMatrix = true;
 		
 		calculator.resetInputs();
 	}
@@ -212,7 +222,8 @@ public class MatrixTextPane extends JTextPane
 		}
 		
 		if (m_operation.equals("+") || m_operation.equals("-") 
-				|| m_operation.equals("*") || m_operation.equals("/"))
+				|| m_operation.equals("*") || m_operation.equals("/")
+				|| m_operation.equals("Scalar") )
 		{
 			m_amtOperands = OperationArguments.BINARY;
 		}
@@ -237,21 +248,43 @@ public class MatrixTextPane extends JTextPane
 			return;
 		}
 		
-		try 
+		setMode(DISPLAY_RESULT);
+		
+		if (m_answerIsMatrix)
 		{
-			setMode(DISPLAY_RESULT);
-			m_answerMatrix = calculator.doMatrixOperation();
-			m_answerMatrix.setName("Ans");
-			m_selectedMatrix = m_answerMatrix;
-			m_amtSelected = 1;
-		} 
-		catch (MatrixException exception) 
+			try 
+			{
+				
+				m_answerMatrix = calculator.doMatrixOperation();
+				m_answerMatrix.setName("Ans");
+				m_selectedMatrix = m_answerMatrix;
+				m_amtSelected = 1;
+			} 
+			catch (MatrixException exception) 
+			{
+				setMode(EXCEPTION);
+				m_caughtException = exception;
+			}
+		}
+		else
 		{
-			setMode(EXCEPTION);
-			m_caughtException = exception;
+			try 
+			{
+				m_answerFraction = calculator.fractionResultOperation();
+				m_answerMatrix = null;
+				m_selectedMatrix = null;
+				m_amtSelected = 0;
+			} 
+			catch (MatrixException exception) 
+			{
+				setMode(EXCEPTION);
+				m_caughtException = exception;
+			}
 		}
 		
 		updateText();
+		
+		m_answerIsMatrix = true;
 		
 	}
 	
@@ -356,7 +389,7 @@ public class MatrixTextPane extends JTextPane
 			}
 			case NAME_MATRIX:
 			{
-				setText("Name Matrix (or \"Enter\" to skip):\n" + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
+				setText("Name Matrix (or \"Enter\" to skip):" + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
 				break;
 			}
 			case SELECT_MATRIX:
@@ -391,9 +424,15 @@ public class MatrixTextPane extends JTextPane
 				}
 				break;
 			}
+			case SCALAR:
+			{
+				setText("Enter Scalar: " + m_runningString);
+				break;
+			}
 			case DISPLAY_RESULT:
 			{
-				setText(getText() + m_answerMatrix.toString());
+				if (m_answerIsMatrix) setText(getText() + m_answerMatrix.toString());
+				else setText(getText() + m_answerFraction.toString());
 				break;
 			}
 			case EXCEPTION:
@@ -493,6 +532,16 @@ public class MatrixTextPane extends JTextPane
 				
 				break;
 			}
+			case SCALAR:
+			{
+				if (tryFractionParse(m_runningString))
+				{
+					m_scalarFraction = Fraction.parseFraction(m_runningString);
+					m_amtSelected++;
+					doOperation();
+				}
+				break;
+			}
 			default:
 			{
 				System.out.println("Unknown error in enter action");
@@ -575,6 +624,9 @@ public class MatrixTextPane extends JTextPane
 		
 		setText("");
 		String operation = a_event.getActionCommand();
+		
+		if (operation.equals("Det") || operation.equals("Trace") 
+				|| operation.equals("Rank")) m_answerIsMatrix = false;
 		
 		if (operation.equals("Create")) createRows();
 		else if (operation.equals("List")) selectMatrix();

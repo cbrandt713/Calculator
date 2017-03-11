@@ -11,6 +11,7 @@ public class Calculator {
 	private Matrix m_matrixResult;
 	private Matrix m_matrixInput;
 	private Matrix m_matrixInput2;
+	private Fraction m_fractionResult;
 	
 	private Calculator()
 	{
@@ -46,6 +47,7 @@ public class Calculator {
 		m_matrixResult = null;
 		m_matrixInput = null;
 		m_matrixInput2 = null;
+		m_fractionResult = null;
 	}
 	
 	public void setMatrixInput(Matrix a_operand)
@@ -133,6 +135,10 @@ public class Calculator {
 				m_matrixResult = invertMatrix(m_matrixInput);
 				break;
 			}
+			case "Scalar":
+			{
+				
+			}
 			case "":
 			default:
 			{
@@ -145,6 +151,34 @@ public class Calculator {
 		m_matrixInput2 = null;
 		
 		return m_matrixResult;
+	}
+	
+	public Fraction fractionResultOperation() throws MatrixException
+	{
+		switch (m_operator)
+		{
+			case "Det":
+			{
+				m_fractionResult = determinant(m_matrixInput);
+				break;
+			}
+			case "Trace":
+			{
+				break;
+			}
+			case "Rank":
+			{
+				break;
+			}
+			default:
+			{
+				System.out.println("Unhandled Case in fractionResultOperation");
+				break;
+			}
+		}
+		
+		return m_fractionResult;
+	
 	}
 	
 	public Matrix matrixBinaryOperation() throws MatrixException
@@ -344,6 +378,23 @@ public class Calculator {
 		//Multiply the left hand side by the inverse of the right-hand side.
 		return multiplyMatrices(a_LHS, a_RHS);
 	}
+	
+	public Matrix scalarMultiply(int a_scalar, Matrix a_matrix)
+	{
+		Matrix scalarMatrix = new Matrix(a_matrix);
+		
+		for (int row = 0; row < a_matrix.getRows(); row++)
+		{
+			for (int column = 0; column < a_matrix.getColumns(); column++)
+			{
+				//Simply multiply each cell in the copy by the scalar, then return the copy:
+				Fraction current = scalarMatrix.getCell(row, column);
+				scalarMatrix.setCell(row, column, current.multiply(a_scalar));
+			}
+		}
+		
+		return scalarMatrix;
+	}
 
 	public Matrix REF(Matrix a_matrix)
 	{
@@ -461,6 +512,11 @@ public class Calculator {
 			throw new MatrixException("Not a square matrix", a_matrix);
 		}
 		
+		if (determinant(a_matrix).equals(0))
+		{
+			throw new MatrixException("Singular matrix, not invertible", a_matrix);
+		}
+		
 		//Create a joint matrix of size rows x (2x) columns
 		Matrix jointMatrix = new Matrix(amtRows, amtColumns * 2);
 		
@@ -529,7 +585,7 @@ public class Calculator {
 		
 		int highestCount = 0;
 		int highestIndex = 0;
-		boolean isRow = true;
+		boolean pivotIsRow = true;
 		
 		//Optimization: Pick the row or column with most zeroes:
 		for (int index = 0; index < amtRows; index++)
@@ -539,7 +595,7 @@ public class Calculator {
 			{
 				highestCount = amountZeroes;
 				highestIndex = index;
-				isRow = true;
+				pivotIsRow = true;
 			}
 			
 			amountZeroes = a_matrix.amountZeroesInColumn(index);
@@ -547,7 +603,7 @@ public class Calculator {
 			{
 				highestCount = amountZeroes;
 				highestIndex = index;
-				isRow = false;
+				pivotIsRow = false;
 			}
 			
 		}
@@ -562,13 +618,59 @@ public class Calculator {
 			//Each iteration must create a submatrix of dimension n-1:
 			Matrix subMatrix = new Matrix(amtRows - 1, amtRows - 1);
 			
-			//If this is the pivot row/column, this value is the multiplied value.
-			if (index == highestIndex && isRow) multValue = new Fraction(a_matrix.getCell(highestIndex, index));
-			else if (index == highestIndex && !isRow) multValue = new Fraction(a_matrix.getCell(index, highestIndex));
+			//Get the value from the pivot row/column:
+			//If the pivot is a row, the highestIndex refers to the row index
+			if (pivotIsRow) multValue = new Fraction(a_matrix.getCell(highestIndex, index));
+			else multValue = new Fraction(a_matrix.getCell(index, highestIndex));
 			
+			//If the value to multiply by is a 0, we can just skip this iteration:
+			if (multValue.equals(0)) continue;
+			
+			int subMatrixRow = 0;
+			int subMatrixColumn = 0;
+			
+			//Create the submatrix:
+			for (int subRow = 0; subRow < amtRows; subRow++)
+			{
+				//If the pivot is this row, delete this row.
+				if (pivotIsRow && subRow == highestIndex) continue;
+				//Else if the pivot is a column, we are eliminating rows.
+				//The current row to eliminate will be the index row.
+				else if (!pivotIsRow && subRow == index) continue;
+				
+				for (int subColumn = 0; subColumn < amtRows; subColumn++)
+				{
+					//If the pivot is a column and is the current column index, delete this column.
+					if (!pivotIsRow && subColumn == highestIndex) continue;
+					//Else if the pivot is a row, we are eliminating columns.
+					//The current column to eliminate will be the index column.
+					else if (pivotIsRow && subColumn == index) continue;
+					
+					Fraction current = a_matrix.getCell(subRow, subColumn);
+					subMatrix.setCell(subMatrixRow, subMatrixColumn, current);
+					
+					subMatrixColumn++;
+				}
+				subMatrixColumn = 0;
+				subMatrixRow++;
+			}
+			
+			//Calculate the determinant of submatrices:
+			Fraction innerDeterminant = determinant(subMatrix);
+			
+			//Chain the determinants:
+			
+			//If the index and highestIndex added together is an odd number,
+			//We subtract the value of multValue multiplied by the innerDeterminant.
+			if ((index + highestIndex) % 2 != 0) multValue = multValue.multiply(-1);
+			
+			innerDeterminant = multValue.multiply(innerDeterminant);
+			
+			//Finally, add all of this to the total determinant:
+			determinant = determinant.add(innerDeterminant);
 		}
 		
-		
+		//After all of the submatrices have been added together, return the chained result as the determinant:
 		return determinant;
 	}
 
