@@ -1,13 +1,9 @@
 package calculator;
 
 import java.awt.EventQueue;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-
-import javax.swing.AbstractAction;
 import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 
 public class BasicTextArea extends JTextArea {

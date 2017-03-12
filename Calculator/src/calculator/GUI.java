@@ -89,7 +89,7 @@ public class GUI extends JPanel
 	
 	public static void main(String[] args)
 	{
-		GUI gui = getGUIInstance();	
+		getGUIInstance();	
 	}
 	
 	private GUI()

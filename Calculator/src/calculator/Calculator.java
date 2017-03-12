@@ -1,7 +1,5 @@
 package calculator;
 
-import java.util.Vector;
-
 public class Calculator {
 	
 	private static Calculator calcObj = null;
@@ -11,6 +9,7 @@ public class Calculator {
 	private Matrix m_matrixResult;
 	private Matrix m_matrixInput;
 	private Matrix m_matrixInput2;
+	private Fraction m_fractionScalar;
 	private Fraction m_fractionResult;
 	
 	private Calculator()
@@ -56,6 +55,10 @@ public class Calculator {
 		else m_matrixInput2 = a_operand;
 	}
 	
+	public void setScalar(Fraction a_input)
+	{
+		m_fractionScalar = a_input;
+	}
 	
 	public double doBasicCalculation()
 	{
@@ -137,7 +140,13 @@ public class Calculator {
 			}
 			case "Scalar":
 			{
-				
+				m_matrixResult = scalarMultiply(m_fractionScalar, m_matrixInput);
+				break;
+			}
+			case "Transpose":
+			{
+				m_matrixResult = transpose(m_matrixInput);
+				break;
 			}
 			case "":
 			default:
@@ -153,6 +162,25 @@ public class Calculator {
 		return m_matrixResult;
 	}
 	
+	public Matrix transpose(Matrix a_matrix) 
+	{
+		int amtRows = a_matrix.getRows();
+		int amtColumns = a_matrix.getColumns();
+		
+		Matrix transpose = new Matrix(amtColumns, amtRows);
+		
+		for (int rowIndex = 0; rowIndex < amtColumns; rowIndex++)
+		{
+			for (int columnIndex = 0; columnIndex < amtRows; columnIndex++)
+			{
+				Fraction current = new Fraction(a_matrix.getCell(columnIndex, rowIndex));
+				transpose.setCell(rowIndex, columnIndex, current);
+			}
+		}
+		
+		return transpose;
+	}
+
 	public Fraction fractionResultOperation() throws MatrixException
 	{
 		switch (m_operator)
@@ -164,10 +192,12 @@ public class Calculator {
 			}
 			case "Trace":
 			{
+				m_fractionResult = trace(m_matrixInput);
 				break;
 			}
 			case "Rank":
 			{
+				m_fractionResult = rank(m_matrixInput);
 				break;
 			}
 			default:
@@ -379,7 +409,7 @@ public class Calculator {
 		return multiplyMatrices(a_LHS, a_RHS);
 	}
 	
-	public Matrix scalarMultiply(int a_scalar, Matrix a_matrix)
+	public Matrix scalarMultiply(Fraction a_scalar, Matrix a_matrix)
 	{
 		Matrix scalarMatrix = new Matrix(a_matrix);
 		
@@ -409,6 +439,7 @@ public class Calculator {
 		{
 			int columnIndex = rowIndex;
 			int i;
+			
 			//Check for column of zeroes:
 			for (i = columnIndex; i < numCols; i++)
 			{
@@ -421,8 +452,38 @@ public class Calculator {
 			//Break from last loop at non-zero column. Use this column:
 			columnIndex = i;
 			
-			//Create leading one Step:
+			//Check for row of zeroes:
+			if (ref.isRowZeroes(rowIndex))
+			{
+				//Ensure any rows of zero are in the bottom spots:
+				for (int k = numRows - 1; k > 0; k--)
+				{
+					//If the current row isn't a row of zeroes, simply swap rows.
+					if (!ref.isRowZeroes(rowIndex))
+					{
+						ref.swapRows(k, rowIndex);
+						break;
+					}
+				}
+				continue;
+			}
 			
+			//Check for leading zero:
+			//Rows with leading zeroes must be moved to the bottom:
+			if (ref.getCell(rowIndex, columnIndex).equals(0))
+			{
+				//Find latest row in matrix without a zero in this spot:
+				for (int k = numRows - 1; k > 0; k--)
+				{
+					if (!ref.getCell(k, columnIndex).equals(0))
+					{
+						ref.swapRows(rowIndex, k);
+						break;
+					}
+				}
+			}
+			
+			//Create leading one Step:
 			//Get the cell to create the leading one
 			Fraction cellValue = ref.getCell(rowIndex, columnIndex);
 			
@@ -433,7 +494,6 @@ public class Calculator {
 			//Create zeroes below step:
 			//Find value to create the zero. Multiply lead one row by this value
 			//Then subtract the produced row from the current row
-			
 			for (int j = rowIndex + 1; j < numRows; j++)
 			{
 				Fraction multVal = ref.getCell(j, columnIndex);
@@ -472,9 +532,41 @@ public class Calculator {
 			
 			//Break from last loop at non-zero column. Use this column:
 			columnIndex = i;
+
+			//Check for row of zeroes:
+			if (rref.isRowZeroes(rowIndex))
+			{
+				//Ensure any rows of zero are in the bottom spots:
+				for (int k = numRows - 1; k > 0; k--)
+				{
+					//If the current row isn't a row of zeroes, simply swap rows.
+					if (!rref.isRowZeroes(rowIndex))
+					{
+						rref.swapRows(k, rowIndex);
+						break;
+					}
+				}
+				continue;
+			}
+			
+			//Check for leading zero:
+			//Rows with leading zeroes must be moved to the bottom:
+			if (rref.getCell(rowIndex, columnIndex).equals(0))
+			{
+				//Find latest row in matrix without a zero in this spot:
+				for (int k = numRows - 1; k > 0; k--)
+				{
+					if (!rref.getCell(k, columnIndex).equals(0))
+					{
+						rref.swapRows(rowIndex, k);
+						break;
+					}
+				}
+			}
+			
+			
 			
 			//Create leading one Step:
-			
 			//Get the cell to create the leading one
 			Fraction cellValue = rref.getCell(rowIndex, columnIndex);
 			//divide the whole row by that value to create a one:
@@ -672,6 +764,39 @@ public class Calculator {
 		
 		//After all of the submatrices have been added together, return the chained result as the determinant:
 		return determinant;
+	}
+	
+	public Fraction rank(Matrix a_matrix)
+	{
+		//Rank will always be a positive integer.
+		int rank = 0;
+		
+		Matrix ref = REF(a_matrix);
+		
+		//It is simply the amount of non-zero rows in the matrix's REF or RREF.
+		for (int rowIndex = 0; rowIndex < a_matrix.getRows(); rowIndex++)
+		{
+			if (!ref.isRowZeroes(rowIndex)) rank++;
+		}
+		
+		return new Fraction(rank);
+	}
+	
+	public Fraction trace(Matrix a_matrix) throws MatrixException
+	{
+		if (!a_matrix.isSquareMatrix())
+		{
+			throw new MatrixException("Not a square matrix", a_matrix);
+		}
+		
+		Fraction trace = new Fraction();
+		
+		for (int index = 0; index < a_matrix.getRows(); index++)
+		{
+			trace = trace.add(a_matrix.getCell(index, index));
+		}
+		
+		return trace;
 	}
 
 }

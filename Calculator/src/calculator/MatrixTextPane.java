@@ -234,7 +234,8 @@ public class MatrixTextPane extends JTextPane
 			
 		calculator.setOperator(m_operation);		
 		
-		setMode(GENERIC_OPERATION);
+		if (m_operation.equals("Scalar") && m_amtSelected == 1) setMode(SCALAR);
+		else setMode(GENERIC_OPERATION);
 		
 		updateText();
 		
@@ -389,7 +390,7 @@ public class MatrixTextPane extends JTextPane
 			}
 			case NAME_MATRIX:
 			{
-				setText("Name Matrix (or \"Enter\" to skip):" + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
+				setText("Name Matrix (or \"Enter\" to skip): " + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
 				break;
 			}
 			case SELECT_MATRIX:
@@ -529,7 +530,6 @@ public class MatrixTextPane extends JTextPane
 				m_selectedMatrix = m_matrices[m_arrowPointer-1];
 				calculator.setMatrixInput(m_selectedMatrix);
 				updateText();
-				
 				break;
 			}
 			case SCALAR:
@@ -537,7 +537,9 @@ public class MatrixTextPane extends JTextPane
 				if (tryFractionParse(m_runningString))
 				{
 					m_scalarFraction = Fraction.parseFraction(m_runningString);
+					calculator.setScalar(m_scalarFraction);
 					m_amtSelected++;
+					m_storedString = m_scalarFraction.toString() + " * ";
 					doOperation();
 				}
 				break;
