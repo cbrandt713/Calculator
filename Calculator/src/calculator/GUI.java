@@ -20,6 +20,7 @@ import javax.swing.KeyStroke;
 //Increase gridx = move right
 //Increase gridy = move down
 //Starts top left corner (0,0)
+@SuppressWarnings("serial")
 public class GUI extends JPanel
 {	
 	//GUI State Indicator Constants:
@@ -502,7 +503,7 @@ public class GUI extends JPanel
 		
 		add(createMatrix, buttonC);
 		
-		matrixAction = new MatrixAction("List", "List current matrices");
+		matrixAction = new MatrixAction("Matrix", "Select, Edit, or Delete a Matrix");
 		listMatrices = new JButton(matrixAction);
 		listMatrices.setFocusable(false);
 		
