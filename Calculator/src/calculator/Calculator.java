@@ -122,6 +122,11 @@ public class Calculator {
 				m_matrixResult = matrixBinaryOperation();
 				break;
 			}
+			case "=":
+			{
+				m_matrixResult = m_matrixInput;
+				break;
+			}
 			//Unary operation:
 			case "RREF":
 			{

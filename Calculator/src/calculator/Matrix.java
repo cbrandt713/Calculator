@@ -227,20 +227,20 @@ public class Matrix
 	@Override
 	public String toString()
 	{
-		String matrixString = "";
+		StringBuilder matrixString = new StringBuilder("");
 		
 		for (int i = 0; i < getRows(); i++)
 		{
-			matrixString += "[";
+			matrixString.append("[ ");
 			for (int j = 0; j < getColumns() - 1; j++)
 			{
-				matrixString += m_numbers[i][j].toString() + " | ";
+				matrixString.append(m_numbers[i][j].toString() + " | ");
 			}
-			matrixString += m_numbers[i][getColumns() - 1].toString();
-			matrixString += "]\n";
+			matrixString.append(m_numbers[i][getColumns() - 1].toString());
+			matrixString.append(" ]\n");
 		}
 		
-		return matrixString;
+		return matrixString.toString();
 	}
 
 }
