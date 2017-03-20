@@ -19,7 +19,7 @@ public class BasicTextArea extends JTextArea {
 	private double m_total;
 	
 	//Calculator and Required Data:
-	private Calculator calculator;
+	private BasicCalculator calculator;
 	
 	public BasicTextArea(String a_input)
 	{
@@ -29,7 +29,7 @@ public class BasicTextArea extends JTextArea {
 		m_firstInputFlag = true;
 		
 		//Create calculator
-		calculator = Calculator.getCalculatorInstance();	
+		calculator = new BasicCalculator();	
 	}
 	
 	private String getUserInput()
@@ -216,7 +216,7 @@ public class BasicTextArea extends JTextArea {
 		changeDisplay(userInput + " " + operator + " ", EXPRESSION);
 		changeDisplay("Clear", INPUT);
 		
-		m_total = calculator.doBasicCalculation();
+		m_total = calculator.doCalculation();
 		
 		//Format and display the total to the user:
 		String formattedTotal = formatDouble(m_total);

@@ -7,12 +7,140 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	
 	public MatrixCalculator()
 	{
-		resetInputs();
+		resetAll();
 	}
 	
-	public void resetInputs()
+	protected void resetAll()
+	{
+		m_input = null;
+		m_input2 = null;
+		m_result = null;
+		m_operator = "";
+		m_fractionScalar = null;
+		m_fractionResult = null;
+	}
+	
+	protected void resetInputs()
+	{
+		m_input = null;
+		m_input2 = null;
+		m_fractionScalar = null;
+	}
+	
+	public void setOperator(String a_operator)
+	{
+		m_operator = a_operator;
+	}
+	
+	public void setInput(Matrix a_input)
+	{
+		m_input = a_input;
+	}
+	
+	public void setScalar(Fraction a_input)
+	{
+		m_fractionScalar = a_input;
+	}
+	
+	public Matrix doCalculation() throws MatrixException
+	{
+		switch (m_operator)
+		{
+			//Binary operations. Requires two operands.
+			case "+":
+			case "-":
+			case "*":
+			case "/":
+			{
+				m_result = matrixBinaryOperation();
+				break;
+			}
+			case "=":
+			{
+				m_result = m_input;
+				break;
+			}
+			//Unary operation:
+			case "RREF":
+			{
+				m_result = RREF(m_input);
+				break;
+			}
+			case "REF":
+			{
+				m_result = REF(m_input);
+				break;
+			}
+			case "Inverse":
+			{
+				m_result = invertMatrix(m_input);
+				break;
+			}
+			case "Scalar":
+			{
+				m_result = scalarMultiply(m_fractionScalar, m_input);
+				break;
+			}
+			case "Transpose":
+			{
+				m_result = transpose(m_input);
+				break;
+			}
+			case "":
+			default:
+			{
+				System.out.println("An unknown error has occurred.");
+				break;
+			}
+		}
+		
+		resetInputs();
+		
+		return m_result;
+	}
+	
+	public Fraction fractionResultOperation() throws MatrixException
+	{
+		switch (m_operator)
+		{
+			case "Det":
+			{
+				m_fractionResult = determinant(m_input);
+				break;
+			}
+			case "Trace":
+			{
+				m_fractionResult = trace(m_input);
+				break;
+			}
+			case "Rank":
+			{
+				m_fractionResult = rank(m_input);
+				break;
+			}
+			default:
+			{
+				System.out.println("Unhandled Case in fractionResultOperation");
+				break;
+			}
+		}
+		
+		return m_fractionResult;
+	
+	}
+	
+	public Matrix matrixBinaryOperation() throws MatrixException
 	{
 		
+		if (m_input == null) throw new MatrixException("Unable to perform operation on blank matrix:", m_input);
+		if (m_input2 == null) throw new MatrixException("Unable to perform operation on blank matrix:", m_input2);
+		
+		if (m_operator.equals("+")) m_result = addMatrices(m_input, m_input2);
+		else if (m_operator.equals("-")) m_result = subtractMatrices(m_input, m_input2);
+		else if (m_operator.equals("*")) m_result = multiplyMatrices(m_input, m_input2);
+		else m_result = divideMatrices(m_input, m_input2);
+		
+		return m_result;
 	}
 	
 	//Add the rows in a_matrix in index a_fromIndex to the row in a_toIndex
@@ -555,4 +683,24 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		
 		return trace;
 	}
+	
+	public Matrix transpose(Matrix a_matrix) 
+	{
+		int amtRows = a_matrix.getRows();
+		int amtColumns = a_matrix.getColumns();
+		
+		Matrix transpose = new Matrix(amtColumns, amtRows);
+		
+		for (int rowIndex = 0; rowIndex < amtColumns; rowIndex++)
+		{
+			for (int columnIndex = 0; columnIndex < amtRows; columnIndex++)
+			{
+				Fraction current = new Fraction(a_matrix.getCell(columnIndex, rowIndex));
+				transpose.setCell(rowIndex, columnIndex, current);
+			}
+		}
+		
+		return transpose;
+	}
+
 }

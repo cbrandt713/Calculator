@@ -66,7 +66,7 @@ public class MatrixTextPane extends JTextPane
 	private SimpleAttributeSet m_underlineSet;
 	
 	//Calculator and Required Data:
-	private Calculator calculator;
+	private MatrixCalculator calculator;
 	
 	public MatrixTextPane()
 	{
@@ -77,7 +77,7 @@ public class MatrixTextPane extends JTextPane
 		m_amtMatrices = 0;
 		m_defaultName = 'A';
 		
-		calculator = Calculator.getCalculatorInstance();
+		calculator = new MatrixCalculator();
 		m_underlineSet = new SimpleAttributeSet();
 		StyleConstants.setUnderline(m_underlineSet, true);
 		
@@ -255,7 +255,7 @@ public class MatrixTextPane extends JTextPane
 		{
 			if (m_answerIsMatrix)
 			{
-				m_answerMatrix = calculator.doMatrixOperation();
+				m_answerMatrix = calculator.doCalculation();
 				m_answerMatrix.setName("Ans");
 				m_selectedMatrix = m_answerMatrix;
 				m_amtSelected = 1;
@@ -640,7 +640,7 @@ public class MatrixTextPane extends JTextPane
 				if (m_underlinePos == 0)
 				{
 					m_amtSelected++;
-					calculator.setMatrixInput(m_selectedMatrix);
+					calculator.setInput(m_selectedMatrix);
 					setMode(SELECT_MATRIX);
 					updateText();
 				}

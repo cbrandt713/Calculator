@@ -7,12 +7,77 @@ public class BasicCalculator extends Calculator<Double>
 		resetInputs();
 	}
 	
-	public void resetInputs()
+	protected void resetAll()
 	{
 		m_input = -Double.MAX_VALUE;
 		m_input2 = -Double.MAX_VALUE;
 		m_result = -Double.MAX_VALUE;
 		m_operator = "";
+	}
+	
+	protected void resetInputs()
+	{
+		m_input = -Double.MAX_VALUE;
+		m_input2 = -Double.MAX_VALUE;
+	}
+	
+	public void setOperator(String a_operator)
+	{
+		m_operator = a_operator;
+	}
+	
+	public void setInput(Double a_input)
+	{
+		if (m_input == null) m_input = a_input;
+		else m_input2 = a_input;
+	}
+
+	public Double doCalculation()
+	{
+		//If less than two operands, no calculation. Return original value.
+		if (m_result == -Double.MAX_VALUE && m_input == -Double.MAX_VALUE)
+		{
+			return m_input;
+		}
+		
+		switch (m_operator)
+		{
+			case "+":
+			{
+				m_result = add(m_result, m_input);
+				break;
+			}
+			case "-":
+			{
+				m_result = subtract(m_result, m_input);
+				break;
+			}
+			case "*":
+			{
+				m_result = multiply(m_result, m_input);
+				break;
+			}
+			case "/":
+			{
+				m_result = divide(m_result, m_input);
+				break;
+			}	
+			case "=":
+			{
+				m_result = m_input;
+				break;
+			}
+			//Error case:
+			default:
+			{
+				System.out.println("An unknown error has occurred");
+				break;
+			}
+		}
+		
+		m_operator = "";
+		
+		return m_result;
 	}
 	
 	public double add(double LHS, double RHS)
