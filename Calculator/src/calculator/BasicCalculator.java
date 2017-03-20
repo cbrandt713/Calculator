@@ -4,7 +4,7 @@ public class BasicCalculator extends Calculator<Double>
 {
 	public BasicCalculator()
 	{
-		resetInputs();
+		resetAll();
 	}
 	
 	protected void resetAll()
@@ -35,7 +35,7 @@ public class BasicCalculator extends Calculator<Double>
 	public Double doCalculation()
 	{
 		//If less than two operands, no calculation. Return original value.
-		if (m_result == -Double.MAX_VALUE && m_input == -Double.MAX_VALUE)
+		if (m_input == -Double.MAX_VALUE && m_input2 == -Double.MAX_VALUE)
 		{
 			return m_input;
 		}
@@ -44,22 +44,22 @@ public class BasicCalculator extends Calculator<Double>
 		{
 			case "+":
 			{
-				m_result = add(m_result, m_input);
+				m_result = add(m_input, m_input2);
 				break;
 			}
 			case "-":
 			{
-				m_result = subtract(m_result, m_input);
+				m_result = subtract(m_input, m_input2);
 				break;
 			}
 			case "*":
 			{
-				m_result = multiply(m_result, m_input);
+				m_result = multiply(m_input, m_input2);
 				break;
 			}
 			case "/":
 			{
-				m_result = divide(m_result, m_input);
+				m_result = divide(m_input, m_input2);
 				break;
 			}	
 			case "=":
@@ -75,7 +75,9 @@ public class BasicCalculator extends Calculator<Double>
 			}
 		}
 		
+		resetInputs();
 		m_operator = "";
+		m_input = m_result;
 		
 		return m_result;
 	}

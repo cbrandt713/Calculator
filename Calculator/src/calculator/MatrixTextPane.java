@@ -4,10 +4,13 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
+@SuppressWarnings("serial")
 public class MatrixTextPane extends JTextPane
 {
 	//Acceptable Modes for Text Input:
@@ -39,6 +42,7 @@ public class MatrixTextPane extends JTextPane
 	private int m_columns;
 	
 	//Matrix creation input:
+	private StyledDocument m_displayText;
 	private String m_runningString;
 	private String m_storedString;
 	
@@ -56,7 +60,6 @@ public class MatrixTextPane extends JTextPane
 	private int m_currentRow;
 	private int m_currentColumn;
 	private boolean m_answerIsMatrix;
-	private boolean m_typeOverFlag;
 	
 	//Various:
 	private int m_arrowPointer;
@@ -69,17 +72,16 @@ public class MatrixTextPane extends JTextPane
 	private MatrixCalculator calculator;
 	
 	public MatrixTextPane()
-	{
-		
+	{	
 		super();
 		
 		m_matrices = new Matrix[20];
 		m_amtMatrices = 0;
 		m_defaultName = 'A';
+		m_displayText = getStyledDocument();
 		
 		calculator = new MatrixCalculator();
 		m_underlineSet = new SimpleAttributeSet();
-		StyleConstants.setUnderline(m_underlineSet, true);
 		
 		setDefaultValues();
 		
@@ -145,7 +147,6 @@ public class MatrixTextPane extends JTextPane
 		m_answerMatrix = null;
 		m_selectedMatrix = null;
 		m_answerFraction = null;
-		m_typeOverFlag = true;
 		m_currentRow = 0;
 		m_currentColumn = 0;
 		m_amtSelected = 0;
@@ -174,7 +175,7 @@ public class MatrixTextPane extends JTextPane
 		setText("Matrix Size: _ rows X _ columns");
 	}
 	
-	public void createColumns()
+	private void createColumns()
 	{
 		setMode(CREATE_COLUMNS);
 		updateText();
@@ -205,11 +206,34 @@ public class MatrixTextPane extends JTextPane
 		updateText();
 	}
 	
-	
 	public void selectMatrix()
 	{
 		setMode(SELECT_MATRIX);
 		updateText();
+	}
+	
+	public void append(String a_string)
+	{
+		try 
+		{
+			m_displayText.insertString(m_displayText.getLength(), a_string, null);
+		} 
+		catch (BadLocationException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void insertString(int a_loc, String a_string)
+	{
+		try 
+		{
+			m_displayText.insertString(a_loc, a_string, null);
+		} 
+		catch (BadLocationException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public void doOperation()
@@ -308,10 +332,9 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
-	private int getLengthOfText(int a_beginIndex) throws StringIndexOutOfBoundsException
+	private int getLengthOfText(int a_beginIndex, String a_textToSearch) throws StringIndexOutOfBoundsException
 	{
-		String text = getText();
-		int length = text.length();
+		int length = a_textToSearch.length();
 		
 		if (a_beginIndex >= length)
 		{
@@ -320,12 +343,12 @@ public class MatrixTextPane extends JTextPane
 		
 		int index = a_beginIndex;
 		int count = 0;
-		char current = text.charAt(index++);
+		char current = a_textToSearch.charAt(index++);
 		
 		while (current != ' ' && current != '\n' && current != '\t' && index < length)
 		{
 			count++;
-			current = text.charAt(index++);
+			current = a_textToSearch.charAt(index++);
 		} 
 		
 		return count;
@@ -353,7 +376,14 @@ public class MatrixTextPane extends JTextPane
 	
 	private void setUnderline(int a_beginIndex, int a_length, boolean a_replace) 
 	{
+		StyleConstants.setUnderline(m_underlineSet, true);
 		getStyledDocument().setCharacterAttributes(a_beginIndex, a_length, m_underlineSet, a_replace);
+	}
+	
+	private void resetUnderline()
+	{
+		StyleConstants.setUnderline(m_underlineSet, false);
+		getStyledDocument().setCharacterAttributes(0, 0, m_underlineSet, true);
 	}
 	
 	private int findMatrixIndexByName(String a_name)
@@ -387,7 +417,7 @@ public class MatrixTextPane extends JTextPane
 			}
 			case DRAW_MATRIX:
 			{
-				setText(getText() + m_selectedMatrix.toString() + "Done");
+				append(m_selectedMatrix.toString() + "Done");
 				m_matrixText = getText();
 				m_runningString = "";
 				break;
@@ -397,17 +427,21 @@ public class MatrixTextPane extends JTextPane
 				m_underlinedTextLoc = getLocOfSymbol() + 2;
 					
 				String beginText = m_matrixText.substring(0, m_underlinedTextLoc);
-				String endText = m_matrixText.substring(m_underlinedTextLoc + getLengthOfText(m_underlinedTextLoc));
+				String endText = m_matrixText.substring(m_underlinedTextLoc 
+						+ getLengthOfText(m_underlinedTextLoc, m_matrixText));
 				
-				if (m_runningString.equals("")) setText(beginText + m_selectedMatrix.getCell(m_currentRow, m_currentColumn).toString() + endText);
+				if (m_runningString.equals("")) setText(beginText 
+						+ m_selectedMatrix.getCell(m_currentRow, m_currentColumn).toString() 
+						+ endText);
 				else setText(beginText + m_runningString + endText);
 				
-				setUnderline(m_underlinedTextLoc, getLengthOfText(m_underlinedTextLoc), false);
+				setUnderline(m_underlinedTextLoc, getLengthOfText(m_underlinedTextLoc, getText()), false);
 				break;
 			}
 			case NAME_MATRIX:
 			{
-				setText("Name Matrix (or \"Enter\" to skip): " + m_runningString + "\n" + getText().substring(getText().indexOf('[')));
+				setText(getText().substring(getText().indexOf('[')));
+				insertString(0, "Name Matrix (or \"Enter\" to skip): " + m_runningString + "\n");
 				break;
 			}
 			case MATRIX_MENU:
@@ -525,8 +559,8 @@ public class MatrixTextPane extends JTextPane
 			}
 			case DISPLAY_RESULT:
 			{
-				if (m_answerIsMatrix) setText(getText() + m_answerMatrix.toString());
-				else setText(getText() + m_answerFraction.toString());
+				if (m_answerIsMatrix) append(m_answerMatrix.toString());
+				else append(m_answerFraction.toString());
 				break;
 			}
 			case EXCEPTION:
@@ -538,7 +572,7 @@ public class MatrixTextPane extends JTextPane
 				for (String matrixName : offenders)
 				{
 					if (matrixName != null)
-					setText(getText() + matrixName + " ");
+					append(matrixName + " ");
 				}
 			}
 		}
@@ -576,7 +610,17 @@ public class MatrixTextPane extends JTextPane
 				break;
 			}
 			case EDIT_MATRIX:
-			{
+			{	
+				if (m_currentRow == m_selectedMatrix.getRows())
+				{
+					m_currentRow = 0;
+					m_currentColumn = 0;
+					m_runningString = "";
+					if (m_underlinePos == 1) setText("Matrix Edited Successfully!");
+					else nameMatrix();
+					break;
+				}
+				
 				if (!tryFractionParse(m_runningString))
 				{
 					break;
@@ -591,31 +635,28 @@ public class MatrixTextPane extends JTextPane
 				{
 					m_currentColumn++;
 				}
-				else if (m_currentRow + 1< m_selectedMatrix.getRows())
+				else if (m_currentRow < m_selectedMatrix.getRows())
 				{
 					m_currentRow++;
 					m_currentColumn = 0;
-				}
-				else
-				{
-					m_currentRow = 0;
-					m_currentColumn = 0;
-					if (m_underlinePos != 1) nameMatrix();
-					else setText("Matrix Edited Successfully!");
-					break;
 				}
 				
 				//Returns the location of the symbol. Add 2 for the location of the text.
 				m_underlinedTextLoc = getLocOfSymbol() + 2;
 				
 				//If the location is 1, the function returned -1, meaning not found, so do not underline.
-				if (m_underlinedTextLoc != 1) setUnderline(m_underlinedTextLoc, getLengthOfText(m_underlinedTextLoc), true);
-				
+				if (m_underlinedTextLoc != 1) 
+				{
+					resetUnderline();
+					setText(m_matrixText);
+					setUnderline(m_underlinedTextLoc, 
+						getLengthOfText(m_underlinedTextLoc, getText()), true);
+					
+				}
 				break;
 			}
 			case NAME_MATRIX:
 			{
-				m_typeOverFlag = true;
 				m_underlinedTextLoc = -1;
 				
 				//If nothing was entered, use default naming scheme:
@@ -748,9 +789,19 @@ public class MatrixTextPane extends JTextPane
 	{
 		if (a_direction.equals("Down"))
 		{
-			if (m_currentRow < m_selectedMatrix.getRows()) m_currentRow++;
+			if (m_currentRow >= m_selectedMatrix.getRows()) 
+			{
+				m_runningString = "Done";
+				return;
+			}
 			
-			if (m_currentRow == m_selectedMatrix.getRows()) m_matrixText += " <--";
+			m_currentRow++;
+			
+			if (m_currentRow == m_selectedMatrix.getRows())
+			{
+				m_runningString = "Done";
+				m_matrixText += " <--";
+			}
 		}
 		else if (a_direction.equals("Up"))
 		{
@@ -758,6 +809,7 @@ public class MatrixTextPane extends JTextPane
 			
 			if (m_matrixText.substring(m_matrixText.length() - 3, m_matrixText.length()).equals("<--"))
 			{
+				m_runningString = "";
 				m_matrixText = m_matrixText.substring(0, m_matrixText.length() - 3);
 			}
 		}

@@ -138,7 +138,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		if (m_operator.equals("+")) m_result = addMatrices(m_input, m_input2);
 		else if (m_operator.equals("-")) m_result = subtractMatrices(m_input, m_input2);
 		else if (m_operator.equals("*")) m_result = multiplyMatrices(m_input, m_input2);
-		else m_result = divideMatrices(m_input, m_input2);
+		else if (m_operator.equals("/")) m_result = divideMatrices(m_input, m_input2);
 		
 		return m_result;
 	}
@@ -294,8 +294,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return multiplyMatrices(a_LHS, a_RHS);
 	}
 	
-	public Matrix scalarMultiply(Fraction a_scalar, Matrix a_matrix)
-	{
+	public Matrix scalarMultiply(Fraction a_scalar, Matrix a_matrix) throws MatrixException
+	{	
+		if (a_scalar == null)
+		{
+			throw new MatrixException("No scalar set for operation");
+		}
+		
+		//Copy matrix:
 		Matrix scalarMatrix = new Matrix(a_matrix);
 		
 		for (int row = 0; row < a_matrix.getRows(); row++)
@@ -319,7 +325,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		//Copy the original matrix:
 		Matrix ref = new Matrix(a_matrix);
 		
-		//Go through each column: start at the leftmost column
+		//Go through each row:
 		for (int rowIndex = 0; rowIndex < numRows; rowIndex++)
 		{
 			int columnIndex = rowIndex;

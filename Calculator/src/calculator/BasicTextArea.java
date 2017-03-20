@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
+@SuppressWarnings("serial")
 public class BasicTextArea extends JTextArea {
 
 	//Display Line Number Constants:
@@ -39,20 +40,6 @@ public class BasicTextArea extends JTextArea {
 		
 		System.out.println("User input: " + displayText.substring(newLine + 1));
 		return displayText.substring(newLine + 1);
-	}
-	
-	private void changeDisplay(double expression, int lineNum)
-	{
-		String exp = ((Double) expression).toString();
-		
-		changeDisplay(exp, lineNum);
-	}
-	
-	private void changeDisplay(int expression, int lineNum)
-	{
-		String exp = ((Integer) expression).toString();
-		
-		changeDisplay(exp, lineNum);
 	}
 	
 	private void changeDisplay(String message, int lineNum)

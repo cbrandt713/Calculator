@@ -1,5 +1,6 @@
 package calculator;
 
+@SuppressWarnings("serial")
 public class MatrixException extends Exception 
 {
 	private String[] m_offendingMatrices;
