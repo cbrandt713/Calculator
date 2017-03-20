@@ -308,10 +308,15 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
-	private int getLengthOfText(int a_beginIndex)
+	private int getLengthOfText(int a_beginIndex) throws StringIndexOutOfBoundsException
 	{
 		String text = getText();
 		int length = text.length();
+		
+		if (a_beginIndex >= length)
+		{
+			throw new StringIndexOutOfBoundsException(a_beginIndex);
+		}
 		
 		int index = a_beginIndex;
 		int count = 0;
