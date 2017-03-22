@@ -34,7 +34,8 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	
 	public void setInput(Matrix a_input)
 	{
-		m_input = a_input;
+		if (m_input == null) m_input = a_input;
+		else m_input2 = a_input;
 	}
 	
 	public void setScalar(Fraction a_input)
