@@ -28,7 +28,7 @@ public class BasicCalculator extends Calculator<Double>
 	
 	public void setInput(Double a_input)
 	{
-		if (m_input == null) m_input = a_input;
+		if (m_input == null || m_operator.equals("")) m_input = a_input;
 		else m_input2 = a_input;
 	}
 

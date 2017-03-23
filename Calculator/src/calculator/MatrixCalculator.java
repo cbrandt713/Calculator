@@ -96,6 +96,8 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		}
 		
 		resetInputs();
+		m_operator = "";
+		m_input = m_result;
 		
 		return m_result;
 	}
