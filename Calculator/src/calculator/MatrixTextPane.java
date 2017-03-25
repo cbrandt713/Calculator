@@ -651,20 +651,26 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 
-	public void enterActionPerformed(ActionEvent a_event) throws NumberFormatException, BadLocationException
+	public void enterActionPerformed(ActionEvent a_event)
 	{	
 		switch (getMode()) 
 		{
 			//Typing in the rows section:
 			case CREATE_ROWS:
 			{
+				//Fake Comment
 				int length = m_currentTextPos - m_beginTextPos;
 				//Only take acceptable numbers:
-				if (tryParse(m_displayText.getText(m_beginTextPos, length)))
-				{
-					m_rows = Integer.parseInt(m_runningString);
-					m_runningString = "";
-					createColumns();
+				try {
+					if (tryParse(m_displayText.getText(m_beginTextPos, length)))
+					{
+						m_rows = Integer.parseInt(m_runningString);
+						m_runningString = "";
+						createColumns();
+					}
+				} catch (NumberFormatException | BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				break;
 			}
