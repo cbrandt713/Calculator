@@ -61,11 +61,15 @@ public class MatrixTextPane extends JTextPane
 	private int m_currentColumn;
 	private boolean m_answerIsMatrix;
 	
-	//Various:
+	//Text manipulation:
 	private int m_arrowPointer;
 	private int m_underlinePos;
-	private MatrixException m_caughtException;
+	private int m_currentTextPos;
+	private int m_beginTextPos;
+	private boolean m_replace;
 	private int m_underlinedTextLoc;
+	
+	private MatrixException m_caughtException;
 	private SimpleAttributeSet m_underlineSet;
 	
 	//Calculator and Required Data:
@@ -153,7 +157,10 @@ public class MatrixTextPane extends JTextPane
 		m_amtOperands = OperationArguments.UNARY;
 		m_storedString = "";
 		m_answerIsMatrix = true;
+		m_replace = false;
 		m_underlinePos = 0;
+		m_currentTextPos = 0;
+		m_beginTextPos = 0;
 		
 		calculator.resetInputs();
 		
@@ -172,7 +179,11 @@ public class MatrixTextPane extends JTextPane
 	public void createRows()
 	{
 		setMode(CREATE_ROWS);
-		setText("Matrix Size: _ rows X _ columns");
+		String text = "Matrix Size: ";
+		m_beginTextPos = text.length();
+		m_currentTextPos = m_beginTextPos;
+		m_replace = true;
+		append(text + "_ rows X _ columns");
 	}
 	
 	private void createColumns()
@@ -212,7 +223,7 @@ public class MatrixTextPane extends JTextPane
 		updateText();
 	}
 	
-	public void append(String a_string)
+	private void append(String a_string)
 	{
 		try 
 		{
@@ -224,11 +235,57 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
-	public void insertString(int a_loc, String a_string)
+	private void insertString(int a_loc, String a_string)
 	{
 		try 
 		{
 			m_displayText.insertString(a_loc, a_string, null);
+		} 
+		catch (BadLocationException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private void insertAtFront(String a_string)
+	{
+		insertString(0, a_string);
+	}
+	
+	private void replaceText(int a_locationOfText, int a_lengthToReplace, String a_string)
+	{
+		try 
+		{
+			m_displayText.remove(a_locationOfText, a_lengthToReplace);
+		} 
+		catch (BadLocationException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		insertString(a_locationOfText, a_string);
+	}
+	
+	private void backspace()
+	{
+		if (m_currentTextPos <= m_beginTextPos) return;
+		
+		try 
+		{
+			m_displayText.remove(m_currentTextPos-1, 1);
+			m_currentTextPos--;
+		} 
+		catch (BadLocationException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private void clearEntry() 
+	{
+		try 
+		{
+			m_displayText.remove(m_currentTextPos, getLengthOfTextAtPos(m_currentTextPos));
 		} 
 		catch (BadLocationException e) 
 		{
@@ -332,23 +389,38 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
-	private int getLengthOfText(int a_beginIndex, String a_textToSearch) throws StringIndexOutOfBoundsException
+	private int getLengthOfTextAtPos(int a_beginIndex)
 	{
-		int length = a_textToSearch.length();
+		int length = m_displayText.getLength();
 		
 		if (a_beginIndex >= length)
 		{
-			throw new StringIndexOutOfBoundsException(a_beginIndex);
+			return -1;
 		}
 		
 		int index = a_beginIndex;
 		int count = 0;
-		char current = a_textToSearch.charAt(index++);
+		String current = "";
+		try
+		{
+			current = m_displayText.getText(index++, 1);
+		}
+		catch (BadLocationException e)
+		{
+			return -1;
+		}
 		
-		while (current != ' ' && current != '\n' && current != '\t' && index < length)
+		while (!current.equals(" ") && !current.equals('\n') && !current.equals('\t') && index < length)
 		{
 			count++;
-			current = a_textToSearch.charAt(index++);
+			try
+			{
+				current = m_displayText.getText(index++, 1);
+			}
+			catch (BadLocationException e)
+			{
+				return count;
+			}
 		} 
 		
 		return count;
@@ -428,14 +500,14 @@ public class MatrixTextPane extends JTextPane
 					
 				String beginText = m_matrixText.substring(0, m_underlinedTextLoc);
 				String endText = m_matrixText.substring(m_underlinedTextLoc 
-						+ getLengthOfText(m_underlinedTextLoc, m_matrixText));
+						+ getLengthOfTextAtPos(m_underlinedTextLoc));
 				
 				if (m_runningString.equals("")) setText(beginText 
 						+ m_selectedMatrix.getCell(m_currentRow, m_currentColumn).toString() 
 						+ endText);
 				else setText(beginText + m_runningString + endText);
 				
-				setUnderline(m_underlinedTextLoc, getLengthOfText(m_underlinedTextLoc, getText()), false);
+				setUnderline(m_underlinedTextLoc, getLengthOfTextAtPos(m_underlinedTextLoc), false);
 				break;
 			}
 			case NAME_MATRIX:
@@ -579,15 +651,16 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 
-	public void enterActionPerformed(ActionEvent a_event)
+	public void enterActionPerformed(ActionEvent a_event) throws NumberFormatException, BadLocationException
 	{	
 		switch (getMode()) 
 		{
 			//Typing in the rows section:
 			case CREATE_ROWS:
 			{
+				int length = m_currentTextPos - m_beginTextPos;
 				//Only take acceptable numbers:
-				if (tryParse(m_runningString))
+				if (tryParse(m_displayText.getText(m_beginTextPos, length)))
 				{
 					m_rows = Integer.parseInt(m_runningString);
 					m_runningString = "";
@@ -650,7 +723,7 @@ public class MatrixTextPane extends JTextPane
 					resetUnderline();
 					setText(m_matrixText);
 					setUnderline(m_underlinedTextLoc, 
-						getLengthOfText(m_underlinedTextLoc, getText()), true);
+						getLengthOfTextAtPos(m_underlinedTextLoc), true);
 					
 				}
 				break;
@@ -759,32 +832,27 @@ public class MatrixTextPane extends JTextPane
 		}
 		
 	}
-
-	public void numberActionPerformed(ActionEvent a_event)
-	{
-		m_runningString += a_event.getActionCommand();
-		updateText();
-	}
 	
 	public void deleteActionPerformed(ActionEvent a_event)
 	{
 		if (a_event.getActionCommand().equals("Clr"))
 		{
 			setDefaultValues();
-			updateText();
+			setText("");
 		}
 		else if (a_event.getActionCommand().equals("CE"))
 		{
-			m_runningString = "";
+			clearEntry();
 		}
-		else if (!m_runningString.equals(""))
-		{
-			m_runningString = m_runningString.substring(0, m_runningString.length()-1);
+		else
+		{	
+			backspace();
+			//m_runningString = m_runningString.substring(0, m_runningString.length()-1);
 		}
 		
-		updateText();
+		//updateText();
 	}
-	
+
 	private void editMatrixArrowAction(String a_direction)
 	{
 		if (a_direction.equals("Down"))
@@ -880,10 +948,34 @@ public class MatrixTextPane extends JTextPane
 		updateText();
 	}
 
+	public void numberActionPerformed(ActionEvent a_event)
+	{
+		String text = a_event.getActionCommand();
+		if (m_replace) 
+		{	
+			m_replace = false;
+			replaceText(m_currentTextPos, getLengthOfTextAtPos(m_currentTextPos), text);
+		}
+		else insertString(m_currentTextPos, text);
+		
+		m_currentTextPos++;
+		//updateText();
+	}
+	
 	public void letterActionPerformed(ActionEvent a_event)
 	{
-		m_runningString += a_event.getActionCommand();
-		updateText();
+		String text = a_event.getActionCommand();
+		if (m_replace) 
+		{	
+			m_replace = false;
+			replaceText(m_currentTextPos, getLengthOfTextAtPos(m_currentTextPos), text);
+			
+		}
+		else insertString(m_currentTextPos, text);
+		
+		m_currentTextPos++;
+		
+		//updateText();
 	}
 
 	public void operatorActionPerformed(ActionEvent a_event) 
