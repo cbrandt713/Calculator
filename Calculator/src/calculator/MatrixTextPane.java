@@ -176,6 +176,11 @@ public class MatrixTextPane extends JTextPane
 		return m_mode;
 	}
 	
+	public void createMatrix()
+	{
+		//createRows();
+	}
+	
 	public void createRows()
 	{
 		setMode(CREATE_ROWS);
@@ -183,26 +188,34 @@ public class MatrixTextPane extends JTextPane
 		m_beginTextPos = text.length();
 		m_currentTextPos = m_beginTextPos;
 		m_replace = true;
-		append(text + "_ rows X _ columns");
+		append(text + "_ rows X _ columns\n");
+		//updateText();
 	}
 	
 	private void createColumns()
 	{
 		setMode(CREATE_COLUMNS);
-		updateText();
+		m_beginTextPos = getText().indexOf('_');
+		m_currentTextPos = m_beginTextPos;
+		m_replace = true;
+		//updateText();
 	}
 	
 	private void drawMatrix()
 	{
 		setMode(DRAW_MATRIX);
-		updateText();
+		append(m_selectedMatrix.toString() + "Done");
+		//updateText();
 		editMatrix();
 	}
 	
 	private void editMatrix()
 	{
 		setMode(EDIT_MATRIX);
-		updateText();
+		m_underlinedTextLoc = getLocOfSymbol() + 2;
+		setUnderline(m_underlinedTextLoc, getLengthOfTextAtPos(m_underlinedTextLoc), true);
+		
+		//updateText();
 	}
 	
 	private void nameMatrix()
@@ -285,7 +298,7 @@ public class MatrixTextPane extends JTextPane
 	{
 		try 
 		{
-			m_displayText.remove(m_currentTextPos, getLengthOfTextAtPos(m_currentTextPos));
+			m_displayText.remove(m_currentTextPos, getLengthOfTextAtPos(m_beginTextPos));
 		} 
 		catch (BadLocationException e) 
 		{
@@ -428,18 +441,19 @@ public class MatrixTextPane extends JTextPane
 	
 	private int getLocOfSymbol()
 	{
+		String currentText = getText();
 		if (m_currentRow == m_selectedMatrix.getRows()) 
 		{
-			return m_matrixText.indexOf("Done") - 2;
+			return currentText.indexOf("Done") - 2;
 		}
 		
 		int loc = -1;
 		for (int i = 0; i < m_currentRow + 1; i++)
 		{
-			loc = m_matrixText.indexOf('[', loc + 1);
+			loc = currentText.indexOf('[', loc + 1);
 			for (int j = 0; j < m_currentColumn; j++)
 			{
-				loc = m_matrixText.indexOf('|', loc + 1);
+				loc = currentText.indexOf('|', loc + 1);
 			}
 		}
 		
@@ -653,35 +667,48 @@ public class MatrixTextPane extends JTextPane
 
 	public void enterActionPerformed(ActionEvent a_event)
 	{	
+		int length = m_currentTextPos - m_beginTextPos;
+		String enteredText = "";
+		
 		switch (getMode()) 
 		{
 			//Typing in the rows section:
 			case CREATE_ROWS:
 			{
-				//Fake Comment
-				int length = m_currentTextPos - m_beginTextPos;
-				//Only take acceptable numbers:
-				try {
-					if (tryParse(m_displayText.getText(m_beginTextPos, length)))
-					{
-						m_rows = Integer.parseInt(m_runningString);
-						m_runningString = "";
-						createColumns();
-					}
-				} catch (NumberFormatException | BadLocationException e) {
-					// TODO Auto-generated catch block
+				try 
+				{
+					enteredText = m_displayText.getText(m_beginTextPos, length);
+				}
+				catch (BadLocationException e) 
+				{
 					e.printStackTrace();
 				}
+				
+				//Only take acceptable numbers:
+				if (tryParse(enteredText))
+				{
+					m_rows = Integer.parseInt(enteredText);
+					createColumns();
+				}
+				
 				break;
 			}
 			//Typing in the columns section:
 			case CREATE_COLUMNS:
 			{
-				//Only take acceptable numbers:
-				if (tryParse(m_runningString))
+				try 
 				{
-					m_columns = Integer.parseInt(m_runningString);
-					m_runningString = "";
+					enteredText = m_displayText.getText(m_beginTextPos, length);
+				}
+				catch (BadLocationException e) 
+				{
+					e.printStackTrace();
+				}
+				
+				//Only take acceptable numbers:
+				if (tryParse(enteredText))
+				{
+					m_columns = Integer.parseInt(enteredText);
 					m_matrices[m_amtMatrices++] = new Matrix(m_rows, m_columns);
 					m_selectedMatrix = m_matrices[m_amtMatrices-1];
 					drawMatrix();
@@ -881,7 +908,9 @@ public class MatrixTextPane extends JTextPane
 		{
 			if (m_currentRow > 0) m_currentRow--;
 			
-			if (m_matrixText.substring(m_matrixText.length() - 3, m_matrixText.length()).equals("<--"))
+			String text = getText();
+			
+			if (text.substring(text.length() - 3, text.length()).equals("<--"))
 			{
 				m_runningString = "";
 				m_matrixText = m_matrixText.substring(0, m_matrixText.length() - 3);
@@ -919,7 +948,7 @@ public class MatrixTextPane extends JTextPane
         if (getMode() == EDIT_MATRIX)
         {
         	editMatrixArrowAction(direction);
-    		updateText();
+    		editMatrix();
         }
         
         if (getMode() == DELETE_MENU)
