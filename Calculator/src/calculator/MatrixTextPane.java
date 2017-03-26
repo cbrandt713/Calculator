@@ -898,10 +898,8 @@ public class MatrixTextPane extends JTextPane
 		else
 		{	
 			backspace();
-			//m_runningString = m_runningString.substring(0, m_runningString.length()-1);
 		}
 		
-		//updateText();
 	}
 
 	private void editMatrixArrowAction(String a_direction)
@@ -910,7 +908,6 @@ public class MatrixTextPane extends JTextPane
 		{
 			if (m_currentRow >= m_selectedMatrix.getRows()) 
 			{
-				m_runningString = "Done";
 				return;
 			}
 			
@@ -918,8 +915,7 @@ public class MatrixTextPane extends JTextPane
 			
 			if (m_currentRow == m_selectedMatrix.getRows())
 			{
-				m_runningString = "Done";
-				m_matrixText += " <--";
+				append(" <--");
 			}
 		}
 		else if (a_direction.equals("Up"))
@@ -930,8 +926,8 @@ public class MatrixTextPane extends JTextPane
 			
 			if (text.substring(text.length() - 3, text.length()).equals("<--"))
 			{
-				m_runningString = "";
-				m_matrixText = m_matrixText.substring(0, m_matrixText.length() - 3);
+				text = text.substring(0, text.length() - 3);
+				setText(text);
 			}
 		}
 		else if (a_direction.equals("Right"))
@@ -968,7 +964,8 @@ public class MatrixTextPane extends JTextPane
         	
     		String enteredText = getUserEnteredText();
     		
-        	editMatrixEnterPress(enteredText);
+        	boolean finished = editMatrixEnterPress(enteredText);
+        	if (finished) return;
         	editMatrixArrowAction(direction);
     		editMatrix();
         }
