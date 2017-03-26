@@ -106,6 +106,9 @@ public class GUI extends JPanel
 		
 		//Create Frame to host GUI:
 		createFrame();	
+		
+		///System.out.println(frame.getSize());
+		
 	}
 	
 	public static GUI getGUIInstance()
@@ -166,7 +169,7 @@ public class GUI extends JPanel
 		createOperators();
 		createMatrixButtons();
 		
-		matrixSize = new Dimension(285, 281);
+		matrixSize = new Dimension(380, 313);
 	}
 	
 	private void createMenu()
