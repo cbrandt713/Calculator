@@ -189,7 +189,6 @@ public class MatrixTextPane extends JTextPane
 		m_currentTextPos = m_beginTextPos;
 		m_replace = true;
 		append(text + "_ rows X _ columns\n");
-		//updateText();
 	}
 	
 	private void createColumns()
@@ -198,14 +197,12 @@ public class MatrixTextPane extends JTextPane
 		m_beginTextPos = getText().indexOf('_');
 		m_currentTextPos = m_beginTextPos;
 		m_replace = true;
-		//updateText();
 	}
 	
 	private void drawMatrix()
 	{
 		setMode(DRAW_MATRIX);
 		append(m_selectedMatrix.toString() + "Done");
-		//updateText();
 		editMatrix();
 	}
 	
@@ -218,8 +215,6 @@ public class MatrixTextPane extends JTextPane
 		
 		resetUnderline();
 		setUnderline(m_underlinedTextLoc, getLengthOfTextAtPos(m_underlinedTextLoc), true);
-		
-		//updateText();
 	}
 	
 	private void nameMatrix()
@@ -231,19 +226,162 @@ public class MatrixTextPane extends JTextPane
 		m_replace = false;
 		
 		insertAtFront(text + "\n");
-		//updateText();
 	}
 	
-	public void matrixMenu()
+	private void matrixMenu()
 	{
 		setMode(MATRIX_MENU);
-		updateText();
+		setText("");
+		append("Select\tEdit\tDelete\n");
+		for (Integer i = 1; i < m_matrices.length + 1; i++)
+		{
+			if (m_matrices[i-1] != null)
+			{
+				append(i.toString() + ". " + m_matrices[i-1].getName());
+			}
+			else
+			{
+				append(i.toString() + ".");
+			}
+			if (m_arrowPointer == i)
+			{
+				append(" <--\n");
+			}
+			else
+			{
+				append("\n");
+			}	
+		}
+		
+		int beginPos = 0;
+		int length = 0;
+		
+		switch (m_underlinePos)
+		{
+			case 0:
+			{
+				beginPos = 0;
+				length = 6;
+				break;
+			}
+			case 1:
+			{
+				beginPos = 7;
+				length = 4;
+				break;
+			}
+			case 2:
+			{
+				beginPos = 12;
+				length = 6;
+				break;
+			}
+			default:
+			{
+				beginPos = 0;
+				length = 0;
+				System.out.println("Error in m_underlinePos switch");
+			}
+		}
+		
+		setUnderline(beginPos, length, true);
 	}
 	
-	public void selectMatrix()
+	private void deleteMenu()
+	{
+		setText("");
+		
+		append("Delete " + m_selectedMatrix.getName() + "?\n");
+		append("Yes ");
+		if (m_arrowPointer == 1) append(" <--\n");
+		else append("\n");
+		append("No ");
+		if (m_arrowPointer == 2) append(" <--");
+	}
+	
+	private void selectMatrix()
 	{
 		setMode(SELECT_MATRIX);
-		updateText();
+		if (m_operation.equals("")) 
+		{
+			setText(m_selectedMatrix.getName());
+		}
+		else 
+		{
+			doOperation();
+		}
+	}
+	
+	private void getScalar()
+	{
+		setMode(SCALAR);
+		String text = "Enter Scalar: ";
+		m_beginTextPos = m_currentTextPos = text.length();
+		setText(text);
+	}
+	
+	private void genericOperation()
+	{
+		setMode(GENERIC_OPERATION);
+		if (m_amtOperands == OperationArguments.UNARY)
+		{
+			if (m_operation.equals("=")) setText(m_selectedMatrix.getName() + " =\n");
+			else setText(m_operation + "(" + m_selectedMatrix.getName() + ") = \n");
+			
+		}
+		else
+		{
+			if (m_amtSelected == 1)
+			{
+				setText(m_selectedMatrix.getName() + " " + m_operation + " ");
+				m_storedString = getText();
+			}
+			else
+			{
+				setText(m_storedString + m_selectedMatrix.getName() + " = \n");
+			}
+		}
+	}
+	
+	private void displayResult()
+	{
+		setMode(DISPLAY_RESULT);
+		if (m_answerIsMatrix) append(m_answerMatrix.toString());
+		else append(m_answerFraction.toString());
+	}
+	
+	private void displayException(MatrixException a_exception)
+	{
+		setText("");
+		append(a_exception.getMessage() + "\nMatrices: ");
+		
+		String[] offenders = a_exception.getOffendingMatrices();
+		
+		for (String matrixName : offenders)
+		{
+			if (matrixName != null)
+			append(matrixName + " ");
+		}
+	}
+	
+	private String getUserEnteredText()
+	{
+		int length = m_currentTextPos - m_beginTextPos;
+		
+		//Prevent the thrown exception from the getText method below:
+		if (length == 0) return "";
+		
+		String enteredText = "";
+		try 
+		{
+			enteredText = m_displayText.getText(m_beginTextPos, length);
+		}
+		catch (BadLocationException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return enteredText;
 	}
 	
 	private void append(String a_string)
@@ -287,22 +425,6 @@ public class MatrixTextPane extends JTextPane
 		}
 		
 		insertString(a_locationOfText, a_string);
-	}
-	
-	private String getUserEnteredText()
-	{
-		int length = m_currentTextPos - m_beginTextPos;
-		String enteredText = "";
-		try 
-		{
-			enteredText = m_displayText.getText(m_beginTextPos, length);
-		}
-		catch (BadLocationException e) 
-		{
-			e.printStackTrace();
-		}
-		
-		return enteredText;
 	}
 	
 	private void backspace()
@@ -353,10 +475,8 @@ public class MatrixTextPane extends JTextPane
 			
 		calculator.setOperator(m_operation);		
 		
-		if (m_operation.equals("Scalar") && m_amtSelected == 1) setMode(SCALAR);
-		else setMode(GENERIC_OPERATION);
-		
-		updateText();
+		if (m_operation.equals("Scalar") && m_amtSelected == 1) getScalar();
+		else genericOperation();
 		
 		if (m_amtOperands == OperationArguments.BINARY && m_amtSelected < 2)
 		{
@@ -367,8 +487,6 @@ public class MatrixTextPane extends JTextPane
 		{
 			return;
 		}
-		
-		setMode(DISPLAY_RESULT);
 		
 		
 		try 
@@ -387,14 +505,15 @@ public class MatrixTextPane extends JTextPane
 				m_selectedMatrix = null;
 				m_amtSelected = 0;
 			}
+			
+			displayResult();
+			
 		} 
 		catch (MatrixException exception) 
 		{
 			setMode(EXCEPTION);
-			m_caughtException = exception;
+			displayException(exception);
 		}
-		
-		updateText();
 		
 		m_answerIsMatrix = true;
 		
@@ -506,193 +625,6 @@ public class MatrixTextPane extends JTextPane
 		}
 		
 		return -1;
-	}
-	
-	public void updateText()
-	{
-		switch (getMode())
-		{
-			case NONE:
-			{
-				setText("");
-				break;
-			}
-			case CREATE_ROWS:
-			{
-				setText("Matrix Size: " + m_runningString + " rows X _ columns\n");
-				break;
-			}
-			case CREATE_COLUMNS:
-			{
-				setText("Matrix Size: " + m_rows + " rows X " + m_runningString + " columns\n");
-				break;
-			}
-			case DRAW_MATRIX:
-			{
-				append(m_selectedMatrix.toString() + "Done");
-				m_matrixText = getText();
-				m_runningString = "";
-				break;
-			}
-			case EDIT_MATRIX:
-			{
-				m_underlinedTextLoc = getLocOfSymbol() + 2;
-					
-				String beginText = m_matrixText.substring(0, m_underlinedTextLoc);
-				String endText = m_matrixText.substring(m_underlinedTextLoc 
-						+ getLengthOfTextAtPos(m_underlinedTextLoc));
-				
-				if (m_runningString.equals("")) setText(beginText 
-						+ m_selectedMatrix.getCell(m_currentRow, m_currentColumn).toString() 
-						+ endText);
-				else setText(beginText + m_runningString + endText);
-				
-				setUnderline(m_underlinedTextLoc, getLengthOfTextAtPos(m_underlinedTextLoc), false);
-				break;
-			}
-			case NAME_MATRIX:
-			{
-				setText(getText().substring(getText().indexOf('[')));
-				String text = "Name Matrix (or \"Enter\" to skip): ";
-				m_beginTextPos = m_currentTextPos = text.length();
-				m_replace = false;
-				
-				insertAtFront(text + "\n");
-				break;
-			}
-			case MATRIX_MENU:
-			{
-				StringBuilder line = new StringBuilder("Select\tEdit\tDelete\n");
-				for (Integer i = 1; i < m_matrices.length + 1; i++)
-				{
-					if (m_matrices[i-1] != null)
-					{
-						line.append(i.toString() + ". " + m_matrices[i-1].getName());
-					}
-					else
-					{
-						line.append(i.toString() + ".");
-					}
-					if (m_arrowPointer == i)
-					{
-						line.append(" <--\n");
-					}
-					else
-					{
-						line.append("\n");
-					}	
-				}
-				setText(line.toString());
-				
-				int beginPos = 0;
-				int length = 0;
-				
-				switch (m_underlinePos)
-				{
-					case 0:
-					{
-						beginPos = 0;
-						length = 6;
-						break;
-					}
-					case 1:
-					{
-						beginPos = 7;
-						length = 4;
-						break;
-					}
-					case 2:
-					{
-						beginPos = 12;
-						length = 6;
-						break;
-					}
-					default:
-					{
-						beginPos = 0;
-						length = 0;
-						System.out.println("Error in m_underlinePos switch");
-					}
-				}
-				
-				setUnderline(beginPos, length, false);
-				break;
-			}
-			
-			case SELECT_MATRIX:
-			{
-				if (m_operation.equals("")) 
-				{
-					setText(m_selectedMatrix.getName());
-				}
-				else 
-				{
-					doOperation();
-				}
-				break;
-			}
-			case DELETE_MENU:
-			{
-				StringBuilder line = new StringBuilder("");
-				
-				line.append("Delete " + m_selectedMatrix.getName() + "?\n");
-				line.append("Yes ");
-				if (m_arrowPointer == 1) line.append(" <--\n");
-				else line.append("\n");
-				line.append("No ");
-				if (m_arrowPointer == 2) line.append(" <--");
-				
-				setText(line.toString());
-				
-				break;
-			}
-			case GENERIC_OPERATION:
-			{
-				if (m_amtOperands == OperationArguments.UNARY)
-				{
-					if (m_operation.equals("=")) setText(m_selectedMatrix.getName() + " =\n");
-					else setText(m_operation + "(" + m_selectedMatrix.getName() + ") = \n");
-					
-				}
-				else
-				{
-					if (m_amtSelected == 1)
-					{
-						setText(m_selectedMatrix.getName() + " " + m_operation + " ");
-						m_storedString = getText();
-					}
-					else
-					{
-						setText(m_storedString + m_selectedMatrix.getName() + " = \n");
-					}
-				}
-				break;
-			}
-			case SCALAR:
-			{
-				setText("Enter Scalar: " + m_runningString);
-				break;
-			}
-			case DISPLAY_RESULT:
-			{
-				if (m_answerIsMatrix) append(m_answerMatrix.toString());
-				else append(m_answerFraction.toString());
-				break;
-			}
-			case EXCEPTION:
-			{
-				setText(m_caughtException.getMessage() + "\nMatrices: ");
-				
-				String[] offenders = m_caughtException.getOffendingMatrices();
-				
-				for (String matrixName : offenders)
-				{
-					if (matrixName != null)
-					append(matrixName + " ");
-				}
-			}
-		}
-		
 	}
 
 	private boolean editMatrixEnterPress(String a_enteredText)
@@ -806,8 +738,7 @@ public class MatrixTextPane extends JTextPane
 				{
 					m_amtSelected++;
 					calculator.setInput(m_selectedMatrix);
-					setMode(SELECT_MATRIX);
-					updateText();
+					selectMatrix();
 				}
 				//Edit:
 				else if (m_underlinePos == 1)
@@ -822,7 +753,7 @@ public class MatrixTextPane extends JTextPane
 				{
 					m_arrowPointer = 1;
 					setMode(DELETE_MENU);
-					updateText();
+					deleteMenu();
 				}
 				
 				break;
@@ -857,8 +788,7 @@ public class MatrixTextPane extends JTextPane
 				}
 				else
 				{
-					setMode(MATRIX_MENU);
-					updateText();
+					matrixMenu();
 				}
 				break;
 			}
@@ -964,8 +894,7 @@ public class MatrixTextPane extends JTextPane
         	
     		String enteredText = getUserEnteredText();
     		
-        	boolean finished = editMatrixEnterPress(enteredText);
-        	if (finished) return;
+        	if (m_currentRow != m_selectedMatrix.getRows()) editMatrixEnterPress(enteredText);
         	editMatrixArrowAction(direction);
     		editMatrix();
         }
@@ -973,7 +902,7 @@ public class MatrixTextPane extends JTextPane
         if (getMode() == DELETE_MENU)
         {
         	deleteMatrixArrowAction(direction);
-        	updateText();
+        	deleteMenu();
         }
         
 		if (getMode() != MATRIX_MENU && getMode() != SELECT_MATRIX)
@@ -998,8 +927,7 @@ public class MatrixTextPane extends JTextPane
 			if (m_underlinePos > 0) m_underlinePos--;
 		}
 
-		//setMode(MATRIX_MENU);
-		updateText();
+		matrixMenu();
 	}
 
 	public void numberActionPerformed(ActionEvent a_event)
@@ -1018,7 +946,6 @@ public class MatrixTextPane extends JTextPane
 		}
 		
 		m_currentTextPos++;
-		//updateText();
 	}
 	
 	public void letterActionPerformed(ActionEvent a_event)
