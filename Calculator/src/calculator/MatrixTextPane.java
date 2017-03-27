@@ -493,19 +493,20 @@ public class MatrixTextPane extends JTextPane
 		{
 			if (m_answerIsMatrix)
 			{
-				m_answerMatrix = calculator.doCalculation();
+				m_answerMatrix = new Matrix(calculator.doCalculation());
 				m_answerMatrix.setName("Ans");
 				m_selectedMatrix = m_answerMatrix;
 				m_amtSelected = 1;
 			}
 			else
 			{
-				m_answerFraction = calculator.fractionResultOperation();
+				m_answerFraction = new Fraction(calculator.fractionResultOperation());
 				m_answerMatrix = null;
 				m_selectedMatrix = null;
 				m_amtSelected = 0;
 			}
 			
+			m_operation = "";
 			displayResult();
 			
 		} 
