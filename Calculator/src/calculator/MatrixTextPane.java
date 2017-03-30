@@ -43,11 +43,9 @@ public class MatrixTextPane extends JTextPane
 	
 	//Matrix creation input:
 	private StyledDocument m_displayText;
-	private String m_runningString;
 	private String m_storedString;
 	
 	//Matrix Helper Strings:
-	private String m_matrixText;
 	private Character m_defaultName;
 	
 	//Data objects:
@@ -68,8 +66,6 @@ public class MatrixTextPane extends JTextPane
 	private int m_beginTextPos;
 	private boolean m_replace;
 	private int m_underlinedTextLoc;
-	
-	private MatrixException m_caughtException;
 	private SimpleAttributeSet m_underlineSet;
 	
 	//Calculator and Required Data:
@@ -143,7 +139,6 @@ public class MatrixTextPane extends JTextPane
 	{
 		m_rows = 0;
 		m_columns = 0;
-		m_runningString = "";
 		m_arrowPointer = 1;
 		m_underlinedTextLoc = -1;
 		m_mode = NONE;
@@ -627,6 +622,29 @@ public class MatrixTextPane extends JTextPane
 		
 		return -1;
 	}
+	
+	private void createRowsEnterPress(String a_enteredText)
+	{
+		//Only take acceptable numbers:
+		if (tryParse(a_enteredText))
+		{
+			m_rows = Integer.parseInt(a_enteredText);
+			createColumns();
+		}
+	}
+	
+	private void createColumnsEnterPress(String a_enteredText)
+	{
+		//Only take acceptable numbers:
+		if (tryParse(a_enteredText))
+		{
+			m_columns = Integer.parseInt(a_enteredText);
+			m_matrices[m_amtMatrices] = new Matrix(m_rows, m_columns);
+			m_selectedMatrix = m_matrices[m_amtMatrices];
+			m_amtMatrices++;
+			drawMatrix();
+		}
+	}
 
 	private boolean editMatrixEnterPress(String a_enteredText)
 	{
@@ -649,39 +667,116 @@ public class MatrixTextPane extends JTextPane
 		return false;
 	}
 	
+	private void nameMatrixEnterPress(String a_enteredText)
+	{
+		m_underlinedTextLoc = -1;
+		
+		//If nothing was entered, use default naming scheme:
+		if (a_enteredText.equals(""))
+		{
+			a_enteredText = (m_defaultName.toString());
+			m_defaultName++;
+		}
+		m_matrices[m_amtMatrices - 1].setName(a_enteredText);
+		
+		setText("Matrix Added Successfully!");
+	}
+	
+	private void matrixMenuEnterPress()
+	{
+		m_selectedMatrix = m_matrices[m_arrowPointer-1];
+		
+		//Select:
+		if (m_underlinePos == 0)
+		{
+			m_amtSelected++;
+			calculator.setInput(m_selectedMatrix);
+			selectMatrix();
+		}
+		//Edit:
+		else if (m_underlinePos == 1)
+		{
+			m_currentRow = 0;
+			m_currentColumn = 0;
+			setText("Editing " + m_selectedMatrix.getName() + ":\n");
+			drawMatrix();
+		}
+		//Delete:
+		else if (m_underlinePos == 2)
+		{
+			m_arrowPointer = 1;
+			setMode(DELETE_MENU);
+			deleteMenu();
+		}
+	}
+	
+	private void deleteMenuEnterPress()
+	{
+		//Yes selected:
+		if (m_arrowPointer == 1)
+		{
+			//We reused arrowpointer so find the index in our array:
+			int indexToDelete = findMatrixIndexByName(m_selectedMatrix.getName());
+			
+			//Some unknown error occurred:
+			if (indexToDelete == -1) 
+			{
+				System.out.println("Unknown error in delete!");
+				return;
+			}
+			
+			//Move every matrix up one slot that is passed this index
+			//IE: Delete matrix 3 with 6 matrices, move 4 to 3, 5 to 4, and 6 to 5.
+			for (int i = indexToDelete; i < m_amtMatrices - 1; i++)
+			{
+				m_matrices[i] = m_matrices[i + 1];
+			}
+			
+			//Decrement total matrices:
+			m_amtMatrices--;
+			m_matrices[m_amtMatrices] = null;
+			
+			setText("Matrix deleted successfully!");
+		}
+		else
+		{
+			matrixMenu();
+		}
+	}
+	
+	public void scalarEnterPress(String a_enteredText)
+	{
+		if (tryFractionParse(a_enteredText))
+		{
+			m_scalarFraction = Fraction.parseFraction(a_enteredText);
+			calculator.setScalar(m_scalarFraction);
+			m_amtSelected++;
+			m_storedString = m_scalarFraction.toString() + " * ";
+			doOperation();
+		}
+	}
+	
 	public void enterActionPerformed(ActionEvent a_event)
 	{	
 		
 		String enteredText = getUserEnteredText();
 		
+		//Switch based on the mode:
 		switch (getMode()) 
 		{
 			//Typing in the rows section:
 			case CREATE_ROWS:
 			{	
-				//Only take acceptable numbers:
-				if (tryParse(enteredText))
-				{
-					m_rows = Integer.parseInt(enteredText);
-					createColumns();
-				}
-				
+				createRowsEnterPress(enteredText);
 				break;
 			}
 			//Typing in the columns section:
 			case CREATE_COLUMNS:
 			{	
-				//Only take acceptable numbers:
-				if (tryParse(enteredText))
-				{
-					m_columns = Integer.parseInt(enteredText);
-					m_matrices[m_amtMatrices] = new Matrix(m_rows, m_columns);
-					m_selectedMatrix = m_matrices[m_amtMatrices];
-					m_amtMatrices++;
-					drawMatrix();
-				}
+				createColumnsEnterPress(enteredText);
 				break;
 			}
+			//Editing a matrix cell:
 			case EDIT_MATRIX:
 			{	
 				
@@ -713,102 +808,35 @@ public class MatrixTextPane extends JTextPane
 				}
 				break;
 			}
+			//Naming the matrix:
 			case NAME_MATRIX:
 			{
-				m_underlinedTextLoc = -1;
 				
-				//If nothing was entered, use default naming scheme:
-				if (enteredText.equals(""))
-				{
-					enteredText = (m_defaultName.toString());
-					m_defaultName++;
-				}
-				m_matrices[m_amtMatrices - 1].setName(enteredText);
-				
-				setText("Matrix Added Successfully!");
-				
+				nameMatrixEnterPress(enteredText);
 				break;
 			}
+			//Picking a matrix:
 			case SELECT_MATRIX:
 			case MATRIX_MENU:
 			{
-				m_selectedMatrix = m_matrices[m_arrowPointer-1];
-				
-				//Select:
-				if (m_underlinePos == 0)
-				{
-					m_amtSelected++;
-					calculator.setInput(m_selectedMatrix);
-					selectMatrix();
-				}
-				//Edit:
-				else if (m_underlinePos == 1)
-				{
-					m_currentRow = 0;
-					m_currentColumn = 0;
-					setText("Editing " + m_selectedMatrix.getName() + ":\n");
-					drawMatrix();
-				}
-				//Delete:
-				else if (m_underlinePos == 2)
-				{
-					m_arrowPointer = 1;
-					setMode(DELETE_MENU);
-					deleteMenu();
-				}
-				
+				matrixMenuEnterPress();
 				break;
 			}
+			//Deleting a matrix:
 			case DELETE_MENU:
 			{
-				//Yes selected:
-				if (m_arrowPointer == 1)
-				{
-					//We reused arrowpointer so find the index in our array:
-					int indexToDelete = findMatrixIndexByName(m_selectedMatrix.getName());
-					
-					//Some unknown error occurred:
-					if (indexToDelete == -1) 
-					{
-						System.out.println("Unknown error in delete!");
-						break;
-					}
-					
-					//Move every matrix up one slot that is passed this index
-					//IE: Delete matrix 3 with 6 matrices, move 4 to 3, 5 to 4, and 6 to 5.
-					for (int i = indexToDelete; i < m_amtMatrices - 1; i++)
-					{
-						m_matrices[i] = m_matrices[i + 1];
-					}
-					
-					//Decrement total matrices:
-					m_amtMatrices--;
-					m_matrices[m_amtMatrices] = null;
-					
-					setText("Matrix deleted successfully!");
-				}
-				else
-				{
-					matrixMenu();
-				}
+				deleteMenuEnterPress();
 				break;
 			}
+			//Entering the scalar:
 			case SCALAR:
 			{
-				if (tryFractionParse(m_runningString))
-				{
-					m_scalarFraction = Fraction.parseFraction(m_runningString);
-					calculator.setScalar(m_scalarFraction);
-					m_amtSelected++;
-					m_storedString = m_scalarFraction.toString() + " * ";
-					doOperation();
-				}
+				scalarEnterPress(enteredText);
 				break;
 			}
 			default:
 			{
 				System.out.println("Unknown error in enter action");
-				
 				break;
 			}
 		}
@@ -817,15 +845,18 @@ public class MatrixTextPane extends JTextPane
 	
 	public void deleteActionPerformed(ActionEvent a_event)
 	{
+		//Clear command:
 		if (a_event.getActionCommand().equals("Clr"))
 		{
 			setDefaultValues();
 			setText("");
 		}
+		//Clear entry command:
 		else if (a_event.getActionCommand().equals("CE"))
 		{
 			clearEntry();
 		}
+		//Backspace command:
 		else
 		{	
 			backspace();
@@ -887,8 +918,6 @@ public class MatrixTextPane extends JTextPane
 	{
 		KeyEvent ke = (KeyEvent) EventQueue.getCurrentEvent();
         String direction = KeyEvent.getKeyText( ke.getKeyCode() );
-     
-        m_runningString = "";
         
         if (getMode() == EDIT_MATRIX)
         {
