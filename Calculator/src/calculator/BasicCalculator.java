@@ -12,7 +12,7 @@ public class BasicCalculator extends Calculator<Double>
 		m_input = -Double.MAX_VALUE;
 		m_input2 = -Double.MAX_VALUE;
 		m_result = -Double.MAX_VALUE;
-		m_operator = "";
+		m_operation = "";
 	}
 	
 	protected void resetInputs()
@@ -21,14 +21,14 @@ public class BasicCalculator extends Calculator<Double>
 		m_input2 = -Double.MAX_VALUE;
 	}
 	
-	public void setOperator(String a_operator)
+	public void setOperation(String a_operation)
 	{
-		m_operator = a_operator;
+		m_operation = a_operation;
 	}
 	
 	public void setInput(Double a_input)
 	{
-		if (m_input == null || m_operator.equals("")) m_input = a_input;
+		if (m_input == null || m_operation.equals("")) m_input = a_input;
 		else m_input2 = a_input;
 	}
 
@@ -40,7 +40,7 @@ public class BasicCalculator extends Calculator<Double>
 			return m_input;
 		}
 		
-		switch (m_operator)
+		switch (m_operation)
 		{
 			case "+":
 			{
@@ -76,7 +76,7 @@ public class BasicCalculator extends Calculator<Double>
 		}
 		
 		resetInputs();
-		m_operator = "";
+		m_operation = "";
 		m_input = m_result;
 		
 		return m_result;

@@ -192,7 +192,7 @@ public class BasicTextArea extends JTextArea {
 		//Enter key is equivalent to the = operator.
 		if (operator.equals("\n")) operator = "=";
 		
-		calculator.setOperator(operator);
+		calculator.setOperation(operator);
 		
 		//Get user input and send to calculator:
 		String userInput = getUserInput();

@@ -15,7 +15,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		m_input = null;
 		m_input2 = null;
 		m_result = null;
-		m_operator = "";
+		m_operation = "";
 		m_fractionScalar = null;
 		m_fractionResult = null;
 	}
@@ -27,9 +27,9 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		m_fractionScalar = null;
 	}
 	
-	public void setOperator(String a_operator)
+	public void setOperation(String a_operation)
 	{
-		m_operator = a_operator;
+		m_operation = a_operation;
 	}
 	
 	public void setInput(Matrix a_input)
@@ -45,7 +45,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	
 	public Matrix doCalculation() throws MatrixException
 	{
-		switch (m_operator)
+		switch (m_operation)
 		{
 			//Binary operations. Requires two operands.
 			case "+":
@@ -96,7 +96,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		}
 		
 		resetInputs();
-		m_operator = "";
+		m_operation = "";
 		m_input = m_result;
 		
 		return m_result;
@@ -104,7 +104,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	
 	public Fraction fractionResultOperation() throws MatrixException
 	{
-		switch (m_operator)
+		switch (m_operation)
 		{
 			case "Det":
 			{
@@ -138,10 +138,10 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		if (m_input == null) throw new MatrixException("Unable to perform operation on blank matrix:", m_input);
 		if (m_input2 == null) throw new MatrixException("Unable to perform operation on blank matrix:", m_input2);
 		
-		if (m_operator.equals("+")) m_result = addMatrices(m_input, m_input2);
-		else if (m_operator.equals("-")) m_result = subtractMatrices(m_input, m_input2);
-		else if (m_operator.equals("*")) m_result = multiplyMatrices(m_input, m_input2);
-		else if (m_operator.equals("/")) m_result = divideMatrices(m_input, m_input2);
+		if (m_operation.equals("+")) m_result = addMatrices(m_input, m_input2);
+		else if (m_operation.equals("-")) m_result = subtractMatrices(m_input, m_input2);
+		else if (m_operation.equals("*")) m_result = multiplyMatrices(m_input, m_input2);
+		else if (m_operation.equals("/")) m_result = divideMatrices(m_input, m_input2);
 		
 		return m_result;
 	}

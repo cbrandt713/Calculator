@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package calculator;
 
 import java.awt.EventQueue;
@@ -10,67 +13,150 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MatrixTextPane.
+ */
 @SuppressWarnings("serial")
-public class MatrixTextPane extends JTextPane
+public class MatrixTextPane extends JTextPane implements ActionEventHandler
 {
+	
+	/** The Constant NONE. */
 	//Acceptable Modes for Text Input:
 	private final static int NONE = -1;
+	
+	/** The Constant CREATE_ROWS. */
 	private final static int CREATE_ROWS = 0;
+	
+	/** The Constant CREATE_COLUMNS. */
 	private final static int CREATE_COLUMNS = 1;
+	
+	/** The Constant DRAW_MATRIX. */
 	private final static int DRAW_MATRIX = 2;
+	
+	/** The Constant EDIT_MATRIX. */
 	private final static int EDIT_MATRIX = 3;
+	
+	/** The Constant NAME_MATRIX. */
 	private final static int NAME_MATRIX = 4;
+	
+	/** The Constant MATRIX_MENU. */
 	private final static int MATRIX_MENU = 5;
+	
+	/** The Constant DELETE_MENU. */
 	private final static int DELETE_MENU = 7;
+	
+	/** The Constant SELECT_MATRIX. */
 	private final static int SELECT_MATRIX = 8;
+	
+	/** The Constant SCALAR. */
 	private final static int SCALAR = 100;
+	
+	/** The Constant GENERIC_OPERATION. */
 	private final static int GENERIC_OPERATION = 200;
+	
+	/** The Constant DISPLAY_RESULT. */
 	private final static int DISPLAY_RESULT = 201;
+	
+	/** The Constant EXCEPTION. */
 	private final static int EXCEPTION = 900;
 	
-	public enum OperationArguments
-	{
-		UNARY, BINARY;
-	}
+	/**
+	 * The Enum OperationArguments.
+	 */
+	private enum OperationArguments { /** The unary. */
+ UNARY, /** The binary. */
+ BINARY; }
+	
+	/** The m amt operands. */
 	private OperationArguments m_amtOperands;
+	
+	/** The m amt selected. */
 	private int m_amtSelected;
+	
+	/** The m mode. */
 	private int m_mode;
+	
+	/** The m operation. */
 	private String m_operation;
 	
+	/** The m rows. */
 	//Matrix creation properties:
 	private int m_rows;
+	
+	/** The m columns. */
 	private int m_columns;
 	
+	/** The m display text. */
 	//Matrix creation input:
 	private StyledDocument m_displayText;
+	
+	/** The m stored string. */
 	private String m_storedString;
 	
+	/** The m default name. */
 	//Matrix Helper Strings:
 	private Character m_defaultName;
 	
+	/** The m matrices. */
 	//Data objects:
 	private Matrix[] m_matrices;
+	
+	/** The m selected matrix. */
 	private Matrix m_selectedMatrix;
+	
+	/** The m answer matrix. */
 	private Matrix m_answerMatrix;
+	
+	/** The m answer fraction. */
 	private Fraction m_answerFraction;
+	
+	/** The m scalar fraction. */
 	private Fraction m_scalarFraction;
+	
+	/** The m amt matrices. */
 	private int m_amtMatrices;
+	
+	/** The m current row. */
 	private int m_currentRow;
+	
+	/** The m current column. */
 	private int m_currentColumn;
+	
+	/** The m answer is matrix. */
 	private boolean m_answerIsMatrix;
 	
+	/** The m arrow pointer. */
 	//Text manipulation:
 	private int m_arrowPointer;
+	
+	/** The m underline pos. */
 	private int m_underlinePos;
+	
+	/** The m current text pos. */
 	private int m_currentTextPos;
+	
+	/** The m begin text pos. */
 	private int m_beginTextPos;
+	
+	/** The m replace. */
 	private boolean m_replace;
+	
+	/** The m underlined text loc. */
 	private int m_underlinedTextLoc;
+	
+	/** The m underline set. */
 	private SimpleAttributeSet m_underlineSet;
 	
+	/** The calculator. */
 	//Calculator and Required Data:
 	private MatrixCalculator calculator;
 	
+	private MatrixGUIModel m_model;
+	
+	/**
+	 * Instantiates a new matrix text pane.
+	 */
 	public MatrixTextPane()
 	{	
 		super();
@@ -134,6 +220,9 @@ public class MatrixTextPane extends JTextPane
 	}
 	
 	//Helper method used by the constructor to initialize and the
+	/**
+	 * Sets the default values.
+	 */
 	//"Clear" button to reset the calculator to default settings.
 	private void setDefaultValues()
 	{
@@ -161,22 +250,30 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 	
+	/**
+	 * Sets the mode.
+	 *
+	 * @param a_mode: the new mode
+	 */
 	private void setMode(int a_mode)
 	{
 		m_mode = a_mode;
 	}
 	
+	/**
+	 * Gets the mode.
+	 *
+	 * @return the mode
+	 */
 	private int getMode()
 	{
 		return m_mode;
 	}
-	
-	public void createMatrix()
-	{
-		//createRows();
-	}
-	
-	public void createRows()
+		
+	/**
+	 * Creates the rows.
+	 */
+	private void createRows()
 	{
 		setMode(CREATE_ROWS);
 		String text = "Matrix Size: ";
@@ -186,6 +283,9 @@ public class MatrixTextPane extends JTextPane
 		append(text + "_ rows X _ columns\n");
 	}
 	
+	/**
+	 * Creates the columns.
+	 */
 	private void createColumns()
 	{
 		setMode(CREATE_COLUMNS);
@@ -194,6 +294,9 @@ public class MatrixTextPane extends JTextPane
 		m_replace = true;
 	}
 	
+	/**
+	 * Draw matrix.
+	 */
 	private void drawMatrix()
 	{
 		setMode(DRAW_MATRIX);
@@ -201,6 +304,9 @@ public class MatrixTextPane extends JTextPane
 		editMatrix();
 	}
 	
+	/**
+	 * Edits the matrix.
+	 */
 	private void editMatrix()
 	{
 		setMode(EDIT_MATRIX);
@@ -212,6 +318,9 @@ public class MatrixTextPane extends JTextPane
 		setUnderline(m_underlinedTextLoc, getLengthOfTextAtPos(m_underlinedTextLoc), true);
 	}
 	
+	/**
+	 * Name matrix.
+	 */
 	private void nameMatrix()
 	{
 		setMode(NAME_MATRIX);
@@ -223,6 +332,9 @@ public class MatrixTextPane extends JTextPane
 		insertAtFront(text + "\n");
 	}
 	
+	/**
+	 * Matrix menu.
+	 */
 	private void matrixMenu()
 	{
 		setMode(MATRIX_MENU);
@@ -282,6 +394,9 @@ public class MatrixTextPane extends JTextPane
 		setUnderline(beginPos, length, true);
 	}
 	
+	/**
+	 * Delete menu.
+	 */
 	private void deleteMenu()
 	{
 		setText("");
@@ -294,6 +409,9 @@ public class MatrixTextPane extends JTextPane
 		if (m_arrowPointer == 2) append(" <--");
 	}
 	
+	/**
+	 * Select matrix.
+	 */
 	private void selectMatrix()
 	{
 		setMode(SELECT_MATRIX);
@@ -303,10 +421,15 @@ public class MatrixTextPane extends JTextPane
 		}
 		else 
 		{
-			doOperation();
+			m_model.doOperation();
 		}
 	}
 	
+	/**
+	 * Gets the scalar.
+	 *
+	 * @return the scalar
+	 */
 	private void getScalar()
 	{
 		setMode(SCALAR);
@@ -315,12 +438,15 @@ public class MatrixTextPane extends JTextPane
 		setText(text);
 	}
 	
-	private void genericOperation()
+	/**
+	 * Sets the text for operation.
+	 */
+	private void setTextForOperation()
 	{
 		setMode(GENERIC_OPERATION);
 		if (m_amtOperands == OperationArguments.UNARY)
 		{
-			if (m_operation.equals("=")) setText(m_selectedMatrix.getName() + " =\n");
+			if (m_operation.equals("=")) setText(m_selectedMatrix.getName() + " = \n");
 			else setText(m_operation + "(" + m_selectedMatrix.getName() + ") = \n");
 			
 		}
@@ -338,6 +464,9 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
+	/**
+	 * Display result.
+	 */
 	private void displayResult()
 	{
 		setMode(DISPLAY_RESULT);
@@ -345,6 +474,11 @@ public class MatrixTextPane extends JTextPane
 		else append(m_answerFraction.toString());
 	}
 	
+	/**
+	 * Display exception.
+	 *
+	 * @param a_exception the a exception
+	 */
 	private void displayException(MatrixException a_exception)
 	{
 		setText("");
@@ -359,6 +493,11 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
+	/**
+	 * Gets the user entered text.
+	 *
+	 * @return the user entered text
+	 */
 	private String getUserEnteredText()
 	{
 		int length = m_currentTextPos - m_beginTextPos;
@@ -379,6 +518,11 @@ public class MatrixTextPane extends JTextPane
 		return enteredText;
 	}
 	
+	/**
+	 * Append.
+	 *
+	 * @param a_string the a string
+	 */
 	private void append(String a_string)
 	{
 		try 
@@ -391,6 +535,12 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
+	/**
+	 * Insert string.
+	 *
+	 * @param a_loc the a loc
+	 * @param a_string the a string
+	 */
 	private void insertString(int a_loc, String a_string)
 	{
 		try 
@@ -403,11 +553,23 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
+	/**
+	 * Insert at front.
+	 *
+	 * @param a_string the a string
+	 */
 	private void insertAtFront(String a_string)
 	{
 		insertString(0, a_string);
 	}
 	
+	/**
+	 * Replace text.
+	 *
+	 * @param a_locationOfText the a location of text
+	 * @param a_lengthToReplace the a length to replace
+	 * @param a_string the a string
+	 */
 	private void replaceText(int a_locationOfText, int a_lengthToReplace, String a_string)
 	{
 		try 
@@ -422,6 +584,9 @@ public class MatrixTextPane extends JTextPane
 		insertString(a_locationOfText, a_string);
 	}
 	
+	/**
+	 * Backspace.
+	 */
 	private void backspace()
 	{
 		if (m_currentTextPos <= m_beginTextPos) return;
@@ -437,6 +602,9 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
+	/**
+	 * Clear entry.
+	 */
 	private void clearEntry() 
 	{
 		try 
@@ -449,104 +617,63 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
-	public void doOperation()
-	{
-		if (m_selectedMatrix == null) 
-		{
-			matrixMenu();
-			return;
-		}
-		
-		if (m_operation.equals("+") || m_operation.equals("-") 
-				|| m_operation.equals("*") || m_operation.equals("/")
-				|| m_operation.equals("Scalar") )
-		{
-			m_amtOperands = OperationArguments.BINARY;
-		}
-		else
-		{
-			m_amtOperands = OperationArguments.UNARY;
-		}
-			
-		calculator.setOperator(m_operation);		
-		
-		if (m_operation.equals("Scalar") && m_amtSelected == 1) getScalar();
-		else genericOperation();
-		
-		if (m_amtOperands == OperationArguments.BINARY && m_amtSelected < 2)
-		{
-			return;
-		}
-		
-		if (m_amtOperands == OperationArguments.UNARY && m_amtSelected != 1)
-		{
-			return;
-		}
-		
-		
-		try 
-		{
-			if (m_answerIsMatrix)
-			{
-				m_answerMatrix = new Matrix(calculator.doCalculation());
-				m_answerMatrix.setName("Ans");
-				m_selectedMatrix = m_answerMatrix;
-				m_amtSelected = 1;
-			}
-			else
-			{
-				m_answerFraction = new Fraction(calculator.fractionResultOperation());
-				m_answerMatrix = null;
-				m_selectedMatrix = null;
-				m_amtSelected = 0;
-			}
-			
-			m_operation = "";
-			displayResult();
-			
-		} 
-		catch (MatrixException exception) 
-		{
-			setMode(EXCEPTION);
-			displayException(exception);
-		}
-		
-		m_answerIsMatrix = true;
-		
-	}
 	
 	
-	private boolean tryParse(String a_input)
+	/**
+	 * Try to parse the integer from the text given.
+	 *
+	 * @param a_input: the given text to parse.
+	 * @return true if the input can be parsed into an int. Otherwise false if not.
+	 */
+	private boolean tryIntParse(String a_input)
 	{
 		try
 		{
+			//Can be parsed:
 			Integer.parseInt(a_input);
 			return true;
 		}
 		catch (NumberFormatException a_exception)
 		{
+			//Can not be parsed:
 			return false;
 		}
 		
 	}
 	
+	/**
+	 * Try to parse the Fraction from the text given.
+	 *
+	 * @param a_input: the given text to parse.
+	 * @return true if the input can be parsed into a Fraction Object. Otherwise false if not.
+	 */
 	private boolean tryFractionParse(String a_input)
 	{
 		try
 		{
+			//Can be parsed:
 			Fraction.parseFraction(a_input);
 			return true;
 		}
 		catch (NumberFormatException a_exception)
 		{
+			//Can not be parsed:
 			return false;
 		}
 	}
 	
+	/**
+	 * Gets the length of text at given position. 
+	 * Underline text helper method.
+	 *
+	 * @param a_beginIndex: the first index
+	 * @return the length of the text starting at a_beginIndex
+	 */
 	private int getLengthOfTextAtPos(int a_beginIndex)
 	{
 		int length = m_displayText.getLength();
 		
+		//Attempting to search text out of bounds:
 		if (a_beginIndex >= length)
 		{
 			return -1;
@@ -564,6 +691,7 @@ public class MatrixTextPane extends JTextPane
 			return -1;
 		}
 		
+		//The end of the text is considered to be a white space, tab, or new line, or end of string.
 		while (!current.equals(" ") && !current.equals('\n') && !current.equals('\t') && index < length)
 		{
 			count++;
@@ -580,20 +708,31 @@ public class MatrixTextPane extends JTextPane
 		return count;
 	}
 	
+	/**
+	 * Gets the location of the matrix symbol when editing the matrix.
+	 * Underline text helper method.
+	 *
+	 * @return the location of the matrix symbol (either | or [)
+	 */
 	private int getLocOfSymbol()
 	{
 		String currentText = getText();
+		
+		//The symbol is considered "done"
 		if (m_currentRow == m_selectedMatrix.getRows()) 
 		{
 			return currentText.indexOf("Done") - 2;
 		}
 		
 		int loc = -1;
+		
+		//If column is 0, the symbol we want is the '['.
 		for (int i = 0; i < m_currentRow + 1; i++)
 		{
 			loc = currentText.indexOf('[', loc + 1);
 			for (int j = 0; j < m_currentColumn; j++)
 			{
+				//If column is not 0 we want the '|' symbol to the left.
 				loc = currentText.indexOf('|', loc + 1);
 			}
 		}
@@ -601,18 +740,34 @@ public class MatrixTextPane extends JTextPane
 		return loc;
 	}
 	
+	/**
+	 * Underlines text starting at a_beginIndex, length characters long.
+	 *
+	 * @param a_beginIndex: the position to begin underlining.
+	 * @param a_length: the length of the text to underline
+	 * @param a_replace: if true, replace the existing underlined text. If false, add to it.
+	 */
 	private void setUnderline(int a_beginIndex, int a_length, boolean a_replace) 
 	{
 		StyleConstants.setUnderline(m_underlineSet, true);
 		m_displayText.setCharacterAttributes(a_beginIndex, a_length, m_underlineSet, a_replace);
 	}
 	
+	/**
+	 * Removes all underlined text.
+	 */
 	private void resetUnderline()
 	{
 		StyleConstants.setUnderline(m_underlineSet, false);
 		m_displayText.setCharacterAttributes(0, m_displayText.getLength(), m_underlineSet, true);
 	}
 	
+	/**
+	 * Find matrix index by name.
+	 *
+	 * @param a_name: the name of the matrix to find.
+	 * @return the index in the array of the matrix specified by name. -1 if not found.
+	 */
 	private int findMatrixIndexByName(String a_name)
 	{
 		for (int i = 0; i < m_amtMatrices; i++)
@@ -623,22 +778,34 @@ public class MatrixTextPane extends JTextPane
 		return -1;
 	}
 	
+	/**
+	 * Enter key pressed in "create rows" area.
+	 *
+	 * @param a_enteredText: the text entered by the user.
+	 */
 	private void createRowsEnterPress(String a_enteredText)
 	{
 		//Only take acceptable numbers:
-		if (tryParse(a_enteredText))
+		if (tryIntParse(a_enteredText))
 		{
 			m_rows = Integer.parseInt(a_enteredText);
 			createColumns();
 		}
 	}
 	
+	/**
+	 * Enter key pressed in "create columns" area.
+	 *
+	 * @param a_enteredText: the text entered by the user.
+	 */
 	private void createColumnsEnterPress(String a_enteredText)
 	{
 		//Only take acceptable numbers:
-		if (tryParse(a_enteredText))
+		if (tryIntParse(a_enteredText))
 		{
 			m_columns = Integer.parseInt(a_enteredText);
+			
+			//Create a new matrix, and 
 			m_matrices[m_amtMatrices] = new Matrix(m_rows, m_columns);
 			m_selectedMatrix = m_matrices[m_amtMatrices];
 			m_amtMatrices++;
@@ -646,29 +813,49 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 
+	/**
+	 * Enter key pressed while editing matrix.
+	 *
+	 * @param a_enteredText: the entered text
+	 * @return true if the user is finished editing. False if not.
+	 */
 	private boolean editMatrixEnterPress(String a_enteredText)
 	{
+		//Enter pressed on "Done":
 		if (m_currentRow == m_selectedMatrix.getRows())
 		{
+			//Reset row and column:
 			m_currentRow = 0;
 			m_currentColumn = 0;
+			//If editing the matrix, do not rename it.
 			if (m_underlinePos == 1) setText("Matrix Edited Successfully!");
 			else nameMatrix();
+			
+			//The user is done editing. Return.
 			return true;
 		}
 		
+		//Only take acceptable numbers to set the cell for editing.
 		if (!tryFractionParse(a_enteredText))
 		{
 			return false;
 		}
-				
+		
+		//Set this cell to the user's input number.
 		m_selectedMatrix.setCell(m_currentRow, m_currentColumn, Fraction.parseFraction(a_enteredText));
 		
+		//Not finished editing, return false.
 		return false;
 	}
 	
+	/**
+	 * Enter pressed to finish naming matrix.
+	 *
+	 * @param a_enteredText: the entered text
+	 */
 	private void nameMatrixEnterPress(String a_enteredText)
 	{
+		//Reset underline:
 		m_underlinedTextLoc = -1;
 		
 		//If nothing was entered, use default naming scheme:
@@ -677,11 +864,15 @@ public class MatrixTextPane extends JTextPane
 			a_enteredText = (m_defaultName.toString());
 			m_defaultName++;
 		}
+		//Name matrix:
 		m_matrices[m_amtMatrices - 1].setName(a_enteredText);
 		
 		setText("Matrix Added Successfully!");
 	}
 	
+	/**
+	 * Matrix menu enter press.
+	 */
 	private void matrixMenuEnterPress()
 	{
 		m_selectedMatrix = m_matrices[m_arrowPointer-1];
@@ -710,6 +901,9 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
+	/**
+	 * Delete menu enter press.
+	 */
 	private void deleteMenuEnterPress()
 	{
 		//Yes selected:
@@ -744,7 +938,12 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
-	public void scalarEnterPress(String a_enteredText)
+	/**
+	 * Scalar enter press.
+	 *
+	 * @param a_enteredText the a entered text
+	 */
+	private void scalarEnterPress(String a_enteredText)
 	{
 		if (tryFractionParse(a_enteredText))
 		{
@@ -752,10 +951,15 @@ public class MatrixTextPane extends JTextPane
 			calculator.setScalar(m_scalarFraction);
 			m_amtSelected++;
 			m_storedString = m_scalarFraction.toString() + " * ";
-			doOperation();
+			m_model.doOperation();
 		}
 	}
 	
+	/**
+	 * The user pressed the "enter" key to input data.
+	 *
+	 * @param a_event: the event which triggered the call of the function.
+	*/
 	public void enterActionPerformed(ActionEvent a_event)
 	{	
 		
@@ -779,39 +983,22 @@ public class MatrixTextPane extends JTextPane
 			//Editing a matrix cell:
 			case EDIT_MATRIX:
 			{	
-				
-				boolean finished = editMatrixEnterPress(enteredText);
-				
-				if (finished) return;
-				
-				if (m_currentColumn + 1 < m_selectedMatrix.getColumns())
-				{
-					m_currentColumn++;
-				}
-				else if (m_currentRow < m_selectedMatrix.getRows())
-				{
-					m_currentRow++;
-					m_currentColumn = 0;
-				}
-				
-				//Returns the location of the symbol. Add 2 for the location of the text.
-				m_underlinedTextLoc = getLocOfSymbol() + 2;
-				m_beginTextPos = m_currentTextPos = m_underlinedTextLoc;
-				m_replace = true;
-				
-				//If the location is 1, the function returned -1, meaning not found, so do not underline.
-				if (m_underlinedTextLoc != 1) 
-				{
-					resetUnderline();
-					setUnderline(m_underlinedTextLoc, 
-						getLengthOfTextAtPos(m_underlinedTextLoc), true);
-				}
+	        	boolean finished = editMatrixEnterPress(enteredText);
+	        	
+	        	//If the user pushed enter on "Done", return.
+	        	if (finished) return;
+	        	
+	        	//Move right if user used enter to accept data
+	        	editMatrixArrowAction("Right");
+	        	
+	        	//Since we weren't done, recall the method to edit.
+	    		editMatrix();
+	
 				break;
 			}
 			//Naming the matrix:
 			case NAME_MATRIX:
 			{
-				
 				nameMatrixEnterPress(enteredText);
 				break;
 			}
@@ -843,6 +1030,11 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 	
+	/**
+	 * Delete action performed. This includes backspace, clear, and clear entry.
+	 *
+	 * @param a_event: the event that triggered the call of the function.
+	 */
 	public void deleteActionPerformed(ActionEvent a_event)
 	{
 		//Clear command:
@@ -864,64 +1056,92 @@ public class MatrixTextPane extends JTextPane
 		
 	}
 
+	/**
+	 * Arrow key pressed while editing matrix.
+	 *
+	 * @param a_direction: the direction to move
+	 */
 	private void editMatrixArrowAction(String a_direction)
 	{
-		if (a_direction.equals("Down"))
+		//Increase row or column based on direction specified:
+		//Up and down and will change row, left and right change
+		//Column, unless you are at the end of a row, then it will change the row too.
+		if (a_direction.equals("Down")
+				&& m_currentRow < m_selectedMatrix.getRows())
 		{
-			if (m_currentRow >= m_selectedMatrix.getRows()) 
-			{
-				return;
-			}
-			
 			m_currentRow++;
-			
-			if (m_currentRow == m_selectedMatrix.getRows())
-			{
-				append(" <--");
-			}
 		}
-		else if (a_direction.equals("Up"))
+		else if (a_direction.equals("Up")
+				&& m_currentRow > 0)
 		{
-			if (m_currentRow > 0) m_currentRow--;
-			
-			String text = getText();
-			
-			if (text.substring(text.length() - 3, text.length()).equals("<--"))
-			{
-				text = text.substring(0, text.length() - 3);
-				setText(text);
-			}
+			m_currentRow--;
 		}
 		else if (a_direction.equals("Right"))
 		{
 			if (m_currentColumn < m_selectedMatrix.getColumns() - 1) m_currentColumn++;
+			else if (m_currentColumn == m_selectedMatrix.getColumns() - 1 
+					&& m_currentRow < m_selectedMatrix.getRows()) 
+			{
+				m_currentColumn = 0;
+				m_currentRow++;
+			}
 		}
 		else if (a_direction.equals("Left"))
 		{
 			if (m_currentColumn > 0) m_currentColumn--;
+			else if (m_currentColumn == 0 && m_currentRow > 0)
+			{
+				m_currentRow--;
+				m_currentColumn = m_selectedMatrix.getColumns() - 1;
+			}
 		}
+		
+		String text = getText();
+		
+		//If we are hovering over done, add an "arrow" to indicate position.
+		if (m_currentRow == m_selectedMatrix.getRows())
+		{
+			append(" <--");
+		}
+		//If we are not on done but the arrow is still there, remove it.
+		else if (text.substring(text.length() - 3, text.length()).equals("<--"))
+		{
+			text = text.substring(0, text.length() - 3);
+			setText(text);
+		}
+		
 	}
 	
+	/**
+	 * Move arrow based on arrow keys. Hover over "yes" if up, "no" if down.
+	 *
+	 * @param a_direction: the direction
+	 */
 	private void deleteMatrixArrowAction(String a_direction) 
 	{
-		if (a_direction.equals("Down"))
-		{
-			m_arrowPointer = 2;
-		}
-		else if (a_direction.equals("Up"))
+		if (a_direction.equals("Up"))
 		{
 			m_arrowPointer = 1;
 		}
+		else if (a_direction.equals("Down"))
+		{
+			m_arrowPointer = 2;
+		}
 	}
 	
+	/**
+	 * Arrow key action performed.
+	 *
+	 * @param a_event: the event that triggered the function call
+	 */
 	public void arrowActionPerformed(ActionEvent a_event)
 	{
+		//Parse direction from event:
 		KeyEvent ke = (KeyEvent) EventQueue.getCurrentEvent();
         String direction = KeyEvent.getKeyText( ke.getKeyCode() );
         
         if (getMode() == EDIT_MATRIX)
         {
-        	
     		String enteredText = getUserEnteredText();
     		
         	if (m_currentRow != m_selectedMatrix.getRows()) editMatrixEnterPress(enteredText);
@@ -960,6 +1180,11 @@ public class MatrixTextPane extends JTextPane
 		matrixMenu();
 	}
 
+	/**
+	 * Number action performed.
+	 *
+	 * @param a_event the a event
+	 */
 	public void numberActionPerformed(ActionEvent a_event)
 	{
 		String text = a_event.getActionCommand();
@@ -978,11 +1203,21 @@ public class MatrixTextPane extends JTextPane
 		m_currentTextPos++;
 	}
 	
+	/**
+	 * Letter action performed.
+	 *
+	 * @param a_event the a event
+	 */
 	public void letterActionPerformed(ActionEvent a_event)
 	{
 		numberActionPerformed(a_event);
 	}
 
+	/**
+	 * Operator action performed.
+	 *
+	 * @param a_event the a event
+	 */
 	public void operatorActionPerformed(ActionEvent a_event) 
 	{
 		//In the case that we are using the "/" or "-" operator to indicate a fraction:
@@ -994,9 +1229,14 @@ public class MatrixTextPane extends JTextPane
 		
 		//Otherwise we are using the generic meaning of the operator:
 		m_operation = a_event.getActionCommand();
-		doOperation();
+		m_model.doOperation();
 	}
 
+	/**
+	 * Matrix action performed.
+	 *
+	 * @param a_event the a event
+	 */
 	public void matrixActionPerformed(ActionEvent a_event) 
 	{
 		
@@ -1011,7 +1251,7 @@ public class MatrixTextPane extends JTextPane
 		else 
 		{
 			m_operation = operation;
-			doOperation();
+			m_model.doOperation();
 		}
 		
 	}
