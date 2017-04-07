@@ -38,6 +38,7 @@ public class GUI extends JPanel
 	private JFrame frame;
 	private JPanel m_noWrapPanel;
 	private MatrixTextPane m_matrixDisplay;
+	private MatrixGUIModel m_matrixModel;
 	private JMenu menu;
 	private JMenuBar menuBar;
 	private JMenuItem basic;
@@ -247,9 +248,10 @@ public class GUI extends JPanel
 	
 	private void createMatrixDisplay()
 	{
-		m_matrixDisplay = new MatrixTextPane();
+		m_matrixDisplay = MatrixTextPane.getInstance();
 		m_matrixDisplay.setText("\n\n\n\n\n\n");
 		m_matrixDisplay.setEditable(false);
+		m_matrixModel = new MatrixGUIModel();
 		m_noWrapPanel = new JPanel( new BorderLayout() );
 		m_noWrapPanel.add(m_matrixDisplay);
 		scrollPane = new JScrollPane(m_noWrapPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -587,7 +589,7 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event) 
 		{
 			if (getGUIState() == BASIC) m_basicDisplay.numberActionPerformed(a_event);
-			else m_matrixDisplay.numberActionPerformed(a_event);
+			else m_matrixModel.numberActionPerformed(a_event);
 		}
 		
 	}
@@ -605,7 +607,7 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event) 
 		{
 			if (getGUIState() == BASIC) m_basicDisplay.enterActionPerformed(a_event);
-			else m_matrixDisplay.enterActionPerformed(a_event);
+			else m_matrixModel.enterActionPerformed(a_event);
 		}
 	}
 	
@@ -622,7 +624,7 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event) 
 		{
 			if (getGUIState() == BASIC) m_basicDisplay.deleteActionPerformed(a_event);
-			else m_matrixDisplay.deleteActionPerformed(a_event);
+			else m_matrixModel.deleteActionPerformed(a_event);
 		}
 	}
 	
@@ -638,7 +640,7 @@ public class GUI extends JPanel
 		public void actionPerformed(ActionEvent a_event) 
 		{
 			if (getGUIState() == BASIC) m_basicDisplay.operatorActionPerformed(a_event);
-			else m_matrixDisplay.operatorActionPerformed(a_event);
+			else m_matrixModel.operatorActionPerformed(a_event);
 		}
 	}
 	
@@ -696,7 +698,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
-			m_matrixDisplay.matrixActionPerformed(a_event);
+			if (getGUIState() == MATRIX) m_matrixModel.matrixActionPerformed(a_event);
 		}
 	}
 	
@@ -714,7 +716,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
-			m_matrixDisplay.letterActionPerformed(a_event);
+			if (getGUIState() == MATRIX) m_matrixModel.letterActionPerformed(a_event);
 		}
 		
 	}
@@ -731,7 +733,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
-			if (getGUIState() == MATRIX) m_matrixDisplay.arrowActionPerformed(a_event);
+			if (getGUIState() == MATRIX) m_matrixModel.arrowActionPerformed(a_event);
 		}
 	}
 	

@@ -72,7 +72,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 				m_result = REF(m_input);
 				break;
 			}
-			case "Inverse":
+			case "A⁻¹":
 			{
 				m_result = invertMatrix(m_input);
 				break;
@@ -135,8 +135,8 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	public Matrix matrixBinaryOperation() throws MatrixException
 	{
 		
-		if (m_input == null) throw new MatrixException("Unable to perform operation on blank matrix:", m_input);
-		if (m_input2 == null) throw new MatrixException("Unable to perform operation on blank matrix:", m_input2);
+		if (m_input == null) throw new MatrixException("Unable to perform operation on blank matrix");
+		if (m_input2 == null) throw new MatrixException("Unable to perform operation on blank matrix");
 		
 		if (m_operation.equals("+")) m_result = addMatrices(m_input, m_input2);
 		else if (m_operation.equals("-")) m_result = subtractMatrices(m_input, m_input2);
