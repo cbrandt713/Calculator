@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JTextArea;
 
-public class BasicGUIModel {
+public class BasicGUIModel implements ActionEventHandler {
 
 	//Display Line Number Constants:
 	public static final int EXPRESSION = 0;
@@ -91,7 +91,7 @@ public class BasicGUIModel {
 		calculator.setOperation(operator);
 		
 		//Get user input and send to calculator:
-		String userInput = getUserInput();
+		String userInput = getUserEnteredText();
 		m_input = Double.parseDouble(userInput);
 		calculator.setInput(m_input);
 		
@@ -116,7 +116,7 @@ public class BasicGUIModel {
 		
 		String formattedTotal = "";
 		
-		String userInput = getUserInput();
+		String userInput = getUserEnteredText();
 		m_input = Double.parseDouble(userInput);
 		String formattedInput = formatDouble(m_input);
 		

@@ -15,7 +15,7 @@ import javax.swing.text.StyledDocument;
  * The Class MatrixTextPane.
  */
 @SuppressWarnings("serial")
-public class MatrixTextPane extends JTextPane
+public class MatrixTextPane extends JTextPane implements TextManipulation
 {
 	//Acceptable Modes for Text Input:
 	public final static int NONE = -1;
@@ -333,6 +333,7 @@ public class MatrixTextPane extends JTextPane
 	 *
 	 * @return the user entered text
 	 */
+	@Override
 	public String getUserEnteredText()
 	{
 		int length = m_currentTextPos - m_beginTextPos;
@@ -358,6 +359,7 @@ public class MatrixTextPane extends JTextPane
 	 *
 	 * @param a_string the a string
 	 */
+	@Override
 	public void append(String a_string)
 	{
 		try 
@@ -376,7 +378,8 @@ public class MatrixTextPane extends JTextPane
 	 * @param a_loc the a loc
 	 * @param a_string the a string
 	 */
-	private void insertString(int a_loc, String a_string)
+	@Override
+	public void insertString(int a_loc, String a_string)
 	{
 		try 
 		{
@@ -393,7 +396,8 @@ public class MatrixTextPane extends JTextPane
 	 *
 	 * @param a_string the a string
 	 */
-	private void insertAtFront(String a_string)
+	@Override
+	public void insertAtFront(String a_string)
 	{
 		insertString(0, a_string);
 	}
@@ -405,6 +409,7 @@ public class MatrixTextPane extends JTextPane
 	 * @param a_lengthToReplace the a length to replace
 	 * @param a_string the a string
 	 */
+	@Override
 	public void replaceText(int a_locationOfText, int a_lengthToReplace, String a_string)
 	{
 		try 
@@ -422,6 +427,7 @@ public class MatrixTextPane extends JTextPane
 	/**
 	 * Backspace.
 	 */
+	@Override
 	public void backspace()
 	{
 		if (m_currentTextPos <= m_beginTextPos) return;
@@ -440,6 +446,7 @@ public class MatrixTextPane extends JTextPane
 	/**
 	 * Clear entry.
 	 */
+	@Override
 	public void clearEntry() 
 	{
 		try 
@@ -452,6 +459,13 @@ public class MatrixTextPane extends JTextPane
 		}
 	}
 	
+	/**
+	 * Removes the amount of characters specified at the location.
+	 * 
+	 * @param a_location the location to remove characters
+	 * @param a_amtChars the amount of characters to remove
+	 */
+	@Override
 	public void remove(int a_location, int a_amtChars)
 	{
 		try

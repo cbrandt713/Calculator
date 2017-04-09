@@ -7,7 +7,8 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
 @SuppressWarnings("serial")
-public class BasicTextArea extends JTextArea {
+public class BasicTextArea extends JTextArea implements TextManipulation 
+{
 
 	//Display Line Number Constants:
 	public static final int EXPRESSION = 0;
@@ -16,7 +17,6 @@ public class BasicTextArea extends JTextArea {
 	private boolean m_typeOverFlag;
 	private boolean m_firstInputFlag;
 	
-	private StyledDocument m_displayText = this.get
 	private static BasicTextArea m_instance;
 	
 	private BasicTextArea()
@@ -37,7 +37,7 @@ public class BasicTextArea extends JTextArea {
 		return m_instance;
 	}
 	
-	private String getUserInput()
+	public String getUserEnteredText()
 	{
 		String displayText = getText();
 		int newLine = displayText.indexOf('\n');
@@ -127,6 +127,46 @@ public class BasicTextArea extends JTextArea {
 		String res = ((Double) a_result).toString();
 		String s = res.indexOf(".") < 0 ? res : res.replaceAll("0*$", "").replaceAll("\\.$", "");
 		return s;
+	}
+
+	@Override
+	public void backspace() 
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clearEntry() 
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void insertAtFront(String a_string) 
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void insertString(int a_location, String a_string) 
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void remove(int a_location, int a_amtChars) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void replaceText(int a_locationOfText, int a_lengthToReplace, String a_string) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
