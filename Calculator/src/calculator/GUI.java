@@ -201,8 +201,9 @@ public class GUI extends JPanel
 	
 	private void createBasicDisplay()
 	{
-		m_basicDisplay = new BasicTextArea("\n0");
+		m_basicDisplay = BasicTextArea.getBasicTextAreaInstance();
 		m_basicDisplay.setRows(2);
+		m_basicDisplay.setText("\n0");
 		m_basicDisplay.setEditable(false);
 				
 		createBasicKeybinds();

@@ -1,38 +1,85 @@
+/*
+ * 
+ */
 package calculator;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MatrixGUIModel.
+ */
 public class MatrixGUIModel implements ActionEventHandler
 {
+	
+	/** The m matrices. */
 	//Data objects:
 	private Matrix[] m_matrices;
+	
+	/** The m selected matrix. */
 	private Matrix m_selectedMatrix;
+	
+	/** The m answer matrix. */
 	private Matrix m_answerMatrix;
+	
+	/** The m answer fraction. */
 	private Fraction m_answerFraction;
+	
+	/** The m scalar fraction. */
 	private Fraction m_scalarFraction;
+	
+	/** The m amt matrices. */
 	private int m_amtMatrices;
+	
+	/** The m current row. */
 	private int m_currentRow;
+	
+	/** The m current column. */
 	private int m_currentColumn;
+	
+	/** The m answer is matrix. */
 	private boolean m_answerIsMatrix;
+	
+	/** The m default name. */
 	private Character m_defaultName;
+	
+	/** The m underline pos. */
 	private int m_underlinePos;
 	
-	//Matrix creation properties:
-	private int m_rows;
-	private int m_columns;
-	private int m_arrowPointer;
-	private int m_amtOperands;
-	private int m_amtSelected;
-
+	/** The m operation. */
 	private String m_operation;
 	
+	/** The m rows. */
+	//Matrix creation properties:
+	private int m_rows;
+	
+	/** The m columns. */
+	private int m_columns;
+	
+	/** The m arrow pointer. */
+	private int m_arrowPointer;
+	
+	/** The m amt operands. */
+	private int m_amtOperands;
+	
+	/** The m amt selected. */
+	private int m_amtSelected;
+	
+	/** The m display text. */
+	//The Text and Calculators associated with the model:
 	private MatrixTextPane m_displayText;
+	
+	/** The calculator. */
 	private MatrixCalculator calculator;
 	
+	/**
+	 * Instantiates a new Matrix GUI Model.
+	 */
 	public MatrixGUIModel()
 	{
+		//Initialize defaults:
 		m_displayText = MatrixTextPane.getInstance();
 		m_matrices = new Matrix[20];
 		m_amtMatrices = 0;
@@ -88,6 +135,9 @@ public class MatrixGUIModel implements ActionEventHandler
 		
 	}
 	
+	/**
+	 * Sets the default values, allowing for a "reset".
+	 */
 	private void setDefaultValues()
 	{
 		m_operation = "";
@@ -103,17 +153,14 @@ public class MatrixGUIModel implements ActionEventHandler
 		m_selectedMatrix = null;
 		m_answerFraction = null;
 		m_answerIsMatrix = true;
-		
-		
+	
 		calculator.resetInputs();
 	}
-	
-	
 		
 	/**
 	 * Find matrix index by name.
 	 *
-	 * @param a_name: the name of the matrix to find.
+	 * @param a_name the name
 	 * @return the index in the array of the matrix specified by name. -1 if not found.
 	 */
 	private int findMatrixIndexByName(String a_name)
@@ -129,7 +176,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Try to parse the integer from the text given.
 	 *
-	 * @param a_input: the given text to parse.
+	 * @param a_input the a input
 	 * @return true if the input can be parsed into an int. Otherwise false if not.
 	 */
 	private boolean tryIntParse(String a_input)
@@ -151,7 +198,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Try to parse the Fraction from the text given.
 	 *
-	 * @param a_input: the given text to parse.
+	 * @param a_input the input
 	 * @return true if the input can be parsed into a Fraction Object. Otherwise false if not.
 	 */
 	private boolean tryFractionParse(String a_input)
@@ -174,7 +221,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	 * do the operation specified by the user, then attempts to display the result or 
 	 * the problem with the operation (if applicable).
 	 */
-	public void doOperation()
+	public void setupOperation()
 	{
 		//Make the user choose a matrix to do the operation:
 		if (m_selectedMatrix == null) 
@@ -203,19 +250,22 @@ public class MatrixGUIModel implements ActionEventHandler
 		else if (m_amtOperands == 1) m_displayText.setTextForUnaryOperation(m_operation, m_selectedMatrix);
 		else m_displayText.setTextForBinaryOperation(m_operation, m_selectedMatrix, m_amtSelected, m_scalarFraction);
 			
-		//Check amount of operands specified.
-		//If it's the wrong amount, do not proceed.
-		if ( (m_amtOperands == 1 && m_amtSelected != 1) || (m_amtOperands == 2 && m_amtSelected != 2) )
+		//Only do operation on correct amount selected
+		if ( (m_amtOperands == 1 && m_amtSelected == 1) || (m_amtOperands == 2 && m_amtSelected == 2) )
 		{
-			return;
+			tryAndDisplayOperation();
 		}
-		
-		//Attempt to do the actual calculation.
-		//If the operation is not possible or failed for some reason, the function will return
-		//A MatrixException containing the problem and what matrices caused it.
+	}
+	
+	/**
+	 * Attempt to do the actual calculation.
+	 * If the operation is not possible or failed for some reason, the function will return
+	 * A MatrixException containing the problem and what matrices caused it.
+	 */
+	public void tryAndDisplayOperation()
+	{
 		try 
 		{
-			//Handles how the data will be displayed and handled.
 			//If the result is a matrix, call the matrix calculation method.
 			//If it's not, call the fraction calculation method.
 			if (m_answerIsMatrix)
@@ -258,13 +308,12 @@ public class MatrixGUIModel implements ActionEventHandler
 		
 		//By default, answer is matrix is true (most operations are), so reset it.
 		m_answerIsMatrix = true;
-		
 	}
 	
 	/**
-	 * Enter key pressed in "create rows" area.
+	 * On enter press in "create rows" area.
 	 *
-	 * @param a_enteredText: the text entered by the user.
+	 * @param a_enteredText the input text
 	 */
 	private void createRowsEnterPress(String a_enteredText)
 	{
@@ -277,9 +326,9 @@ public class MatrixGUIModel implements ActionEventHandler
 	}
 	
 	/**
-	 * Enter key pressed in "create columns" area.
+	 * On enter press in "create columns" area.
 	 *
-	 * @param a_enteredText: the text entered by the user.
+	 * @param a_enteredText the input text
 	 */
 	private void createColumnsEnterPress(String a_enteredText)
 	{
@@ -297,9 +346,9 @@ public class MatrixGUIModel implements ActionEventHandler
 	}
 
 	/**
-	 * Enter key pressed while editing matrix.
+	 * On enter press while editing matrix.
 	 *
-	 * @param a_enteredText: the entered text
+	 * @param a_enteredText the input text
 	 * @return true if the user is finished editing. False if not.
 	 */
 	private boolean editMatrixEnterPress(String a_enteredText)
@@ -332,9 +381,9 @@ public class MatrixGUIModel implements ActionEventHandler
 	}
 	
 	/**
-	 * Enter pressed to finish naming matrix.
+	 * On enter press to finish naming matrix.
 	 *
-	 * @param a_enteredText: the entered text
+	 * @param a_enteredText the input text
 	 */
 	private void nameMatrixEnterPress(String a_enteredText)
 	{
@@ -353,7 +402,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	}
 	
 	/**
-	 * Matrix menu enter press.
+	 * On enter press in matrix menu. Picking a matrix to use, edit, or delete.
 	 */
 	private void matrixMenuEnterPress()
 	{
@@ -371,7 +420,7 @@ public class MatrixGUIModel implements ActionEventHandler
 			}
 			else 
 			{
-				doOperation();
+				setupOperation();
 			}
 		}
 		//Edit:
@@ -391,7 +440,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	}
 	
 	/**
-	 * Delete menu enter press.
+	 * On enter press in delete menu. Selecting between "yes" and "no".
 	 */
 	private void deleteMenuEnterPress()
 	{
@@ -421,6 +470,7 @@ public class MatrixGUIModel implements ActionEventHandler
 			
 			m_displayText.setText("Matrix deleted successfully!");
 		}
+		//No selected:
 		else
 		{
 			m_displayText.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
@@ -428,9 +478,9 @@ public class MatrixGUIModel implements ActionEventHandler
 	}
 	
 	/**
-	 * Scalar enter press.
+	 * On enter press to input the scalar value
 	 *
-	 * @param a_enteredText the a entered text
+	 * @param a_enteredText the input text
 	 */
 	private void scalarEnterPress(String a_enteredText)
 	{
@@ -439,19 +489,17 @@ public class MatrixGUIModel implements ActionEventHandler
 			m_scalarFraction = Fraction.parseFraction(a_enteredText);
 			calculator.setScalar(m_scalarFraction);
 			m_amtSelected++;
-			//m_storedString = m_scalarFraction.toString() + " * ";
-			doOperation();
+			setupOperation();
 		}
 	}
 	
 	/**
 	 * The user pressed the "enter" key to input data.
 	 *
-	 * @param a_event: the event which triggered the call of the function.
+	 * @param a_event the event that triggered the action
 	*/
 	public void enterActionPerformed(ActionEvent a_event)
 	{	
-		
 		String enteredText = m_displayText.getUserEnteredText();
 		
 		//Switch based on the mode:
@@ -521,7 +569,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Delete action performed. This includes backspace, clear, and clear entry.
 	 *
-	 * @param a_event: the event that triggered the call of the function.
+	 * @param a_event the event that triggered the action
 	 */
 	public void deleteActionPerformed(ActionEvent a_event)
 	{
@@ -548,7 +596,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Arrow key pressed while editing matrix.
 	 *
-	 * @param a_direction: the direction to move
+	 * @param a_direction the direction to move
 	 */
 	private void editMatrixArrowAction(String a_direction)
 	{
@@ -604,7 +652,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Move arrow based on arrow keys. Hover over "yes" if up, "no" if down.
 	 *
-	 * @param a_direction: the direction
+	 * @param a_direction the direction to move the arrow
 	 */
 	private void deleteMatrixArrowAction(String a_direction) 
 	{
@@ -621,7 +669,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Arrow key action performed.
 	 *
-	 * @param a_event: the event that triggered the function call
+	 * @param a_event the event that triggered the action
 	 */
 	public void arrowActionPerformed(ActionEvent a_event)
 	{
@@ -672,7 +720,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Number action performed.
 	 *
-	 * @param a_event the a event
+	 * @param a_event the event that triggered the action
 	 */
 	public void numberActionPerformed(ActionEvent a_event)
 	{
@@ -684,7 +732,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Letter action performed.
 	 *
-	 * @param a_event the a event
+	 * @param a_event the event that triggered the action
 	 */
 	public void letterActionPerformed(ActionEvent a_event)
 	{
@@ -694,7 +742,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/**
 	 * Operator action performed.
 	 *
-	 * @param a_event the a event
+	 * @param a_event the event that triggerd the action
 	 */
 	public void operatorActionPerformed(ActionEvent a_event) 
 	{
@@ -707,13 +755,13 @@ public class MatrixGUIModel implements ActionEventHandler
 		
 		//Otherwise we are using the generic meaning of the operator:
 		m_operation = a_event.getActionCommand();
-		doOperation();
+		setupOperation();
 	}
 
 	/**
 	 * Matrix action performed.
 	 *
-	 * @param a_event the a event
+	 * @param a_event the event that triggered the action
 	 */
 	public void matrixActionPerformed(ActionEvent a_event) 
 	{
@@ -734,10 +782,9 @@ public class MatrixGUIModel implements ActionEventHandler
 		else 
 		{
 			m_operation = operation;
-			doOperation();
+			setupOperation();
 		}
 		
 	}
-	
 	
 }
