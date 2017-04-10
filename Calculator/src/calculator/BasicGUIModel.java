@@ -15,27 +15,37 @@ public class BasicGUIModel implements ActionEventHandler {
 	private double m_input;
 	private double m_total;
 	
+	private boolean m_replace;
+	
 	//Calculator and Required Data:
 	private BasicCalculator calculator;
-	private BasicTextArea m_displayText;
+	private BasicTextArea m_display;
 	
 	public BasicGUIModel()
 	{
 		//Create calculator
 		calculator = new BasicCalculator();	
-		m_displayText = BasicTextArea.getBasicTextAreaInstance();
+		m_display = BasicTextArea.getBasicTextAreaInstance();
+		
+		m_replace = true;
+	}
+	
+	private String formatDouble(double a_result)
+	{
+		String res = ((Double) a_result).toString();
+		String s = res.indexOf(".") < 0 ? res : res.replaceAll("0*$", "").replaceAll("\\.$", "");
+		return s;
 	}
 	
 	public void numberActionPerformed(ActionEvent a_event)
 	{	
 		//Possible error: If user uses an operation before a number
-		if (m_firstInputFlag)
-		{
-			changeDisplay("Clear", EXPRESSION);
-			m_firstInputFlag = false;
-		}
+		m_display.changeDisplay(a_event.getActionCommand(), INPUT, m_replace);
 		
-		changeDisplay(a_event.getActionCommand(), INPUT);
+		if (m_replace)
+		{
+			m_replace = false;
+		}
 	}
 	
 	public void enterActionPerformed(ActionEvent a_event)
@@ -51,32 +61,37 @@ public class BasicGUIModel implements ActionEventHandler {
 		{
 		 	KeyEvent ke = (KeyEvent) EventQueue.getCurrentEvent();
 	        keyStroke = KeyEvent.getKeyText( ke.getKeyCode() );
-	        System.out.println(keyStroke);
 		}
-			
-		System.out.println(a_event.getActionCommand());
+
 		//Clear:
 		if (a_event.getActionCommand().equals("Clr") || keyStroke.equals("Delete"))
 		{
-			changeDisplay("Clear", EXPRESSION);
-			changeDisplay("Clear", INPUT);
-			changeDisplay("0", INPUT);
+			m_display.changeDisplay("Clear", EXPRESSION, m_replace);
+			m_display.changeDisplay("Clear", INPUT, m_replace);
+			m_display.changeDisplay("0", INPUT, m_replace);
 			m_input = 0;
 			m_total = 0;
-			m_typeOverFlag = true;
+			m_replace = true;
 		}
 		//Clear Entry:
 		else if (a_event.getActionCommand().equals("CE"))
 		{
-			changeDisplay("Clear", INPUT);
-			changeDisplay("0", INPUT);
+			m_display.changeDisplay("Clear", INPUT, m_replace);
+			m_display.changeDisplay("0", INPUT, m_replace);
 			m_input = 0;
-			m_typeOverFlag = true;
+			m_replace = true;
 		}
 		//Backspace:
 		else
 		{
-			changeDisplay("Backspace", INPUT);
+			m_display.changeDisplay("Backspace", INPUT, m_replace);
+		}
+		
+		//If the text is now blank, place a 0 on the input line and set the typeOverFlag
+		if (m_display.getUserEnteredText().equals(""))
+		{
+			m_display.append("0");
+			m_replace = true;
 		}
 	}
 	
@@ -91,40 +106,38 @@ public class BasicGUIModel implements ActionEventHandler {
 		calculator.setOperation(operator);
 		
 		//Get user input and send to calculator:
-		String userInput = getUserEnteredText();
+		String userInput = m_display.getUserEnteredText();
 		m_input = Double.parseDouble(userInput);
 		calculator.setInput(m_input);
 		
 		//Show the input and operator on the expression line
-		changeDisplay(userInput + " " + operator + " ", EXPRESSION);
-		changeDisplay("Clear", INPUT);
+		m_display.changeDisplay(userInput + " " + operator + " ", EXPRESSION, m_replace);
+		m_display.changeDisplay("Clear", INPUT, m_replace);
 		
 		m_total = calculator.doCalculation();
 		
 		//Format and display the total to the user:
 		String formattedTotal = formatDouble(m_total);
-		changeDisplay(formattedTotal, INPUT);
+		m_display.changeDisplay(formattedTotal, INPUT, m_replace);
 		
-		m_typeOverFlag = true;
+		m_replace = true;
 	}
 	
 	public void miscOperatorActionPerformed(ActionEvent a_event)
 	{
 		
 		String operator = a_event.getActionCommand();
-		System.out.println("Operator: " + operator);
-		
 		String formattedTotal = "";
 		
-		String userInput = getUserEnteredText();
+		String userInput = m_display.getUserEnteredText();
 		m_input = Double.parseDouble(userInput);
 		String formattedInput = formatDouble(m_input);
 		
-		changeDisplay("Clear", INPUT);
+		m_display.changeDisplay("Clear", INPUT, m_replace);
 		
 		switch (operator)
 		{
-			case "Â±":
+			case "±":
 			{
 				
 				m_total = calculator.multiply(m_input, -1);
@@ -132,8 +145,8 @@ public class BasicGUIModel implements ActionEventHandler {
 			}
 			case "1/x":
 			{
-				changeDisplay("Clear", EXPRESSION);
-				changeDisplay("reciprocal(" + formattedInput + ")", EXPRESSION);
+				m_display.changeDisplay("Clear", EXPRESSION, m_replace);
+				m_display.changeDisplay("reciprocal(" + formattedInput + ")", EXPRESSION, m_replace);
 				m_total = calculator.divide(1, m_input);
 				break;
 			}
@@ -141,13 +154,13 @@ public class BasicGUIModel implements ActionEventHandler {
 			{
 				double result = calculator.percent(m_total, m_input);
 				formattedTotal = formatDouble(result);
-				changeDisplay(formattedTotal, EXPRESSION);
+				m_display.changeDisplay(formattedTotal, EXPRESSION, m_replace);
 				break;
 			}
 			case "√":
 			{
-				changeDisplay("Clear", EXPRESSION);
-				changeDisplay("sqrt(" + formattedInput + ")", EXPRESSION);
+				m_display.changeDisplay("Clear", EXPRESSION, m_replace);
+				m_display.changeDisplay("sqrt(" + formattedInput + ")", EXPRESSION, m_replace);
 				m_total = calculator.squareRoot(m_input);
 				break;
 			}
@@ -160,8 +173,14 @@ public class BasicGUIModel implements ActionEventHandler {
 		
 		if (!operator.equals("%"))	formattedTotal = formatDouble(m_total);
 
-		changeDisplay(formattedTotal, INPUT);
-		m_typeOverFlag = true;
+		m_display.changeDisplay(formattedTotal, INPUT, m_replace);
+		m_replace = true;
+	}
+
+	@Override
+	public void letterActionPerformed(ActionEvent a_event) 
+	{
+		
 	}	
 	
 }

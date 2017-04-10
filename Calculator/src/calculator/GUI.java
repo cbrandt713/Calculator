@@ -34,9 +34,10 @@ public class GUI extends JPanel
 	private Dimension matrixSize;
 	
 	//GUI Elements:
-	private BasicTextArea m_basicDisplay;
 	private JFrame frame;
 	private JPanel m_noWrapPanel;
+	private BasicTextArea m_basicDisplay;
+	private BasicGUIModel m_basicModel;
 	private MatrixTextPane m_matrixDisplay;
 	private MatrixGUIModel m_matrixModel;
 	private JMenu menu;
@@ -205,7 +206,7 @@ public class GUI extends JPanel
 		m_basicDisplay.setRows(2);
 		m_basicDisplay.setText("\n0");
 		m_basicDisplay.setEditable(false);
-				
+		m_basicModel = new BasicGUIModel();
 		createBasicKeybinds();
 		
 		GridBagConstraints displayC = new GridBagConstraints();
@@ -458,7 +459,7 @@ public class GUI extends JPanel
 	{
 		GridBagConstraints operatorC = new GridBagConstraints();
 		
-		miscOperatorAction = new MiscOperatorAction("±", "Make number opposite");
+		miscOperatorAction = new MiscOperatorAction("±", "Negate");
 		plusMinus = new JButton(miscOperatorAction);
 		plusMinus.setFocusable(false);
 		
@@ -589,7 +590,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			if (getGUIState() == BASIC) m_basicDisplay.numberActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicModel.numberActionPerformed(a_event);
 			else m_matrixModel.numberActionPerformed(a_event);
 		}
 		
@@ -607,7 +608,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			if (getGUIState() == BASIC) m_basicDisplay.enterActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicModel.enterActionPerformed(a_event);
 			else m_matrixModel.enterActionPerformed(a_event);
 		}
 	}
@@ -624,7 +625,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			if (getGUIState() == BASIC) m_basicDisplay.deleteActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicModel.deleteActionPerformed(a_event);
 			else m_matrixModel.deleteActionPerformed(a_event);
 		}
 	}
@@ -640,7 +641,7 @@ public class GUI extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
-			if (getGUIState() == BASIC) m_basicDisplay.operatorActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicModel.operatorActionPerformed(a_event);
 			else m_matrixModel.operatorActionPerformed(a_event);
 		}
 	}
@@ -655,7 +656,7 @@ public class GUI extends JPanel
 		
 		public void actionPerformed(ActionEvent a_event)
 		{
-			if (getGUIState() == BASIC) m_basicDisplay.miscOperatorActionPerformed(a_event);
+			if (getGUIState() == BASIC) m_basicModel.miscOperatorActionPerformed(a_event);
 		}
 	}
 	

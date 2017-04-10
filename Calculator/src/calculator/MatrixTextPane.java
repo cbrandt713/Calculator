@@ -579,14 +579,14 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 		m_displayText.setCharacterAttributes(0, m_displayText.getLength(), m_underlineSet, true);
 	}
 
-	public void insertCharacter(String text) 
+	public void insertCharacter(String a_char) 
 	{
 		if (m_replace) 
 		{	
 			m_replace = false;
-			replaceText(m_currentTextPos, getLengthOfTextAtPos(m_currentTextPos), text);
+			replaceText(m_currentTextPos, getLengthOfTextAtPos(m_currentTextPos), a_char);
 		}
-		else insertString(m_currentTextPos, text);
+		else insertString(m_currentTextPos, a_char);
 		
 		if (getMode() == EDIT_MATRIX)
 		{

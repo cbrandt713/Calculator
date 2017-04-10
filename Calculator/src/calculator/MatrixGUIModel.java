@@ -69,7 +69,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	
 	/** The m display text. */
 	//The Text and Calculators associated with the model:
-	private MatrixTextPane m_displayText;
+	private MatrixTextPane m_display;
 	
 	/** The calculator. */
 	private MatrixCalculator calculator;
@@ -80,7 +80,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	public MatrixGUIModel()
 	{
 		//Initialize defaults:
-		m_displayText = MatrixTextPane.getInstance();
+		m_display = MatrixTextPane.getInstance();
 		m_matrices = new Matrix[20];
 		m_amtMatrices = 0;
 		m_defaultName = 'A';
@@ -226,7 +226,7 @@ public class MatrixGUIModel implements ActionEventHandler
 		//Make the user choose a matrix to do the operation:
 		if (m_selectedMatrix == null) 
 		{
-			m_displayText.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
+			m_display.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
 			return;
 		}
 		
@@ -246,9 +246,9 @@ public class MatrixGUIModel implements ActionEventHandler
 		calculator.setOperation(m_operation);		
 		
 		//Set the text appropriately for the operation:
-		if (m_operation.equals("Scalar") && m_amtSelected == 1) m_displayText.getScalar();
-		else if (m_amtOperands == 1) m_displayText.setTextForUnaryOperation(m_operation, m_selectedMatrix);
-		else m_displayText.setTextForBinaryOperation(m_operation, m_selectedMatrix, m_amtSelected, m_scalarFraction);
+		if (m_operation.equals("Scalar") && m_amtSelected == 1) m_display.getScalar();
+		else if (m_amtOperands == 1) m_display.setTextForUnaryOperation(m_operation, m_selectedMatrix);
+		else m_display.setTextForBinaryOperation(m_operation, m_selectedMatrix, m_amtSelected, m_scalarFraction);
 			
 		//Only do operation on correct amount selected
 		if ( (m_amtOperands == 1 && m_amtSelected == 1) || (m_amtOperands == 2 && m_amtSelected == 2) )
@@ -281,7 +281,7 @@ public class MatrixGUIModel implements ActionEventHandler
 				m_amtSelected = 1;
 				
 				//Display the result:
-				m_displayText.displayMatrixResult(m_answerMatrix);
+				m_display.displayMatrixResult(m_answerMatrix);
 			}
 			else
 			{
@@ -293,7 +293,7 @@ public class MatrixGUIModel implements ActionEventHandler
 				m_amtSelected = 0;
 				
 				//Display the result:
-				m_displayText.displayFractionResult(m_answerFraction);
+				m_display.displayFractionResult(m_answerFraction);
 			}
 			
 			//Reset the operation
@@ -303,7 +303,7 @@ public class MatrixGUIModel implements ActionEventHandler
 		//If the operation failed, catch the exception and display it.
 		catch (MatrixException exception) 
 		{
-			m_displayText.displayException(exception);
+			m_display.displayException(exception);
 		}
 		
 		//By default, answer is matrix is true (most operations are), so reset it.
@@ -321,7 +321,7 @@ public class MatrixGUIModel implements ActionEventHandler
 		if (tryIntParse(a_enteredText))
 		{
 			m_rows = Integer.parseInt(a_enteredText);
-			m_displayText.createColumns();
+			m_display.createColumns();
 		}
 	}
 	
@@ -341,7 +341,7 @@ public class MatrixGUIModel implements ActionEventHandler
 			m_matrices[m_amtMatrices] = new Matrix(m_rows, m_columns);
 			m_selectedMatrix = m_matrices[m_amtMatrices];
 			m_amtMatrices++;
-			m_displayText.drawMatrix(m_selectedMatrix);
+			m_display.drawMatrix(m_selectedMatrix);
 		}
 	}
 
@@ -360,8 +360,8 @@ public class MatrixGUIModel implements ActionEventHandler
 			m_currentRow = 0;
 			m_currentColumn = 0;
 			//If editing the matrix, do not rename it.
-			if (m_underlinePos == 1) m_displayText.setText("Matrix Edited Successfully!");
-			else m_displayText.nameMatrix();
+			if (m_underlinePos == 1) m_display.setText("Matrix Edited Successfully!");
+			else m_display.nameMatrix();
 			
 			//The user is done editing. Return.
 			return true;
@@ -387,7 +387,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	 */
 	private void nameMatrixEnterPress(String a_enteredText)
 	{
-		m_displayText.resetUnderline();
+		m_display.resetUnderline();
 		
 		//If nothing was entered, use default naming scheme:
 		if (a_enteredText.equals(""))
@@ -398,7 +398,7 @@ public class MatrixGUIModel implements ActionEventHandler
 		//Name matrix:
 		m_matrices[m_amtMatrices - 1].setName(a_enteredText);
 		
-		m_displayText.setText("Matrix Added Successfully!");
+		m_display.setText("Matrix Added Successfully!");
 	}
 	
 	/**
@@ -416,7 +416,7 @@ public class MatrixGUIModel implements ActionEventHandler
 			
 			if (m_operation.equals("")) 
 			{
-				m_displayText.setText(m_selectedMatrix.getName());
+				m_display.setText(m_selectedMatrix.getName());
 			}
 			else 
 			{
@@ -428,14 +428,14 @@ public class MatrixGUIModel implements ActionEventHandler
 		{
 			m_currentRow = 0;
 			m_currentColumn = 0;
-			m_displayText.setText("Editing " + m_selectedMatrix.getName() + ":\n");
-			m_displayText.drawMatrix(m_selectedMatrix);
+			m_display.setText("Editing " + m_selectedMatrix.getName() + ":\n");
+			m_display.drawMatrix(m_selectedMatrix);
 		}
 		//Delete:
 		else if (m_underlinePos == 2)
 		{
 			m_arrowPointer = 1;
-			m_displayText.deleteMenu(m_selectedMatrix, m_arrowPointer);
+			m_display.deleteMenu(m_selectedMatrix, m_arrowPointer);
 		}
 	}
 	
@@ -468,12 +468,12 @@ public class MatrixGUIModel implements ActionEventHandler
 			m_amtMatrices--;
 			m_matrices[m_amtMatrices] = null;
 			
-			m_displayText.setText("Matrix deleted successfully!");
+			m_display.setText("Matrix deleted successfully!");
 		}
 		//No selected:
 		else
 		{
-			m_displayText.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
+			m_display.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
 		}
 	}
 	
@@ -500,10 +500,10 @@ public class MatrixGUIModel implements ActionEventHandler
 	*/
 	public void enterActionPerformed(ActionEvent a_event)
 	{	
-		String enteredText = m_displayText.getUserEnteredText();
+		String enteredText = m_display.getUserEnteredText();
 		
 		//Switch based on the mode:
-		switch (m_displayText.getMode()) 
+		switch (m_display.getMode()) 
 		{
 			//Typing in the rows section:
 			case MatrixTextPane.CREATE_ROWS:
@@ -529,7 +529,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	        	editMatrixArrowAction("Right");
 	        	
 	        	//Since we weren't done, recall the method to edit.
-	    		m_displayText.editMatrix(m_currentRow, m_currentColumn, m_selectedMatrix);
+	    		m_display.editMatrix(m_currentRow, m_currentColumn, m_selectedMatrix);
 	
 				break;
 			}
@@ -577,18 +577,18 @@ public class MatrixGUIModel implements ActionEventHandler
 		if (a_event.getActionCommand().equals("Clr"))
 		{
 			setDefaultValues();
-			m_displayText.setDefaultValues();
-			m_displayText.setText("");
+			m_display.setDefaultValues();
+			m_display.setText("");
 		}
 		//Clear entry command:
 		else if (a_event.getActionCommand().equals("CE"))
 		{
-			m_displayText.clearEntry();
+			m_display.clearEntry();
 		}
 		//Backspace command:
 		else
 		{	
-			m_displayText.backspace();
+			m_display.backspace();
 		}
 		
 	}
@@ -633,17 +633,17 @@ public class MatrixGUIModel implements ActionEventHandler
 			}
 		}
 		
-		String text = m_displayText.getText();
+		String text = m_display.getText();
 		
 		//If we are hovering over done, add an "arrow" to indicate position.
 		if (m_currentRow == m_selectedMatrix.getRows() && !text.substring(text.length() - 3, text.length()).equals("<--"))
 		{
-			m_displayText.append(" <--");
+			m_display.append(" <--");
 		}
 		//If we are not on done but the arrow is still there, remove it.
 		else if (m_currentRow != m_selectedMatrix.getRows() && text.substring(text.length() - 3, text.length()).equals("<--"))
 		{
-			m_displayText.remove(text.length() - 3, 3);
+			m_display.remove(text.length() - 3, 3);
 			
 		}
 		
@@ -677,22 +677,22 @@ public class MatrixGUIModel implements ActionEventHandler
 		KeyEvent ke = (KeyEvent) EventQueue.getCurrentEvent();
         String direction = KeyEvent.getKeyText( ke.getKeyCode() );
         
-        if (m_displayText.getMode() == MatrixTextPane.EDIT_MATRIX)
+        if (m_display.getMode() == MatrixTextPane.EDIT_MATRIX)
         {
-    		String enteredText = m_displayText.getUserEnteredText();
+    		String enteredText = m_display.getUserEnteredText();
     		
         	if (m_currentRow != m_selectedMatrix.getRows()) editMatrixEnterPress(enteredText);
         	editMatrixArrowAction(direction);
-        	m_displayText.editMatrix(m_currentRow, m_currentColumn, m_selectedMatrix);
+        	m_display.editMatrix(m_currentRow, m_currentColumn, m_selectedMatrix);
         }
         
-        if (m_displayText.getMode() == MatrixTextPane.DELETE_MENU)
+        if (m_display.getMode() == MatrixTextPane.DELETE_MENU)
         {
         	deleteMatrixArrowAction(direction);
-        	m_displayText.deleteMenu(m_selectedMatrix, m_arrowPointer);
+        	m_display.deleteMenu(m_selectedMatrix, m_arrowPointer);
         }
         
-		if (m_displayText.getMode() != MatrixTextPane.MATRIX_MENU)
+		if (m_display.getMode() != MatrixTextPane.MATRIX_MENU)
 		{
 			return;
 		}
@@ -714,7 +714,7 @@ public class MatrixGUIModel implements ActionEventHandler
 			if (m_underlinePos > 0) m_underlinePos--;
 		}
 
-		m_displayText.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
+		m_display.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
 	}
 
 	/**
@@ -726,7 +726,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	{
 		String text = a_event.getActionCommand();
 		
-		m_displayText.insertCharacter(text);
+		m_display.insertCharacter(text);
 	}
 	
 	/**
@@ -747,7 +747,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	public void operatorActionPerformed(ActionEvent a_event) 
 	{
 		//In the case that we are using the "/" or "-" operator to indicate a fraction:
-		if (m_displayText.getMode() == MatrixTextPane.EDIT_MATRIX)
+		if (m_display.getMode() == MatrixTextPane.EDIT_MATRIX)
 		{
 			letterActionPerformed(a_event);
 			return;
@@ -765,7 +765,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	 */
 	public void matrixActionPerformed(ActionEvent a_event) 
 	{
-		m_displayText.setText("");
+		m_display.setText("");
 		String operation = a_event.getActionCommand();
 		
 		if (operation.equals("Det") || operation.equals("Trace") 
@@ -773,11 +773,11 @@ public class MatrixGUIModel implements ActionEventHandler
 		
 		if (operation.equals("Create")) 
 		{
-			m_displayText.createRows();
+			m_display.createRows();
 		}
 		else if (operation.equals("Matrix")) 
 		{
-			m_displayText.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
+			m_display.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
 		}
 		else 
 		{
