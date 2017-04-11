@@ -14,61 +14,58 @@ import java.awt.event.KeyEvent;
 public class MatrixGUIModel implements ActionEventHandler
 {
 	
-	/** The m matrices. */
-	//Data objects:
+	/** The matrices. */
 	private Matrix[] m_matrices;
 	
-	/** The m selected matrix. */
+	/** The selected matrix. */
 	private Matrix m_selectedMatrix;
 	
-	/** The m answer matrix. */
+	/** The answer matrix. */
 	private Matrix m_answerMatrix;
 	
-	/** The m answer fraction. */
+	/** The answer fraction. */
 	private Fraction m_answerFraction;
 	
-	/** The m scalar fraction. */
+	/** The scalar fraction. */
 	private Fraction m_scalarFraction;
 	
-	/** The m amt matrices. */
+	/** The amount of matrices. */
 	private int m_amtMatrices;
 	
-	/** The m current row. */
+	/** The current row. */
 	private int m_currentRow;
 	
-	/** The m current column. */
+	/** The current column. */
 	private int m_currentColumn;
 	
-	/** The m answer is matrix. */
+	/** Is the answer a matrix? */
 	private boolean m_answerIsMatrix;
 	
-	/** The m default name. */
+	/** The default name. */
 	private Character m_defaultName;
 	
-	/** The m underline pos. */
+	/** The underline pos. */
 	private int m_underlinePos;
 	
-	/** The m operation. */
+	/** The operation. */
 	private String m_operation;
 	
-	/** The m rows. */
-	//Matrix creation properties:
+	/** The rows. */
 	private int m_rows;
 	
-	/** The m columns. */
+	/** The columns. */
 	private int m_columns;
 	
-	/** The m arrow pointer. */
+	/** The arrow pointer. */
 	private int m_arrowPointer;
 	
-	/** The m amt operands. */
+	/** The amount of operands. */
 	private int m_amtOperands;
 	
-	/** The m amt selected. */
+	/** The amount selected. */
 	private int m_amtSelected;
 	
-	/** The m display text. */
-	//The Text and Calculators associated with the model:
+	/** The display text. */
 	private MatrixTextPane m_display;
 	
 	/** The calculator. */
@@ -251,7 +248,7 @@ public class MatrixGUIModel implements ActionEventHandler
 		else m_display.setTextForBinaryOperation(m_operation, m_selectedMatrix, m_amtSelected, m_scalarFraction);
 			
 		//Only do operation on correct amount selected
-		if ( (m_amtOperands == 1 && m_amtSelected == 1) || (m_amtOperands == 2 && m_amtSelected == 2) )
+		if ( m_amtOperands == m_amtSelected )
 		{
 			tryAndDisplayOperation();
 		}

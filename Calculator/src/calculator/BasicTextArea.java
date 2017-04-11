@@ -43,7 +43,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		
 		try 
 		{
-			return m_displayText.getText(newLineChar + 1, m_displayText.getLength() - 1);
+			return m_displayText.getText(newLineChar + 1, getText().length() - newLineChar - 1);
 		} 
 		catch (BadLocationException e)
 		{
@@ -55,19 +55,36 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	
 	private int getLocNewLineChar()
 	{
-		int newLineChar = -1;
-		
-		try 
+		return getText().indexOf("\n");	
+	}
+	
+	public void setTextForUnary(String a_operator, String a_userInput)
+	{
+		switch (a_operator)
 		{
-			newLineChar = getLineEndOffset(0) - 1;
-		} 
-		catch (BadLocationException e) 
-		{
-			e.printStackTrace();
+			case "±":
+			{
+				break;
+			}
+			case "1/x":
+			{
+				clearExpression();
+				changeDisplay("reciprocal(" + a_userInput + ")", EXPRESSION, false);
+				break;
+			}
+			case "√":
+			{
+				clearExpression();
+				changeDisplay("sqrt(" + a_userInput + ")", EXPRESSION, false);
+				break;
+			}
 		}
 		
-		return newLineChar;
-		
+	}
+	
+	public void setTextForBinary(String a_operator, String a_userInput)
+	{
+		changeDisplay(a_userInput + " " + a_operator + " ", EXPRESSION, false);
 	}
 	
 	public void changeDisplay(String message, int lineNum, boolean a_replace)
@@ -84,13 +101,14 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 			changeInputLine(message, newLineChar, a_replace);
 		}
 		
+		System.out.println("Text changed to: " + getText());
 	}
 	
 	private void changeExpressionLine(String a_message, int a_newLineChar, boolean a_replace)
 	{
 		if (a_message.equals("Clear"))
 		{
-			setText(getText().substring(a_newLineChar - 1));
+			clearExpression();
 		}
 		else
 		{
@@ -122,6 +140,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		//If no special case, just append a character to the end of the input line:
 		else 
 		{
+			//insertString(a_newLineChar + 1, a_message);
 			append(a_message);
 		}
 	}
@@ -148,6 +167,22 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 			
 	}
+	
+	public void clearExpression()
+	{
+		int newLineChar = getLocNewLineChar();
+		
+		if (newLineChar == -1) return;
+		
+		try
+		{
+			m_displayText.remove(0, newLineChar);
+		}
+		catch (BadLocationException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void clearEntry() 
@@ -158,7 +193,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		
 		try 
 		{
-			m_displayText.remove(newLineChar, m_displayText.getLength() - newLineChar - 1);
+			m_displayText.remove(newLineChar + 1, getText().length() - newLineChar - 1);
 		} 
 		catch (BadLocationException e) 
 		{

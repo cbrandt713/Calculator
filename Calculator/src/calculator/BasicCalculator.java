@@ -48,7 +48,7 @@ public class BasicCalculator extends Calculator<Double>
 	 */
 	public void setInput(Double a_input)
 	{
-		if (m_input == null || m_operation.equals("")) m_input = a_input;
+		if (m_input == -Double.MAX_VALUE || m_operation.equals("")) m_input = a_input;
 		else m_input2 = a_input;
 	}
 
@@ -58,7 +58,7 @@ public class BasicCalculator extends Calculator<Double>
 	public Double doCalculation()
 	{
 		//If less than two operands, no calculation. Return original value.
-		if (m_input == -Double.MAX_VALUE && m_input2 == -Double.MAX_VALUE)
+		if (m_input == -Double.MAX_VALUE || m_input2 == -Double.MAX_VALUE)
 		{
 			return m_input;
 		}
@@ -95,6 +95,44 @@ public class BasicCalculator extends Calculator<Double>
 			{
 				System.out.println("An unknown error has occurred");
 				break;
+			}
+		}
+		
+		resetInputs();
+		m_operation = "";
+		m_input = m_result;
+		
+		return m_result;
+	}
+	
+	public Double doMiscCalculation()
+	{
+		switch (m_operation)
+		{
+			case "±":
+			{
+				m_result = multiply(m_input, -1);
+				break;
+			}
+			case "1/x":
+			{
+				m_result  = divide(1, m_input);
+				break;
+			}
+			case "%":
+			{
+				m_result  = percent(m_input, m_input2);
+				break;
+			}
+			case "√":
+			{
+				m_result  = squareRoot(m_input);
+				break;
+			}
+			//Error:
+			default:
+			{
+				System.out.println("An unknown error has occurred");
 			}
 		}
 		

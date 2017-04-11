@@ -226,10 +226,12 @@ public class GUI extends JPanel
 		numberAction = new NumberAction("", "");
 		deleteAction = new DeleteAction("", "");
 		operatorAction = new OperatorAction("", "");
+		enterAction = new EnterAction("", "");
 		
 		m_basicDisplay.getActionMap().put("number", numberAction);
 		m_basicDisplay.getActionMap().put("delete", deleteAction);
 		m_basicDisplay.getActionMap().put("operation", operatorAction);
+		m_basicDisplay.getActionMap().put("enter", enterAction);
 		
 		for (Integer i = 0; i <= 9; i++)
 		{
@@ -244,8 +246,8 @@ public class GUI extends JPanel
 		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('-'), "operation");
 		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('*'), "operation");
 		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('/'), "operation");
-		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('='), "operation");
-		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "operation");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke('='), "enter");
+		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
 	}
 	
 	private void createMatrixDisplay()
