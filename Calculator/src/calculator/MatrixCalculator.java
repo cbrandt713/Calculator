@@ -1,15 +1,28 @@
 package calculator;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MatrixCalculator.
+ */
 public class MatrixCalculator extends Calculator<Matrix> {
 
+	/** The m fraction scalar. */
 	private Fraction m_fractionScalar;
+	
+	/** The m fraction result. */
 	private Fraction m_fractionResult;
 	
+	/**
+	 * Instantiates a new matrix calculator.
+	 */
 	public MatrixCalculator()
 	{
 		resetAll();
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.Calculator#resetAll()
+	 */
 	protected void resetAll()
 	{
 		m_input = null;
@@ -20,6 +33,9 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		m_fractionResult = null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.Calculator#resetInputs()
+	 */
 	protected void resetInputs()
 	{
 		m_input = null;
@@ -27,22 +43,48 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		m_fractionScalar = null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.Calculator#setOperation(java.lang.String)
+	 */
 	public void setOperation(String a_operation)
 	{
 		m_operation = a_operation;
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.Calculator#setInput(java.lang.Object)
+	 */
 	public void setInput(Matrix a_input)
 	{
 		if (m_input == null) m_input = a_input;
 		else m_input2 = a_input;
 	}
 	
+	/**
+	 * Sets the scalar.
+	 *
+	 * @param a_input the new scalar
+	 */
 	public void setScalar(Fraction a_input)
 	{
 		m_fractionScalar = a_input;
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.Calculator#getAmountInputs()
+	 */
+	@Override
+	public int getAmountInputs() {
+		
+		if (m_input == null) return 0;
+		else if (m_input2 == null) return 1;
+		
+		return 2;
+	}
+	
+	/* (non-Javadoc)
+	 * @see calculator.Calculator#doCalculation()
+	 */
 	public Matrix doCalculation() throws MatrixException
 	{
 		switch (m_operation)
@@ -102,6 +144,12 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return m_result;
 	}
 	
+	/**
+	 * Fraction result operation.
+	 *
+	 * @return the fraction
+	 * @throws MatrixException the matrix exception
+	 */
 	public Fraction fractionResultOperation() throws MatrixException
 	{
 		switch (m_operation)
@@ -132,6 +180,12 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	
 	}
 	
+	/**
+	 * Matrix binary operation.
+	 *
+	 * @return the matrix
+	 * @throws MatrixException the matrix exception
+	 */
 	public Matrix matrixBinaryOperation() throws MatrixException
 	{
 		
@@ -146,6 +200,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return m_result;
 	}
 	
+	/**
+	 * Adds the row.
+	 *
+	 * @param fromRow the from row
+	 * @param toRow the to row
+	 * @param a_subtract the a subtract
+	 * @return the fraction[]
+	 */
 	//Add the rows in a_matrix in index a_fromIndex to the row in a_toIndex
 	public Fraction[] addRow(Fraction[] fromRow, Fraction[] toRow, boolean a_subtract)
 	{
@@ -167,6 +229,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		
 	}
 	
+	/**
+	 * Multiply row.
+	 *
+	 * @param a_row the a row
+	 * @param a_multBy the a mult by
+	 * @param a_divide the a divide
+	 * @return the fraction[]
+	 */
 	public Fraction[] multiplyRow(Fraction[] a_row, Fraction a_multBy, boolean a_divide)
 	{
 		if (a_divide) a_multBy = a_multBy.reciprocal(); 
@@ -181,6 +251,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return newRow;
 	}
 	
+	/**
+	 * Adds the matrices.
+	 *
+	 * @param a_LHS the a LHS
+	 * @param a_RHS the a RHS
+	 * @return the matrix
+	 * @throws MatrixException the matrix exception
+	 */
 	public Matrix addMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
 	{
 		//Make sure the matrices are of compatible size:
@@ -208,6 +286,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return sum;
 	}
 	
+	/**
+	 * Subtract matrices.
+	 *
+	 * @param a_LHS the a LHS
+	 * @param a_RHS the a RHS
+	 * @return the matrix
+	 * @throws MatrixException the matrix exception
+	 */
 	public Matrix subtractMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
 	{
 		//Make sure the matrices are of compatible size:
@@ -236,6 +322,13 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	}
 	
 	
+	/**
+	 * Multiply row by column.
+	 *
+	 * @param a_row the a row
+	 * @param a_column the a column
+	 * @return the fraction
+	 */
 	private Fraction multiplyRowByColumn(Fraction[] a_row, Fraction[] a_column)
 	{
 		int length = a_row.length;
@@ -257,6 +350,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return total;
 	}
 	
+	/**
+	 * Multiply matrices.
+	 *
+	 * @param a_LHS the a LHS
+	 * @param a_RHS the a RHS
+	 * @return the matrix
+	 * @throws MatrixException the matrix exception
+	 */
 	public Matrix multiplyMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
 	{
 		//The amount of columns in the LHS must match number of rows in the RHS:
@@ -287,6 +388,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	
 	//Matrix definition does not formally exist.
 	//For consistency's sake, we will define matrix definition as multiplying a_LHS by
+	/**
+	 * Divide matrices.
+	 *
+	 * @param a_LHS the a LHS
+	 * @param a_RHS the a RHS
+	 * @return the matrix
+	 * @throws MatrixException the matrix exception
+	 */
 	//the inverse of a_RHS.
 	public Matrix divideMatrices(Matrix a_LHS, Matrix a_RHS) throws MatrixException
 	{
@@ -297,6 +406,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return multiplyMatrices(a_LHS, a_RHS);
 	}
 	
+	/**
+	 * Scalar multiply.
+	 *
+	 * @param a_scalar the a scalar
+	 * @param a_matrix the a matrix
+	 * @return the matrix
+	 * @throws MatrixException the matrix exception
+	 */
 	public Matrix scalarMultiply(Fraction a_scalar, Matrix a_matrix) throws MatrixException
 	{	
 		if (a_scalar == null)
@@ -320,6 +437,12 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return scalarMatrix;
 	}
 
+	/**
+	 * Ref.
+	 *
+	 * @param a_matrix the a matrix
+	 * @return the matrix
+	 */
 	public Matrix REF(Matrix a_matrix)
 	{
 		int numRows = a_matrix.getRows();
@@ -402,6 +525,12 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return ref;	
 	}
 	
+	/**
+	 * Rref.
+	 *
+	 * @param a_matrix the a matrix
+	 * @return the matrix
+	 */
 	public Matrix RREF(Matrix a_matrix)
 	{
 		int numRows = a_matrix.getRows();
@@ -487,6 +616,13 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return rref;	
 	}
 	
+	/**
+	 * Invert matrix.
+	 *
+	 * @param a_matrix the a matrix
+	 * @return the matrix
+	 * @throws MatrixException the matrix exception
+	 */
 	public Matrix invertMatrix(Matrix a_matrix) throws MatrixException
 	{
 		int amtRows = a_matrix.getRows();
@@ -544,6 +680,13 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		
 	}
 	
+	/**
+	 * Determinant 2 by 2.
+	 *
+	 * @param a_matrix the a matrix
+	 * @return the fraction
+	 * @throws MatrixException the matrix exception
+	 */
 	public Fraction determinant2by2(Matrix a_matrix) throws MatrixException
 	{
 		if (a_matrix.getRows() != 2 && a_matrix.getColumns() != 2)
@@ -556,6 +699,13 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return LHS.subtract(RHS);
 	}
 	
+	/**
+	 * Determinant.
+	 *
+	 * @param a_matrix the a matrix
+	 * @return the fraction
+	 * @throws MatrixException the matrix exception
+	 */
 	public Fraction determinant(Matrix a_matrix) throws MatrixException
 	{
 		if (!a_matrix.isSquareMatrix())
@@ -660,6 +810,12 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return determinant;
 	}
 	
+	/**
+	 * Rank.
+	 *
+	 * @param a_matrix the a matrix
+	 * @return the fraction
+	 */
 	public Fraction rank(Matrix a_matrix)
 	{
 		//Rank will always be a positive integer.
@@ -676,6 +832,13 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return new Fraction(rank);
 	}
 	
+	/**
+	 * Trace.
+	 *
+	 * @param a_matrix the a matrix
+	 * @return the fraction
+	 * @throws MatrixException the matrix exception
+	 */
 	public Fraction trace(Matrix a_matrix) throws MatrixException
 	{
 		if (!a_matrix.isSquareMatrix())
@@ -693,6 +856,12 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		return trace;
 	}
 	
+	/**
+	 * Transpose.
+	 *
+	 * @param a_matrix the a matrix
+	 * @return the matrix
+	 */
 	public Matrix transpose(Matrix a_matrix) 
 	{
 		int amtRows = a_matrix.getRows();
@@ -711,5 +880,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 		
 		return transpose;
 	}
+
+
 
 }

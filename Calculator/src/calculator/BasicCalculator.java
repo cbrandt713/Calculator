@@ -1,5 +1,7 @@
 package calculator;
 
+import javax.swing.JOptionPane;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class BasicCalculator.
@@ -53,14 +55,31 @@ public class BasicCalculator extends Calculator<Double>
 	}
 
 	/* (non-Javadoc)
+	 * @see calculator.Calculator#getAmountInputs()
+	 */
+	public int getAmountInputs()
+	{
+		if (m_input == -Double.MAX_VALUE) return 0;
+		else if (m_input2 == -Double.MAX_VALUE) return 1;
+		
+		return 2;
+	}
+	/* (non-Javadoc)
 	 * @see calculator.Calculator#doCalculation()
 	 */
-	public Double doCalculation()
+	public Double doCalculation() 
 	{
 		//If less than two operands, no calculation. Return original value.
-		if (m_input == -Double.MAX_VALUE || m_input2 == -Double.MAX_VALUE)
+		if (m_input2 == -Double.MAX_VALUE)
 		{
 			return m_input;
+		}
+		
+		if ( Double.isNaN(m_input) || Double.isNaN(m_input2))
+		{
+			JOptionPane.showMessageDialog(GUI.getGUIInstance(), "Please press clear to continue.", "Error", JOptionPane.ERROR_MESSAGE);
+			return m_input;
+			//throw new Exception("NaN input");
 		}
 		
 		switch (m_operation)
@@ -100,13 +119,25 @@ public class BasicCalculator extends Calculator<Double>
 		
 		resetInputs();
 		m_operation = "";
-		m_input = m_result;
+		setInput(m_result);
 		
 		return m_result;
 	}
 	
-	public Double doMiscCalculation()
+	/**
+	 * Do misc calculation.
+	 *
+	 * @return the double
+	 */
+	public Double doMiscCalculation() 
 	{
+		if (m_input == Double.NaN || m_input == Double.NaN)
+		{
+			JOptionPane.showMessageDialog(GUI.getGUIInstance(), "Please press clear to continue.");
+			return m_input;
+			//throw new NumberFormatException("NaN input");
+		}
+		
 		switch (m_operation)
 		{
 			case "±":
@@ -138,13 +169,13 @@ public class BasicCalculator extends Calculator<Double>
 		
 		resetInputs();
 		m_operation = "";
-		m_input = m_result;
+		setInput(m_result);
 		
 		return m_result;
 	}
 	
 	/**
-	 * Adds two inputs
+	 * Adds two inputs.
 	 *
 	 * @param LHS the left-hand side
 	 * @param RHS the right-hand side

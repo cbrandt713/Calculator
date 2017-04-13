@@ -4,27 +4,47 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class BasicGUIModel.
+ */
 public class BasicGUIModel implements ActionEventHandler {
 
+	/** The Constant EXPRESSION. */
 	//Display Line Number Constants:
 	public static final int EXPRESSION = 0;
+	
+	/** The Constant INPUT. */
 	public static final int INPUT = 1;
 	
+	/** The m input. */
 	private double m_input;
+	
+	/** The m total. */
 	private double m_total;
 	
+	/** The m replace. */
 	private boolean m_replace;
+	
+	/** The m misc operation. */
 	private boolean m_miscOperation;
 	
-	private int m_amtSelected;
+	/** The m amt operands. */
 	private int m_amtOperands;
 	
+	/** The m calculator. */
 	//Calculator and Required Data:
 	private BasicCalculator m_calculator;
+	
+	/** The m display. */
 	private BasicTextArea m_display;
 	
+	/**
+	 * Instantiates a new basic GUI model.
+	 */
 	public BasicGUIModel()
 	{
 		//Create calculator
@@ -34,6 +54,9 @@ public class BasicGUIModel implements ActionEventHandler {
 		setDefaultValues();
 	}
 	
+	/**
+	 * Sets the default values.
+	 */
 	private void setDefaultValues()
 	{
 		m_display.setText("\n0");
@@ -43,10 +66,15 @@ public class BasicGUIModel implements ActionEventHandler {
 		m_total = 0;
 		m_replace = true;
 		m_miscOperation = false;
-		m_amtSelected = 0;
 		m_amtOperands = 0;
 	}
 	
+	/**
+	 * Format double.
+	 *
+	 * @param a_result the a result
+	 * @return the string
+	 */
 	private String formatDouble(double a_result)
 	{
 		String res = ((Double) a_result).toString();
@@ -54,6 +82,11 @@ public class BasicGUIModel implements ActionEventHandler {
 		return s;
 	}
 	
+	/**
+	 * Sets the up calculation.
+	 *
+	 * @param a_operator the new up calculation
+	 */
 	private void setupCalculation(String a_operator)
 	{
 		//Get user input and send to calculator:
@@ -61,16 +94,22 @@ public class BasicGUIModel implements ActionEventHandler {
 		m_input = Double.parseDouble(userInput);
 		m_calculator.setInput(m_input);
 		
+		if (Double.isNaN(m_input))
+		{
+			JOptionPane.showMessageDialog(GUI.getGUIInstance(), "Please press clear to continue.");
+			return;
+		}
+		
 		//Show the input and operator on the expression line
 		m_display.changeDisplay(userInput + " " + a_operator + " ", EXPRESSION, m_replace);
 		m_display.changeDisplay("Clear", INPUT, m_replace);
 		
-		m_amtSelected++;
+		int amtSelected = m_calculator.getAmountInputs();
 		
-		if (m_amtSelected != m_amtOperands) return;
+		if (amtSelected < m_amtOperands) return;
 		
 		if (m_amtOperands == 1) m_display.setTextForUnary(a_operator, userInput);
-		else m_display.setTextForBinary(a_operator, userInput);
+		//else m_display.setTextForBinary(a_operator, userInput);
 		
 		if (!m_miscOperation) 
 		{
@@ -82,34 +121,27 @@ public class BasicGUIModel implements ActionEventHandler {
 		}
 		
 		//Format and display the total to the user:
-		String formattedTotal = formatDouble(m_total);
-		if (a_operator.equals("%")) m_display.changeDisplay(formattedTotal, EXPRESSION, m_replace);
-		m_display.changeDisplay(formattedTotal, INPUT, m_replace);
+		displayResult(m_total, a_operator);
 		
 		m_replace = true;
 	}
 	
-	private void setupMiscCalculation(String a_operator, String formattedInput) 
+	/**
+	 * Display result.
+	 *
+	 * @param a_result the a result
+	 * @param a_operator the a operator
+	 */
+	private void displayResult(double a_result, String a_operator)
 	{
-		
-		switch (a_operator)
-		{
-			
-			case "%":
-			{
-				m_display.changeDisplay(formattedInput, EXPRESSION, m_replace);
-				break;
-			}
-			
-			//Error:
-			default:
-			{
-				System.out.println("An unknown error has occurred");
-			}
-		}
-		
+		String formattedResult = formatDouble(a_result);
+		if (a_operator.equals("%")) m_display.changeDisplay(formattedResult, EXPRESSION, m_replace);
+		m_display.changeDisplay(formattedResult, INPUT, false);
 	}
 
+	/* (non-Javadoc)
+	 * @see calculator.ActionEventHandler#numberActionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void numberActionPerformed(ActionEvent a_event)
 	{	
 		//Possible error: If user uses an operation before a number
@@ -121,13 +153,20 @@ public class BasicGUIModel implements ActionEventHandler {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.ActionEventHandler#enterActionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void enterActionPerformed(ActionEvent a_event)
 	{
 		//Enter key is equivalent to the = operator.
 		//Do not change the operator in calculator here
 		setupCalculation("=");
+		m_display.clearExpression();
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.ActionEventHandler#deleteActionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void deleteActionPerformed(ActionEvent a_event)
 	{
 		String keyStroke = "";
@@ -138,7 +177,6 @@ public class BasicGUIModel implements ActionEventHandler {
 	        keyStroke = KeyEvent.getKeyText( ke.getKeyCode() );
 		}
 	 	
-
 		//Clear:
 		if (a_event.getActionCommand().equals("Clr") || keyStroke.equals("Delete"))
 		{
@@ -165,6 +203,9 @@ public class BasicGUIModel implements ActionEventHandler {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.ActionEventHandler#operatorActionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void operatorActionPerformed(ActionEvent a_event)
 	{
 		//Find the given operator:
@@ -180,22 +221,35 @@ public class BasicGUIModel implements ActionEventHandler {
 		
 	}
 	
+	/**
+	 * Misc operator action performed.
+	 *
+	 * @param a_event the a event
+	 */
 	public void miscOperatorActionPerformed(ActionEvent a_event)
 	{
 		
 		String operator = a_event.getActionCommand();
 		
-		if (operator.equals("%")) m_amtOperands = 2;
-		else m_amtOperands = 1;
-		
-		setupCalculation(operator);	
-		
-		m_calculator.setOperation(operator);
 		m_miscOperation = true;
 		
-			
+		if (operator.equals("%")) 
+		{
+			m_amtOperands = 2;
+			setupCalculation(operator);	
+			m_calculator.setOperation(operator);
+		}
+		else 
+		{
+			m_amtOperands = 1;
+			m_calculator.setOperation(operator);
+			setupCalculation(operator);	
+		}		
 	}
 
+	/* (non-Javadoc)
+	 * @see calculator.ActionEventHandler#letterActionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void letterActionPerformed(ActionEvent a_event) 
 	{

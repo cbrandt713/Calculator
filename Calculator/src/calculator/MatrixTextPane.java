@@ -17,32 +17,71 @@ import javax.swing.text.StyledDocument;
 @SuppressWarnings("serial")
 public class MatrixTextPane extends JTextPane implements TextManipulation
 {
+	
+	/** The Constant NONE. */
 	//Acceptable Modes for Text Input:
 	public final static int NONE = -1;
+	
+	/** The Constant CREATE_ROWS. */
 	public final static int CREATE_ROWS = 0;
+	
+	/** The Constant CREATE_COLUMNS. */
 	public final static int CREATE_COLUMNS = 1;
+	
+	/** The Constant DRAW_MATRIX. */
 	public final static int DRAW_MATRIX = 2;
+	
+	/** The Constant EDIT_MATRIX. */
 	public final static int EDIT_MATRIX = 3;
+	
+	/** The Constant NAME_MATRIX. */
 	public final static int NAME_MATRIX = 4;
+	
+	/** The Constant MATRIX_MENU. */
 	public final static int MATRIX_MENU = 5;
+	
+	/** The Constant DELETE_MENU. */
 	public final static int DELETE_MENU = 6;
+	
+	/** The Constant SCALAR. */
 	public final static int SCALAR = 100;
+	
+	/** The Constant GENERIC_OPERATION. */
 	public final static int GENERIC_OPERATION = 200;
+	
+	/** The Constant DISPLAY_RESULT. */
 	public final static int DISPLAY_RESULT = 201;
+	
+	/** The Constant EXCEPTION. */
 	public final static int EXCEPTION = 900;
 	
+	/** The m display text. */
 	//Matrix creation input:
 	private StyledDocument m_displayText;
+	
+	/** The m stored string. */
 	private String m_storedString;
 	
+	/** The m current text pos. */
 	//Text manipulation:
 	private int m_currentTextPos;
+	
+	/** The m begin text pos. */
 	private int m_beginTextPos;
+	
+	/** The m replace. */
 	private boolean m_replace;
+	
+	/** The m underlined text loc. */
 	private int m_underlinedTextLoc;
+	
+	/** The m underline set. */
 	private SimpleAttributeSet m_underlineSet;
 	
+	/** The instance. */
 	private static MatrixTextPane instance;
+	
+	/** The m mode. */
 	private int m_mode;
 	
 	/**
@@ -61,6 +100,11 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 	}
 	
+	/**
+	 * Gets the single instance of MatrixTextPane.
+	 *
+	 * @return single instance of MatrixTextPane
+	 */
 	public static MatrixTextPane getInstance()
 	{
 		if (instance == null)
@@ -88,7 +132,7 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	/**
 	 * Sets the mode.
 	 *
-	 * @param a_mode: the new mode
+	 * @param a_mode the new mode
 	 */
 	private void setMode(int a_mode)
 	{
@@ -131,6 +175,8 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	
 	/**
 	 * Draw matrix.
+	 *
+	 * @param a_selectedMatrix the a selected matrix
 	 */
 	public void drawMatrix(Matrix a_selectedMatrix)
 	{
@@ -141,6 +187,10 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	
 	/**
 	 * Edits the matrix.
+	 *
+	 * @param a_currentRow the a current row
+	 * @param a_currentColumn the a current column
+	 * @param a_selectedMatrix the a selected matrix
 	 */
 	public void editMatrix(int a_currentRow, int a_currentColumn, Matrix a_selectedMatrix)
 	{
@@ -169,6 +219,10 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	
 	/**
 	 * Matrix menu.
+	 *
+	 * @param a_matrices the a matrices
+	 * @param a_arrowPointer the a arrow pointer
+	 * @param a_underlinePos the a underline pos
 	 */
 	public void matrixMenu(Matrix[] a_matrices, int a_arrowPointer, int a_underlinePos)
 	{
@@ -231,6 +285,9 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	
 	/**
 	 * Delete menu.
+	 *
+	 * @param a_selectedMatrix the a selected matrix
+	 * @param a_arrowPointer the a arrow pointer
 	 */
 	public void deleteMenu(Matrix a_selectedMatrix, int a_arrowPointer)
 	{
@@ -259,6 +316,9 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	
 	/**
 	 * Sets the text for operation.
+	 *
+	 * @param a_operation the a operation
+	 * @param a_selectedMatrix the a selected matrix
 	 */
 	public void setTextForUnaryOperation(String a_operation, Matrix a_selectedMatrix)
 	{
@@ -269,6 +329,11 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	
 	/**
 	 * Sets the text for operation.
+	 *
+	 * @param a_operation the a operation
+	 * @param a_selectedMatrix the a selected matrix
+	 * @param a_amtSelected the a amt selected
+	 * @param a_scalarFraction the a scalar fraction
 	 */
 	public void setTextForBinaryOperation(String a_operation, Matrix a_selectedMatrix, int a_amtSelected, Fraction a_scalarFraction)
 	{
@@ -291,6 +356,8 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	
 	/**
 	 * Display matrix result.
+	 *
+	 * @param a_answerMatrix the a answer matrix
 	 */
 	public void displayMatrixResult(Matrix a_answerMatrix)
 	{
@@ -301,6 +368,8 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 
 	/**
 	 * Display fraction result.
+	 *
+	 * @param a_answerFraction the a answer fraction
 	 */
 	public void displayFractionResult(Fraction a_answerFraction)
 	{
@@ -483,7 +552,7 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	 * Gets the length of text at given position. 
 	 * Underline text helper method.
 	 *
-	 * @param a_beginIndex: the first index
+	 * @param a_beginIndex the a begin index
 	 * @return the length of the text starting at a_beginIndex
 	 */
 	private int getLengthOfTextAtPos(int a_beginIndex)
@@ -529,6 +598,9 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	 * Gets the location of the matrix symbol when editing the matrix.
 	 * Underline text helper method.
 	 *
+	 * @param a_currentRow the a current row
+	 * @param a_currentColumn the a current column
+	 * @param a_selectedMatrix the a selected matrix
 	 * @return the location of the matrix symbol (either | or [)
 	 */
 	private int getLocOfSymbol(int a_currentRow, int a_currentColumn, Matrix a_selectedMatrix)
@@ -560,9 +632,9 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 	/**
 	 * Underlines text starting at a_beginIndex, length characters long.
 	 *
-	 * @param a_beginIndex: the position to begin underlining.
-	 * @param a_length: the length of the text to underline
-	 * @param a_replace: if true, replace the existing underlined text. If false, add to it.
+	 * @param a_beginIndex the a begin index
+	 * @param a_length the a length
+	 * @param a_replace the a replace
 	 */
 	private void setUnderline(int a_beginIndex, int a_length, boolean a_replace) 
 	{
@@ -579,6 +651,11 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 		m_displayText.setCharacterAttributes(0, m_displayText.getLength(), m_underlineSet, true);
 	}
 
+	/**
+	 * Insert character.
+	 *
+	 * @param a_char the a char
+	 */
 	public void insertCharacter(String a_char) 
 	{
 		if (m_replace) 

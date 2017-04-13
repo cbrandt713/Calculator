@@ -7,17 +7,30 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class BasicTextArea.
+ */
 @SuppressWarnings("serial")
 public class BasicTextArea extends JTextArea implements TextManipulation 
 {
 
+	/** The Constant EXPRESSION. */
 	//Display Line Number Constants:
 	public static final int EXPRESSION = 0;
+	
+	/** The Constant INPUT. */
 	public static final int INPUT = 1;
 	
+	/** The m instance. */
 	private static BasicTextArea m_instance;
+	
+	/** The m display text. */
 	private Document m_displayText;
 	
+	/**
+	 * Instantiates a new basic text area.
+	 */
 	private BasicTextArea()
 	{
 		super();
@@ -25,6 +38,11 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		m_displayText = getDocument();
 	}
 	
+	/**
+	 * Gets the basic text area instance.
+	 *
+	 * @return the basic text area instance
+	 */
 	public static BasicTextArea getBasicTextAreaInstance()
 	{
 		if (m_instance == null)
@@ -35,6 +53,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		return m_instance;
 	}
 	
+	/* (non-Javadoc)
+	 * @see calculator.TextManipulation#getUserEnteredText()
+	 */
 	public String getUserEnteredText()
 	{
 		int newLineChar = getLocNewLineChar();
@@ -53,40 +74,66 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		return "";
 	}
 	
+	/**
+	 * Gets the loc new line char.
+	 *
+	 * @return the loc new line char
+	 */
 	private int getLocNewLineChar()
 	{
 		return getText().indexOf("\n");	
 	}
 	
+	/**
+	 * Sets the text for unary.
+	 *
+	 * @param a_operator the a operator
+	 * @param a_userInput the a user input
+	 */
 	public void setTextForUnary(String a_operator, String a_userInput)
 	{
 		switch (a_operator)
 		{
 			case "±":
 			{
+				clearExpression();
+				changeDisplay("negate(" + a_userInput + ") =", EXPRESSION, false);
 				break;
 			}
 			case "1/x":
 			{
 				clearExpression();
-				changeDisplay("reciprocal(" + a_userInput + ")", EXPRESSION, false);
+				changeDisplay("reciprocal(" + a_userInput + ") =", EXPRESSION, false);
 				break;
 			}
 			case "√":
 			{
 				clearExpression();
-				changeDisplay("sqrt(" + a_userInput + ")", EXPRESSION, false);
+				changeDisplay("sqrt(" + a_userInput + ") =", EXPRESSION, false);
 				break;
 			}
 		}
 		
 	}
 	
+	/**
+	 * Sets the text for binary.
+	 *
+	 * @param a_operator the a operator
+	 * @param a_userInput the a user input
+	 */
 	public void setTextForBinary(String a_operator, String a_userInput)
 	{
 		changeDisplay(a_userInput + " " + a_operator + " ", EXPRESSION, false);
 	}
 	
+	/**
+	 * Change display.
+	 *
+	 * @param message the message
+	 * @param lineNum the line num
+	 * @param a_replace the a replace
+	 */
 	public void changeDisplay(String message, int lineNum, boolean a_replace)
 	{
 		
@@ -104,6 +151,13 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		System.out.println("Text changed to: " + getText());
 	}
 	
+	/**
+	 * Change expression line.
+	 *
+	 * @param a_message the a message
+	 * @param a_newLineChar the a new line char
+	 * @param a_replace the a replace
+	 */
 	private void changeExpressionLine(String a_message, int a_newLineChar, boolean a_replace)
 	{
 		if (a_message.equals("Clear"))
@@ -116,6 +170,13 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}	
 	}
 	
+	/**
+	 * Change input line.
+	 *
+	 * @param a_message the a message
+	 * @param a_newLineChar the a new line char
+	 * @param a_replace the a replace
+	 */
 	private void changeInputLine(String a_message, int a_newLineChar, boolean a_replace)
 	{
 		//Clear the Input Line:
@@ -146,6 +207,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see calculator.TextManipulation#backspace()
+	 */
 	@Override
 	public void backspace() 
 	{
@@ -168,6 +232,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 			
 	}
 	
+	/**
+	 * Clear expression.
+	 */
 	public void clearExpression()
 	{
 		int newLineChar = getLocNewLineChar();
@@ -184,6 +251,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see calculator.TextManipulation#clearEntry()
+	 */
 	@Override
 	public void clearEntry() 
 	{
@@ -201,12 +271,18 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see calculator.TextManipulation#insertAtFront(java.lang.String)
+	 */
 	@Override
 	public void insertAtFront(String a_string) 
 	{
 		insertString(0, a_string);
 	}
 
+	/* (non-Javadoc)
+	 * @see calculator.TextManipulation#insertString(int, java.lang.String)
+	 */
 	@Override
 	public void insertString(int a_location, String a_string) 
 	{
@@ -220,6 +296,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see calculator.TextManipulation#remove(int, int)
+	 */
 	@Override
 	public void remove(int a_location, int a_amtChars) 
 	{
@@ -233,6 +312,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see calculator.TextManipulation#replaceText(int, int, java.lang.String)
+	 */
 	@Override
 	public void replaceText(int a_locationOfText, int a_lengthToReplace, String a_string)
 	{

@@ -38,7 +38,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	/** The current column. */
 	private int m_currentColumn;
 	
-	/** Is the answer a matrix? */
+	/**  Is the answer a matrix?. */
 	private boolean m_answerIsMatrix;
 	
 	/** The default name. */
@@ -61,9 +61,6 @@ public class MatrixGUIModel implements ActionEventHandler
 	
 	/** The amount of operands. */
 	private int m_amtOperands;
-	
-	/** The amount selected. */
-	private int m_amtSelected;
 	
 	/** The display text. */
 	private MatrixTextPane m_display;
@@ -138,7 +135,6 @@ public class MatrixGUIModel implements ActionEventHandler
 	private void setDefaultValues()
 	{
 		m_operation = "";
-		m_amtSelected = 0;
 		m_arrowPointer = 1;
 		m_amtOperands = 1;
 		m_currentRow = 0;
@@ -242,13 +238,15 @@ public class MatrixGUIModel implements ActionEventHandler
 		//Set the operation to the user's selected operator
 		calculator.setOperation(m_operation);		
 		
+		int amtSelected = calculator.getAmountInputs();
+		
 		//Set the text appropriately for the operation:
-		if (m_operation.equals("Scalar") && m_amtSelected == 1) m_display.getScalar();
+		if (m_operation.equals("Scalar") && amtSelected == 1) m_display.getScalar();
 		else if (m_amtOperands == 1) m_display.setTextForUnaryOperation(m_operation, m_selectedMatrix);
-		else m_display.setTextForBinaryOperation(m_operation, m_selectedMatrix, m_amtSelected, m_scalarFraction);
+		else m_display.setTextForBinaryOperation(m_operation, m_selectedMatrix, amtSelected, m_scalarFraction);
 			
 		//Only do operation on correct amount selected
-		if ( m_amtOperands == m_amtSelected )
+		if ( m_amtOperands == amtSelected )
 		{
 			tryAndDisplayOperation();
 		}
@@ -275,8 +273,6 @@ public class MatrixGUIModel implements ActionEventHandler
 				//These lines allow the user to chain operations, setting the answer as the new
 				//Matrix if the user wants to chain operations (for example add 3 matrices).
 				m_selectedMatrix = m_answerMatrix;
-				m_amtSelected = 1;
-				
 				//Display the result:
 				m_display.displayMatrixResult(m_answerMatrix);
 			}
@@ -287,8 +283,6 @@ public class MatrixGUIModel implements ActionEventHandler
 				m_answerFraction = new Fraction(calculator.fractionResultOperation());
 				m_answerMatrix = null;
 				m_selectedMatrix = null;
-				m_amtSelected = 0;
-				
 				//Display the result:
 				m_display.displayFractionResult(m_answerFraction);
 			}
@@ -408,7 +402,6 @@ public class MatrixGUIModel implements ActionEventHandler
 		//Select:
 		if (m_underlinePos == 0)
 		{
-			m_amtSelected++;
 			calculator.setInput(m_selectedMatrix);
 			
 			if (m_operation.equals("")) 
@@ -475,7 +468,7 @@ public class MatrixGUIModel implements ActionEventHandler
 	}
 	
 	/**
-	 * On enter press to input the scalar value
+	 * On enter press to input the scalar value.
 	 *
 	 * @param a_enteredText the input text
 	 */
@@ -485,7 +478,6 @@ public class MatrixGUIModel implements ActionEventHandler
 		{
 			m_scalarFraction = Fraction.parseFraction(a_enteredText);
 			calculator.setScalar(m_scalarFraction);
-			m_amtSelected++;
 			setupOperation();
 		}
 	}
@@ -774,6 +766,9 @@ public class MatrixGUIModel implements ActionEventHandler
 		}
 		else if (operation.equals("Matrix")) 
 		{
+			//Reset positions:
+			m_arrowPointer = 1;
+			m_underlinePos = 0;
 			m_display.matrixMenu(m_matrices, m_arrowPointer, m_underlinePos);
 		}
 		else 

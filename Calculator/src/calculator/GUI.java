@@ -17,84 +17,186 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 
+// TODO: Auto-generated Javadoc
 //Increase gridx = move right
 //Increase gridy = move down
+/**
+ * The Class GUI.
+ */
 //Starts top left corner (0,0)
 @SuppressWarnings("serial")
 public class GUI extends JPanel
 {	
+	
+	/** The Constant BASIC. */
 	//GUI State Indicator Constants:
 	private final static int BASIC = 0;
+	
+	/** The Constant MATRIX. */
 	private final static int MATRIX = 1;
 	
+	/** The GUI object. */
 	//GUI Data Objects:
 	private static GUI GUIObject;
+	
+	/** The m GUI state. */
 	private int m_GUIState;
+	
+	/** The basic size. */
 	private Dimension basicSize;
+	
+	/** The matrix size. */
 	private Dimension matrixSize;
 	
+	/** The frame. */
 	//GUI Elements:
 	private JFrame frame;
+	
+	/** The m no wrap panel. */
 	private JPanel m_noWrapPanel;
+	
+	/** The m basic display. */
 	private BasicTextArea m_basicDisplay;
+	
+	/** The m basic model. */
 	private BasicGUIModel m_basicModel;
+	
+	/** The m matrix display. */
 	private MatrixTextPane m_matrixDisplay;
+	
+	/** The m matrix model. */
 	private MatrixGUIModel m_matrixModel;
+	
+	/** The menu. */
 	private JMenu menu;
+	
+	/** The menu bar. */
 	private JMenuBar menuBar;
+	
+	/** The basic. */
 	private JMenuItem basic;
+	
+	/** The matrix. */
 	private JMenuItem matrix;
+	
+	/** The scroll pane. */
 	private JScrollPane scrollPane;
 	
+	/** The numbers. */
 	//Number Buttons:
 	private JButton numbers[];
+	
+	/** The decimal. */
 	private JButton decimal;
 	
+	/** The backspace. */
 	//Delete Buttons:
 	private JButton backspace;
+	
+	/** The clear. */
 	private JButton clear;
+	
+	/** The clear entry. */
 	private JButton clearEntry;
 	
+	/** The addition. */
 	//Operator Buttons:
 	private JButton addition;
+	
+	/** The subtraction. */
 	private JButton subtraction;
+	
+	/** The multiplication. */
 	private JButton multiplication;
+	
+	/** The division. */
 	private JButton division;
+	
+	/** The equals. */
 	private JButton equals;
 	
+	/** The plus minus. */
 	//Misc Operator Buttons:
 	private JButton plusMinus;
+	
+	/** The reciprocal. */
 	private JButton reciprocal;
+	
+	/** The square root. */
 	private JButton squareRoot;
+	
+	/** The percent. */
 	private JButton percent;
 	
+	/** The create matrix. */
 	//Matrix Buttons:
 	private JButton createMatrix;
+	
+	/** The list matrices. */
 	private JButton listMatrices;
+	
+	/** The rref. */
 	private JButton rref;
+	
+	/** The ref. */
 	private JButton ref;
+	
+	/** The inverse. */
 	private JButton inverse;
+	
+	/** The determinant. */
 	private JButton determinant;
+	
+	/** The rank. */
 	private JButton rank;
+	
+	/** The scalar. */
 	private JButton scalar;
+	
+	/** The transpose. */
 	private JButton transpose;
 
+	/** The number action. */
 	//Action Elements:
 	private NumberAction numberAction;
+	
+	/** The enter action. */
 	private EnterAction enterAction;
+	
+	/** The delete action. */
 	private DeleteAction deleteAction;
+	
+	/** The operator action. */
 	private OperatorAction operatorAction;
+	
+	/** The misc operator action. */
 	private MiscOperatorAction miscOperatorAction;
+	
+	/** The menu item action. */
 	private MenuItemAction menuItemAction;
+	
+	/** The matrix action. */
 	private MatrixAction matrixAction;
+	
+	/** The letter action. */
 	private LetterAction letterAction;
+	
+	/** The arrow action. */
 	private ArrowAction arrowAction;
 	
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args)
 	{
 		getGUIInstance();	
 	}
 	
+	/**
+	 * Instantiates a new gui.
+	 */
 	private GUI()
 	{
 		//Call JPanel constructor
@@ -113,6 +215,11 @@ public class GUI extends JPanel
 		
 	}
 	
+	/**
+	 * Gets the GUI instance.
+	 *
+	 * @return the GUI instance
+	 */
 	public static GUI getGUIInstance()
 	{
 		if (GUIObject == null)
@@ -123,6 +230,9 @@ public class GUI extends JPanel
 		return GUIObject;
 	}
 	
+	/**
+	 * Creates the frame.
+	 */
 	private void createFrame()
 	{
 		frame = new JFrame("Calculator");
@@ -138,6 +248,9 @@ public class GUI extends JPanel
         frame.setVisible(true);
 	}
 	
+	/**
+	 * Sets the basic layout.
+	 */
 	private void setBasicLayout()
 	{	
 		//Set Layout of the body
@@ -155,6 +268,9 @@ public class GUI extends JPanel
 		basicSize = new Dimension(253, 224);	
 	}
 	
+	/**
+	 * Sets the matrix layout.
+	 */
 	private void setMatrixLayout()
 	{
 		
@@ -174,6 +290,9 @@ public class GUI extends JPanel
 		matrixSize = new Dimension(380, 313);
 	}
 	
+	/**
+	 * Creates the menu.
+	 */
 	private void createMenu()
 	{
 		menuBar = new JMenuBar();
@@ -190,16 +309,29 @@ public class GUI extends JPanel
 		menu.add(matrix);
 	}
 	
+	/**
+	 * Gets the j menu bar.
+	 *
+	 * @return the j menu bar
+	 */
 	private JMenuBar getJMenuBar()
 	{
 		return menuBar;
 	}
 	
+	/**
+	 * Gets the GUI state.
+	 *
+	 * @return the GUI state
+	 */
 	private int getGUIState()
 	{
 		return m_GUIState;
 	}
 	
+	/**
+	 * Creates the basic display.
+	 */
 	private void createBasicDisplay()
 	{
 		m_basicDisplay = BasicTextArea.getBasicTextAreaInstance();
@@ -221,6 +353,9 @@ public class GUI extends JPanel
 		add(m_basicDisplay, displayC);
 	}
 	
+	/**
+	 * Creates the basic keybinds.
+	 */
 	private void createBasicKeybinds()
 	{
 		numberAction = new NumberAction("", "");
@@ -250,6 +385,9 @@ public class GUI extends JPanel
 		m_basicDisplay.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "enter");
 	}
 	
+	/**
+	 * Creates the matrix display.
+	 */
 	private void createMatrixDisplay()
 	{
 		m_matrixDisplay = MatrixTextPane.getInstance();
@@ -274,6 +412,9 @@ public class GUI extends JPanel
 		add(scrollPane, displayC);
 	}
 	
+	/**
+	 * Creates the matrix keybinds.
+	 */
 	private void createMatrixKeybinds()
 	{
 		enterAction = new EnterAction("", "");
@@ -325,6 +466,9 @@ public class GUI extends JPanel
 		m_matrixDisplay.getActionMap().put("operation", operatorAction);
 	}
 	
+	/**
+	 * Creates the numbers.
+	 */
 	private void createNumbers()
 	{
 		numbers = new JButton[10];
@@ -371,6 +515,9 @@ public class GUI extends JPanel
 		add(decimal, decC);	
 	}
 	
+	/**
+	 * Creates the delete buttons.
+	 */
 	private void createDeleteButtons()
 	{
 		deleteAction = new DeleteAction("←", "Delete number");
@@ -404,6 +551,9 @@ public class GUI extends JPanel
 		add(clearEntry, clearC);
 	}
 	
+	/**
+	 * Creates the operators.
+	 */
 	private void createOperators()
 	{
 		operatorAction = new OperatorAction("+", "Add numbers");
@@ -457,6 +607,9 @@ public class GUI extends JPanel
 		add(equals, operatorC);
 	}
 	
+	/**
+	 * Creates the misc operators.
+	 */
 	private void createMiscOperators()
 	{
 		GridBagConstraints operatorC = new GridBagConstraints();
@@ -499,6 +652,9 @@ public class GUI extends JPanel
 		add(squareRoot, operatorC);
 	}
 	
+	/**
+	 * Creates the matrix buttons.
+	 */
 	private void createMatrixButtons()
 	{
 		matrixAction = new MatrixAction("Create", "Create new Matrix");
@@ -581,14 +737,27 @@ public class GUI extends JPanel
 		
 	}
 	
+	/**
+	 * The Class NumberAction.
+	 */
 	public class NumberAction extends AbstractAction
 	{
+		
+		/**
+		 * Instantiates a new number action.
+		 *
+		 * @param name the name
+		 * @param shortDescription the short description
+		 */
 		public NumberAction(String name, String shortDescription)
 		{
 			super(name);
 			putValue(SHORT_DESCRIPTION, shortDescription);
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
@@ -598,15 +767,27 @@ public class GUI extends JPanel
 		
 	}
 	
+	/**
+	 * The Class EnterAction.
+	 */
 	public class EnterAction extends AbstractAction
 	{
 		
+		/**
+		 * Instantiates a new enter action.
+		 *
+		 * @param name the name
+		 * @param shortDescription the short description
+		 */
 		public EnterAction(String name, String shortDescription)
 		{
 			super(name);
 			putValue(SHORT_DESCRIPTION, shortDescription);
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
@@ -615,15 +796,27 @@ public class GUI extends JPanel
 		}
 	}
 	
+	/**
+	 * The Class DeleteAction.
+	 */
 	public class DeleteAction extends AbstractAction
 	{
 		
+		/**
+		 * Instantiates a new delete action.
+		 *
+		 * @param name the name
+		 * @param shortDescription the short description
+		 */
 		public DeleteAction(String name, String shortDescription)
 		{
 			super(name);
 			putValue(SHORT_DESCRIPTION, shortDescription);
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
@@ -632,14 +825,27 @@ public class GUI extends JPanel
 		}
 	}
 	
+	/**
+	 * The Class OperatorAction.
+	 */
 	public class OperatorAction extends AbstractAction
 	{
+		
+		/**
+		 * Instantiates a new operator action.
+		 *
+		 * @param a_name the a name
+		 * @param a_shortDescription the a short description
+		 */
 		public OperatorAction(String a_name, String a_shortDescription)
 		{
 			super(a_name);
 			putValue(SHORT_DESCRIPTION, a_shortDescription);
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{
@@ -648,27 +854,54 @@ public class GUI extends JPanel
 		}
 	}
 	
+	/**
+	 * The Class MiscOperatorAction.
+	 */
 	public class MiscOperatorAction extends AbstractAction
 	{
+		
+		/**
+		 * Instantiates a new misc operator action.
+		 *
+		 * @param a_name the a name
+		 * @param a_shortDescription the a short description
+		 */
 		public MiscOperatorAction(String a_name, String a_shortDescription)
 		{
 			super(a_name);
 			putValue(SHORT_DESCRIPTION, a_shortDescription);
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		public void actionPerformed(ActionEvent a_event)
 		{
 			if (getGUIState() == BASIC) m_basicModel.miscOperatorActionPerformed(a_event);
 		}
 	}
 	
+	/**
+	 * The Class MenuItemAction.
+	 */
 	public class MenuItemAction extends AbstractAction
 	{
+		
+		/**
+		 * Instantiates a new menu item action.
+		 *
+		 * @param a_name the a name
+		 * @param a_shortDescription the a short description
+		 */
 		public MenuItemAction(String a_name, String a_shortDescription)
 		{
 			super(a_name);
 			putValue(SHORT_DESCRIPTION, a_shortDescription);
 		}
+		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent a_event) 
 		{	
@@ -691,14 +924,27 @@ public class GUI extends JPanel
 		}	
 	}
 	
+	/**
+	 * The Class MatrixAction.
+	 */
 	public class MatrixAction extends AbstractAction
 	{
+		
+		/**
+		 * Instantiates a new matrix action.
+		 *
+		 * @param a_name the a name
+		 * @param a_shortDescription the a short description
+		 */
 		public MatrixAction(String a_name, String a_shortDescription)
 		{
 			super(a_name);
 			putValue(SHORT_DESCRIPTION, a_shortDescription);
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
@@ -707,9 +953,18 @@ public class GUI extends JPanel
 	}
 	
 	
+	/**
+	 * The Class LetterAction.
+	 */
 	public class LetterAction extends AbstractAction
 	{
 
+		/**
+		 * Instantiates a new letter action.
+		 *
+		 * @param a_name the a name
+		 * @param a_shortDescription the a short description
+		 */
 		public LetterAction(String a_name, String a_shortDescription)
 		{
 			super(a_name);
@@ -717,6 +972,9 @@ public class GUI extends JPanel
 		}
 		
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
@@ -725,8 +983,18 @@ public class GUI extends JPanel
 		
 	}
 	
+	/**
+	 * The Class ArrowAction.
+	 */
 	public class ArrowAction extends AbstractAction
 	{
+		
+		/**
+		 * Instantiates a new arrow action.
+		 *
+		 * @param a_name the a name
+		 * @param a_shortDescription the a short description
+		 */
 		public ArrowAction(String a_name, String a_shortDescription)
 		{
 			super(a_name);
@@ -734,6 +1002,9 @@ public class GUI extends JPanel
 		}
 		
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		@Override
 		public void actionPerformed(ActionEvent a_event)
 		{
