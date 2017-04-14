@@ -1,8 +1,5 @@
 package calculator;
 
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
