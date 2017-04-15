@@ -4,7 +4,9 @@ import java.awt.event.ActionEvent;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Interface ActionEventHandler.
+ * The interface which allows implementing classes to handle the events fired by the GUI
+ * of the calculator. A model that manipulates the data of the calculator should implement
+ * this interface.
  */
 public interface ActionEventHandler 
 {
@@ -38,7 +40,7 @@ public interface ActionEventHandler
 	public abstract void deleteActionPerformed(ActionEvent a_event);
 	
 	/**
-	 * An action was fired that is associated with a "number" value being input.
+	 * An action was fired that is associated with an operation being performed.
 	 *
 	 * @param a_event the event that fired the action
 	 */

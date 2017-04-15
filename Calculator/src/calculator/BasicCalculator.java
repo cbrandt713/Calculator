@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class BasicCalculator.
+ * The class which performs the operations of the calculator in the "Basic" view. 
  */
 public class BasicCalculator extends Calculator<Double> 
 {
@@ -17,7 +17,8 @@ public class BasicCalculator extends Calculator<Double>
 		resetAll();
 	}
 	
-	/* (non-Javadoc)
+	/** 
+	 * Resets all values to defaults.
 	 * @see calculator.Calculator#resetAll()
 	 */
 	protected void resetAll()
@@ -28,7 +29,8 @@ public class BasicCalculator extends Calculator<Double>
 		m_operation = "";
 	}
 	
-	/* (non-Javadoc)
+	/** 
+	 * Resets only the inputs to defaults.
 	 * @see calculator.Calculator#resetInputs()
 	 */
 	protected void resetInputs()
@@ -37,7 +39,8 @@ public class BasicCalculator extends Calculator<Double>
 		m_input2 = -Double.MAX_VALUE;
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * Set the operation of the calculation.
 	 * @see calculator.Calculator#setOperation(java.lang.String)
 	 */
 	public void setOperation(String a_operation)
@@ -45,7 +48,8 @@ public class BasicCalculator extends Calculator<Double>
 		m_operation = a_operation;
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * Set an input for the calculation.
 	 * @see calculator.Calculator#setInput(java.lang.Object)
 	 */
 	public void setInput(Double a_input)
