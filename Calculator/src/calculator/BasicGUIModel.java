@@ -7,39 +7,39 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class BasicGUIModel.
+ * The class which controls the TextPane and the Calculator for the "Basic" view.
+ * This class should control what text gets displayed and what operations the calculator performs.
  */
 public class BasicGUIModel implements ActionEventHandler {
 
-	/** The Constant EXPRESSION. */
 	//Display Line Number Constants:
+	
+	/** The EXPRESSION line. */
 	public static final int EXPRESSION = 0;
 	
-	/** The Constant INPUT. */
+	/** The INPUT line. */
 	public static final int INPUT = 1;
 	
-	/** The m input. */
+	/** The input. */
 	private double m_input;
 	
-	/** The m total. */
+	/** The total. */
 	private double m_total;
 	
-	/** The m replace. */
+	/** Replace previous text. */
 	private boolean m_replace;
 	
-	/** The m misc operation. */
+	/** Is misc operation. */
 	private boolean m_miscOperation;
 	
-	/** The m amt operands. */
+	/** The amount of operands. */
 	private int m_amtOperands;
 	
-	/** The m calculator. */
-	//Calculator and Required Data:
+	/** The calculator. */
 	private BasicCalculator m_calculator;
 	
-	/** The m display. */
+	/** The display. */
 	private BasicTextArea m_display;
 	
 	/**
@@ -47,7 +47,7 @@ public class BasicGUIModel implements ActionEventHandler {
 	 */
 	public BasicGUIModel()
 	{
-		//Create calculator
+		//Create calculator and display:
 		m_calculator = new BasicCalculator();	
 		m_display = BasicTextArea.getBasicTextAreaInstance();
 		
@@ -70,22 +70,22 @@ public class BasicGUIModel implements ActionEventHandler {
 	}
 	
 	/**
-	 * Format double.
+	 * Format a double for printing to the calculator
 	 *
-	 * @param a_result the a result
-	 * @return the string
+	 * @param a_result the double to format
+	 * @return the formatted double
 	 */
 	private String formatDouble(double a_result)
 	{
-		String res = ((Double) a_result).toString();
-		String s = res.indexOf(".") < 0 ? res : res.replaceAll("0*$", "").replaceAll("\\.$", "");
-		return s;
+		String strResult = ((Double) a_result).toString();
+		String formatted = strResult.indexOf(".") < 0 ? strResult : strResult.replaceAll("0*$", "").replaceAll("\\.$", "");
+		return formatted;
 	}
 	
 	/**
-	 * Sets the up calculation.
+	 * Sets up the calculation.
 	 *
-	 * @param a_operator the new up calculation
+	 * @param a_operator the operator to perform the calculation on.
 	 */
 	private void setupCalculation(String a_operator)
 	{
@@ -94,6 +94,7 @@ public class BasicGUIModel implements ActionEventHandler {
 		m_input = Double.parseDouble(userInput);
 		m_calculator.setInput(m_input);
 		
+		//If we got NaN result, do not proceed:
 		if (Double.isNaN(m_input))
 		{
 			JOptionPane.showMessageDialog(GUI.getGUIInstance(), "Please press clear to continue.");
@@ -127,10 +128,10 @@ public class BasicGUIModel implements ActionEventHandler {
 	}
 	
 	/**
-	 * Display result.
+	 * Display the result.
 	 *
-	 * @param a_result the a result
-	 * @param a_operator the a operator
+	 * @param a_result the result
+	 * @param a_operator the operator 
 	 */
 	private void displayResult(double a_result, String a_operator)
 	{
@@ -139,7 +140,7 @@ public class BasicGUIModel implements ActionEventHandler {
 		m_display.changeDisplay(formattedResult, INPUT, false);
 	}
 
-	/* (non-Javadoc)
+	/** 
 	 * @see calculator.ActionEventHandler#numberActionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void numberActionPerformed(ActionEvent a_event)
@@ -153,7 +154,7 @@ public class BasicGUIModel implements ActionEventHandler {
 		}
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.ActionEventHandler#enterActionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void enterActionPerformed(ActionEvent a_event)
@@ -164,7 +165,7 @@ public class BasicGUIModel implements ActionEventHandler {
 		m_display.clearExpression();
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.ActionEventHandler#deleteActionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void deleteActionPerformed(ActionEvent a_event)
@@ -203,7 +204,7 @@ public class BasicGUIModel implements ActionEventHandler {
 		}
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.ActionEventHandler#operatorActionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void operatorActionPerformed(ActionEvent a_event)
@@ -222,9 +223,9 @@ public class BasicGUIModel implements ActionEventHandler {
 	}
 	
 	/**
-	 * Misc operator action performed.
+	 * An action was fired that is associated with a miscellaneous operation being performed.
 	 *
-	 * @param a_event the a event
+	 * @param a_event the event that fired the action
 	 */
 	public void miscOperatorActionPerformed(ActionEvent a_event)
 	{
@@ -247,12 +248,13 @@ public class BasicGUIModel implements ActionEventHandler {
 		}		
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.ActionEventHandler#letterActionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
 	public void letterActionPerformed(ActionEvent a_event) 
 	{
+		//Same as a number action:
 		numberActionPerformed(a_event);
 	}	
 	

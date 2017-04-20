@@ -1,32 +1,31 @@
 package calculator;
-
-// TODO: Auto-generated Javadoc
 /**
- * The Class Calculator.
+ * The base for which any implemented Calculators should be derived. The Calculator class sets 
+ * the minimum requirements for what should be included in any calculator model.
  *
- * @param <T> the generic type
+ * @param <T> the type to perform operations on
  */
 public abstract class Calculator<T> {
 
-	/** The m input. */
+	/** The primary input. */
 	protected T m_input;
 	
-	/** The m input 2. */
+	/** The secondary input. */
 	protected T m_input2;
 	
-	/** The m result. */
+	/** The result of the operation. */
 	protected T m_result;
 	
-	/** The m operation. */
+	/** The operation. */
 	protected String m_operation;
 	
 	/**
-	 * Reset all.
+	 * Resets all values to defaults.
 	 */
 	protected abstract void resetAll();
 	
 	/**
-	 * Reset inputs.
+	 * Resets only the inputs to defaults.
 	 */
 	protected abstract void resetInputs();
 	
@@ -45,17 +44,17 @@ public abstract class Calculator<T> {
 	public abstract void setInput(T a_input);
 	
 	/**
-	 * Gets the amount inputs.
+	 * Gets the amount of inputs set.
 	 *
-	 * @return the amount inputs
+	 * @return the amount of inputs set
 	 */
 	public abstract int getAmountInputs();
 	
 	/**
-	 * Do calculation.
+	 * Do the appropriate calculation.
 	 *
-	 * @return the t
-	 * @throws Exception the exception
+	 * @return the result of the calculation
+	 * @throws Exception the reason the calculation cannot be performed, if applicable.
 	 */
 	public abstract T doCalculation() throws Exception;
 

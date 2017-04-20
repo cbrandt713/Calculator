@@ -2,7 +2,6 @@ package calculator;
 
 import javax.swing.JOptionPane;
 
-// TODO: Auto-generated Javadoc
 /**
  * The class which performs the operations of the calculator in the "Basic" view. 
  */
@@ -41,6 +40,7 @@ public class BasicCalculator extends Calculator<Double>
 	
 	/**
 	 * Set the operation of the calculation.
+	 * @param a_operation the operation to set
 	 * @see calculator.Calculator#setOperation(java.lang.String)
 	 */
 	public void setOperation(String a_operation)
@@ -50,6 +50,7 @@ public class BasicCalculator extends Calculator<Double>
 	
 	/**
 	 * Set an input for the calculation.
+	 * @param a_input the input to set
 	 * @see calculator.Calculator#setInput(java.lang.Object)
 	 */
 	public void setInput(Double a_input)
@@ -58,7 +59,8 @@ public class BasicCalculator extends Calculator<Double>
 		else m_input2 = a_input;
 	}
 
-	/* (non-Javadoc)
+	/** 
+	 * Returns the amount of inputs set in the calculator.
 	 * @see calculator.Calculator#getAmountInputs()
 	 */
 	public int getAmountInputs()
@@ -68,24 +70,26 @@ public class BasicCalculator extends Calculator<Double>
 		
 		return 2;
 	}
-	/* (non-Javadoc)
+	/**
+	 * Do the appropriate calculation.
 	 * @see calculator.Calculator#doCalculation()
 	 */
 	public Double doCalculation() 
 	{
 		//If less than two operands, no calculation. Return original value.
-		if (m_input2 == -Double.MAX_VALUE)
+		if (getAmountInputs() <= 1)
 		{
 			return m_input;
 		}
 		
+		//Attempting to do a calculation on NaN:
 		if ( Double.isNaN(m_input) || Double.isNaN(m_input2))
 		{
 			JOptionPane.showMessageDialog(GUI.getGUIInstance(), "Please press clear to continue.", "Error", JOptionPane.ERROR_MESSAGE);
 			return m_input;
-			//throw new Exception("NaN input");
 		}
 		
+		//Do the operation and get the result:
 		switch (m_operation)
 		{
 			case "+":
@@ -121,6 +125,7 @@ public class BasicCalculator extends Calculator<Double>
 			}
 		}
 		
+		//Reset inputs and return result:
 		resetInputs();
 		m_operation = "";
 		setInput(m_result);
@@ -129,9 +134,9 @@ public class BasicCalculator extends Calculator<Double>
 	}
 	
 	/**
-	 * Do misc calculation.
+	 * Do the appropriate "miscellaneous" calculation.
 	 *
-	 * @return the double
+	 * @return the result of the calculation
 	 */
 	public Double doMiscCalculation() 
 	{
@@ -139,7 +144,6 @@ public class BasicCalculator extends Calculator<Double>
 		{
 			JOptionPane.showMessageDialog(GUI.getGUIInstance(), "Please press clear to continue.");
 			return m_input;
-			//throw new NumberFormatException("NaN input");
 		}
 		
 		switch (m_operation)
@@ -181,60 +185,60 @@ public class BasicCalculator extends Calculator<Double>
 	/**
 	 * Adds two inputs.
 	 *
-	 * @param LHS the left-hand side
-	 * @param RHS the right-hand side
-	 * @return the sum of the two
+	 * @param a_LHS the left-hand side
+	 * @param a_RHS the right-hand side
+	 * @return the sum
 	 */
-	public double add(double LHS, double RHS)
+	public double add(double a_LHS, double a_RHS)
 	{
-		return LHS + RHS;
+		return a_LHS + a_RHS;
 	}
 	
 	/**
-	 * Subtract.
+	 * Subtracts two inputs.
 	 *
-	 * @param LHS the lhs
-	 * @param RHS the rhs
-	 * @return the double
+	 * @param a_LHS the left-hand side
+	 * @param a_RHS the right-hand side
+	 * @return the difference
 	 */
-	public double subtract(double LHS, double RHS)
+	public double subtract(double a_LHS, double a_RHS)
 	{
-		return LHS - RHS;
+		return a_LHS - a_RHS;
 	}
 	
 	/**
-	 * Multiply.
+	 * Multiplies two inputs.
 	 *
-	 * @param LHS the lhs
-	 * @param RHS the rhs
-	 * @return the double
+	 * @param a_LHS the left-hand side
+	 * @param a_RHS the right-hand side
+	 * @return the product
 	 */
-	public double multiply(double LHS, double RHS)
+	public double multiply(double a_LHS, double a_RHS)
 	{
-		return LHS * RHS;
+		return a_LHS * a_RHS;
 	}
 	
 	/**
-	 * Divide.
+	 * Divide two inputs.
 	 *
 	 * @param dividend the dividend
 	 * @param divisor the divisor
-	 * @return the double
+	 * @return the quotient
 	 */
-	public double divide(double dividend, double divisor)
+	public double divide(double a_dividend, double a_divisor)
 	{
-		return (dividend / divisor);
+		return (a_dividend / a_divisor);
 	}
 	
 	/**
 	 * Computes the square root of the input.
 	 *
-	 * @param input the number
-	 * @return the square root of input
+	 * @param a_input the number
+	 * @return the square root of the input
 	 */
-	public double squareRoot(double input)
+	public double squareRoot(double a_input)
 	{
-		return Math.sqrt(input);
+		return Math.sqrt(a_input);
 	}
 	
 	/**
@@ -242,14 +246,14 @@ public class BasicCalculator extends Calculator<Double>
 	 * In this case, the method will just calculate a percentage of a total
 	 * and return the total.
 	 *
-	 * @param total the total
-	 * @param percentage the percentage
-	 * @return the double
+	 * @param a_total the total
+	 * @param a_percentage the percentage
+	 * @return the percentage of the total
 	 */
-	public double percent(double total, double percentage)
+	public double percent(double a_total, double a_percentage)
 	{
-		percentage *= 0.01;
-		total *= percentage;
-		return total;
+		a_percentage *= 0.01;
+		a_total *= a_percentage;
+		return a_total;
 	}
 }

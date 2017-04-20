@@ -7,10 +7,10 @@ package calculator;
 public class Fraction 
 {
 	
-	/** The m numerator. */
+	/** The numerator. */
 	private int m_numerator;
 	
-	/** The m denominator. */
+	/** The denominator. */
 	private int m_denominator;
 	
 	/**
@@ -25,7 +25,7 @@ public class Fraction
 	/**
 	 * Instantiates a new fraction.
 	 *
-	 * @param a_wholeNumber the a whole number
+	 * @param a_wholeNumber the whole number to set
 	 */
 	public Fraction(int a_wholeNumber)
 	{
@@ -36,8 +36,8 @@ public class Fraction
 	/**
 	 * Instantiates a new fraction.
 	 *
-	 * @param a_numerator the a numerator
-	 * @param a_denominator the a denominator
+	 * @param a_numerator the numerator
+	 * @param a_denominator the denominator
 	 */
 	public Fraction(int a_numerator, int a_denominator)
 	{
@@ -55,9 +55,9 @@ public class Fraction
 	}
 	
 	/**
-	 * Instantiates a new fraction.
+	 * Copy constructor.
 	 *
-	 * @param a_other the a other
+	 * @param a_other the other fraction
 	 */
 	public Fraction(Fraction a_other)
 	{
@@ -115,7 +115,7 @@ public class Fraction
 	}
 	
 	/**
-	 * Reduce.
+	 * Reduce the fraction to lowest terms.
 	 */
 	public void reduce()
 	{
@@ -142,10 +142,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Adds the.
+	 * Adds the fraction to another fraction.
 	 *
-	 * @param a_other the a other
-	 * @return the fraction
+	 * @param a_other the other fraction
+	 * @return the sum
 	 */
 	public Fraction add(Fraction a_other)
 	{
@@ -158,10 +158,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Adds the.
+	 * Adds the fraction to a whole number.
 	 *
-	 * @param a_wholeNumber the a whole number
-	 * @return the fraction
+	 * @param a_wholeNumber the whole number
+	 * @return the sum
 	 */
 	public Fraction add(int a_wholeNumber)
 	{
@@ -169,10 +169,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Subtract.
+	 * Subtracts this fraction from another.
 	 *
-	 * @param a_other the a other
-	 * @return the fraction
+	 * @param a_other the other fraction
+	 * @return the difference
 	 */
 	public Fraction subtract(Fraction a_other)
 	{
@@ -180,10 +180,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Subtract.
+	 * Subtracts this fraction from a whole number.
 	 *
-	 * @param a_wholeNumber the a whole number
-	 * @return the fraction
+	 * @param a_wholeNumber the whole number
+	 * @return the difference
 	 */
 	public Fraction subtract(int a_wholeNumber)
 	{
@@ -191,10 +191,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Multiply.
+	 * Multiply this fraction with another.
 	 *
-	 * @param a_other the a other
-	 * @return the fraction
+	 * @param a_other the other fraction
+	 * @return the product
 	 */
 	public Fraction multiply(Fraction a_other)
 	{
@@ -205,10 +205,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Multiply.
+	 * Multiply this fraction with a whole number.
 	 *
-	 * @param a_wholeNumber the a whole number
-	 * @return the fraction
+	 * @param a_wholeNumber the whole number
+	 * @return the product
 	 */
 	public Fraction multiply(int a_wholeNumber)
 	{
@@ -216,10 +216,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Divide.
+	 * Divide this fraction from another.
 	 *
-	 * @param a_other the a other
-	 * @return the fraction
+	 * @param a_other the other fraction
+	 * @return the quotient
 	 */
 	public Fraction divide(Fraction a_other)
 	{
@@ -227,10 +227,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Divide.
+	 * Divide this fraction from a whole number.
 	 *
-	 * @param a_wholeNumber the a whole number
-	 * @return the fraction
+	 * @param a_wholeNumber the whole number
+	 * @return the quotient
 	 */
 	public Fraction divide(int a_wholeNumber)
 	{
@@ -238,10 +238,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Equals.
+	 * Compare if two fractions are equal.
 	 *
-	 * @param a_other the a other
-	 * @return true, if successful
+	 * @param a_other the other fraction
+	 * @return true if equal, false if not
 	 */
 	public boolean equals(Fraction a_other)
 	{
@@ -250,10 +250,10 @@ public class Fraction
 	}
 	
 	/**
-	 * Equals.
+	 * Compare if a fraction equals a whole number.
 	 *
-	 * @param a_wholeNumber the a whole number
-	 * @return true, if successful
+	 * @param a_wholeNumber the whole number
+	 * @return true if equal, false if not.
 	 */
 	public boolean equals(int a_wholeNumber)
 	{
@@ -261,9 +261,9 @@ public class Fraction
 	}
 	
 	/**
-	 * Reciprocal.
+	 * Get the reciprocal of this fraction.
 	 *
-	 * @return the fraction
+	 * @return the reciprocal of this fraction
 	 */
 	public Fraction reciprocal()
 	{
@@ -274,11 +274,11 @@ public class Fraction
 	}
 	
 	/**
-	 * Parses the fraction.
+	 * Parses a given string and returns a Fraction if it can be parsed from the text.
 	 *
-	 * @param a_input the a input
-	 * @return the fraction
-	 * @throws NumberFormatException the number format exception
+	 * @param a_input the string
+	 * @return the Fraction in the string
+	 * @throws NumberFormatException the string can't be parsed
 	 */
 	public static Fraction parseFraction(String a_input) throws NumberFormatException
 	{
@@ -298,7 +298,7 @@ public class Fraction
 		
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -315,9 +315,9 @@ public class Fraction
 	}
 	
 	/**
-	 * To double.
+	 * Returns a double representation of the Fraction.
 	 *
-	 * @return the double
+	 * @return the double representation.
 	 */
 	public double toDouble()
 	{

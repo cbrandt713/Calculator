@@ -12,17 +12,16 @@ import javax.swing.text.Document;
 public class BasicTextArea extends JTextArea implements TextManipulation 
 {
 
-	/** The Constant EXPRESSION. */
-	//Display Line Number Constants:
+	/** The expression line. */
 	public static final int EXPRESSION = 0;
 	
-	/** The Constant INPUT. */
+	/** The input line. */
 	public static final int INPUT = 1;
 	
-	/** The m instance. */
+	/** The instance of the basic text area. */
 	private static BasicTextArea m_instance;
 	
-	/** The m display text. */
+	/** The displayed text. */
 	private Document m_displayText;
 	
 	/**
@@ -36,9 +35,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	/**
-	 * Gets the basic text area instance.
+	 * Gets the BasicTextArea instance.
 	 *
-	 * @return the basic text area instance
+	 * @return the BasicTextArea instance
 	 */
 	public static BasicTextArea getBasicTextAreaInstance()
 	{
@@ -50,7 +49,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		return m_instance;
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.TextManipulation#getUserEnteredText()
 	 */
 	public String getUserEnteredText()
@@ -72,9 +71,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	/**
-	 * Gets the loc new line char.
+	 * Gets the location of the new line character.
 	 *
-	 * @return the loc new line char
+	 * @return the location of the new line char
 	 */
 	private int getLocNewLineChar()
 	{
@@ -82,10 +81,10 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	/**
-	 * Sets the text for unary.
+	 * Sets the text for a unary operation.
 	 *
-	 * @param a_operator the a operator
-	 * @param a_userInput the a user input
+	 * @param a_operator the operator
+	 * @param a_userInput the user input
 	 */
 	public void setTextForUnary(String a_operator, String a_userInput)
 	{
@@ -114,10 +113,10 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	/**
-	 * Sets the text for binary.
+	 * Sets the text for a binary operation.
 	 *
-	 * @param a_operator the a operator
-	 * @param a_userInput the a user input
+	 * @param a_operator the operator
+	 * @param a_userInput the user input
 	 */
 	public void setTextForBinary(String a_operator, String a_userInput)
 	{
@@ -125,35 +124,35 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	/**
-	 * Change display.
+	 * Change the display on the given line to the given text.
 	 *
-	 * @param message the message
-	 * @param lineNum the line num
-	 * @param a_replace the a replace
+	 * @param a_message the message
+	 * @param a_lineNum the line number
+	 * @param a_replace replace the text if true
 	 */
-	public void changeDisplay(String message, int lineNum, boolean a_replace)
+	public void changeDisplay(String a_message, int a_lineNum, boolean a_replace)
 	{
 		
 		int newLineChar = getLocNewLineChar();
 		
-		if (lineNum == EXPRESSION)
+		if (a_lineNum == EXPRESSION)
 		{
-			changeExpressionLine(message, newLineChar, a_replace);
+			changeExpressionLine(a_message, newLineChar, a_replace);
 		}
 		else
 		{
-			changeInputLine(message, newLineChar, a_replace);
+			changeInputLine(a_message, newLineChar, a_replace);
 		}
 		
 		System.out.println("Text changed to: " + getText());
 	}
 	
 	/**
-	 * Change expression line.
+	 * Change the expression line's text.
 	 *
-	 * @param a_message the a message
-	 * @param a_newLineChar the a new line char
-	 * @param a_replace the a replace
+	 * @param a_message the message
+	 * @param a_newLineChar the new line character's location
+	 * @param a_replace replace the text if true
 	 */
 	private void changeExpressionLine(String a_message, int a_newLineChar, boolean a_replace)
 	{
@@ -168,7 +167,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	/**
-	 * Change input line.
+	 * Change the input line's text.
 	 *
 	 * @param a_message the a message
 	 * @param a_newLineChar the a new line char
@@ -204,7 +203,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.TextManipulation#backspace()
 	 */
 	@Override
@@ -230,7 +229,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	}
 	
 	/**
-	 * Clear expression.
+	 * Clear the expression line.
 	 */
 	public void clearExpression()
 	{
@@ -248,7 +247,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.TextManipulation#clearEntry()
 	 */
 	@Override
@@ -277,7 +276,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		insertString(0, a_string);
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.TextManipulation#insertString(int, java.lang.String)
 	 */
 	@Override
@@ -293,7 +292,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.TextManipulation#remove(int, int)
 	 */
 	@Override
@@ -309,7 +308,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.TextManipulation#replaceText(int, int, java.lang.String)
 	 */
 	@Override

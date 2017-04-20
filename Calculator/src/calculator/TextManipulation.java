@@ -1,25 +1,24 @@
 package calculator;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface TextManipulation.
+ * The interface that any class that manipulates text should implement.
  */
 public interface TextManipulation {
 	
 	/**
-	 * Append.
+	 * Append text.
 	 *
-	 * @param a_string the a string
+	 * @param a_string the string to append
 	 */
 	public abstract void append(String a_string);
 
 	/**
-	 * Backspace.
+	 * Backspace current text.
 	 */
 	public abstract void backspace();
 
 	/**
-	 * Clear entry.
+	 * Clear the user's entry.
 	 */
 	public abstract void clearEntry();
 	
@@ -31,34 +30,34 @@ public interface TextManipulation {
 	public abstract String getUserEnteredText();
 	
 	/**
-	 * Insert at front.
+	 * Insert a string at the front of the text.
 	 *
-	 * @param a_string the a string
+	 * @param a_string the string to insert
 	 */
 	public abstract void insertAtFront(String a_string);
 	
 	/**
-	 * Insert string.
+	 * Insert a string.
 	 *
-	 * @param a_location the a location
-	 * @param a_string the a string
+	 * @param a_location the location to insert at
+	 * @param a_string the string to insert
 	 */
 	public abstract void insertString(int a_location, String a_string);
 	
 	/**
-	 * Removes the.
+	 * Removes the amount of text at the location
 	 *
-	 * @param a_location the a location
-	 * @param a_amtChars the a amt chars
+	 * @param a_location the location
+	 * @param a_amtChars the amount of characters to remove
 	 */
 	public abstract void remove(int a_location, int a_amtChars);
 	
 	/**
 	 * Replace text.
 	 *
-	 * @param a_locationOfText the a location of text
-	 * @param a_lengthToReplace the a length to replace
-	 * @param a_string the a string
+	 * @param a_locationOfText the location of the text to replace
+	 * @param a_lengthToReplace the length to replace
+	 * @param a_string the string to replace with
 	 */
 	public abstract void replaceText(int a_locationOfText, int a_lengthToReplace, String a_string);
 	
