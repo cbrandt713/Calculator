@@ -1,5 +1,7 @@
 package calculator;
 
+import java.awt.Font;
+
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -31,6 +33,12 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		super();
 		
 		m_displayText = getDocument();
+		
+		//Change font size:
+		Font currentFont = getFont();
+		
+		Font newFont = new Font(currentFont.getFontName(), currentFont.getStyle(), 22);
+		this.setFont(newFont);
 	}
 	
 	/**
@@ -91,24 +99,30 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		{
 			case "±":
 			{
-				clearExpression();
-				changeDisplay("negate(" + a_userInput + ") =", EXPRESSION, false);
+				//clearExpression();
+				changeDisplay("negate(" + a_userInput + ")", EXPRESSION, false);
 				break;
 			}
 			case "1/x":
 			{
-				clearExpression();
-				changeDisplay("reciprocal(" + a_userInput + ") =", EXPRESSION, false);
+				//clearExpression();
+				changeDisplay("reciprocal(" + a_userInput + ")", EXPRESSION, false);
 				break;
 			}
 			case "√":
 			{
+				//clearExpression();
+				changeDisplay("sqrt(" + a_userInput + ")", EXPRESSION, false);
+				break;
+			}
+			case "=" :
+			{
 				clearExpression();
-				changeDisplay("sqrt(" + a_userInput + ") =", EXPRESSION, false);
 				break;
 			}
 		}
 		
+		clearEntry();
 	}
 	
 	/**
@@ -120,6 +134,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	public void setTextForBinary(String a_operator, String a_userInput)
 	{
 		changeDisplay(a_userInput + " " + a_operator + " ", EXPRESSION, false);
+		clearEntry();
 	}
 	
 	/**
@@ -142,8 +157,6 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		{
 			changeInputLine(a_message, newLineChar, a_replace);
 		}
-		
-		System.out.println("Text changed to: " + getText());
 	}
 	
 	/**
@@ -168,9 +181,9 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 	/**
 	 * Change the input line's text.
 	 *
-	 * @param a_message the a message
-	 * @param a_newLineChar the a new line char
-	 * @param a_replace the a replace
+	 * @param a_message the message
+	 * @param a_newLineChar the new line character
+	 * @param a_replace replace text if true, append if false
 	 */
 	private void changeInputLine(String a_message, int a_newLineChar, boolean a_replace)
 	{

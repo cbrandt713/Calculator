@@ -7,6 +7,8 @@ import javax.swing.JOptionPane;
  */
 public class BasicCalculator extends Calculator<Double> 
 {
+	/** The second operation, if applicable. */
+	private String m_operation2;
 	
 	/**
 	 * Instantiates a new basic calculator.
@@ -25,6 +27,7 @@ public class BasicCalculator extends Calculator<Double>
 		m_input2 = -Double.MAX_VALUE;
 		m_result = -Double.MAX_VALUE;
 		m_operation = "";
+		m_operation2 = "";
 	}
 	
 	/** 
@@ -41,7 +44,8 @@ public class BasicCalculator extends Calculator<Double>
 	 */
 	public void setOperation(String a_operation)
 	{
-		m_operation = a_operation;
+		if (m_operation.equals("")) m_operation = a_operation;
+		else m_operation2 = a_operation;
 	}
 	
 	/**
@@ -103,10 +107,10 @@ public class BasicCalculator extends Calculator<Double>
 			{
 				m_result = divide(m_input, m_input2);
 				break;
-			}	
-			case "=":
+			}
+			case "%":
 			{
-				m_result = m_input;
+				m_result  = percent(m_input, m_input2);
 				break;
 			}
 			//Error case:
@@ -126,11 +130,11 @@ public class BasicCalculator extends Calculator<Double>
 	}
 	
 	/**
-	 * Do the appropriate "miscellaneous" calculation.
+	 * Do the appropriate unary calculation.
 	 *
 	 * @return the result of the calculation
 	 */
-	public Double doMiscCalculation() 
+	public Double doUnaryCalculation() 
 	{
 		if (m_input == Double.NaN || m_input == Double.NaN)
 		{
@@ -138,26 +142,42 @@ public class BasicCalculator extends Calculator<Double>
 			return m_input;
 		}
 		
-		switch (m_operation)
+		String operation = "";
+		
+		if (!m_operation2.equals("")) operation = m_operation2;
+		else operation = m_operation;
+		
+		switch (operation)
 		{
 			case "±":
 			{
-				m_result = multiply(m_input, -1);
+				//Use the most recent input:
+				if (m_input2 != -Double.MAX_VALUE) m_result = multiply(m_input2, -1);
+				else m_result = multiply(m_input, -1);
+				
 				break;
 			}
 			case "1/x":
 			{
-				m_result  = divide(1, m_input);
-				break;
-			}
-			case "%":
-			{
-				m_result  = percent(m_input, m_input2);
+				//Use the most recent input:
+				if (m_input2 != -Double.MAX_VALUE) m_result = divide(1, m_input2);
+				else m_result = divide(1, m_input);
+				
 				break;
 			}
 			case "√":
 			{
-				m_result  = squareRoot(m_input);
+				//Use the most recent input:
+				if (m_input2 != -Double.MAX_VALUE) m_result = squareRoot(m_input2);
+				else m_result = squareRoot(m_input);
+				
+				break;
+			}
+			case "=":
+			{
+				m_result = doCalculation();
+				m_input2 = -Double.MAX_VALUE;
+				m_operation2 = "";
 				break;
 			}
 			//Error:
@@ -167,9 +187,13 @@ public class BasicCalculator extends Calculator<Double>
 			}
 		}
 		
-		resetInputs();
-		m_operation = "";
-		setInput(m_result);
+		//Set the most recent input:
+		if (m_input2 != -Double.MAX_VALUE) m_input2 = m_result;
+		else m_input = m_result;
+		
+		//Reset the most recent operation:
+		if (!m_operation2.equals("")) m_operation2 = "";
+		else m_operation = "";
 		
 		return m_result;
 	}

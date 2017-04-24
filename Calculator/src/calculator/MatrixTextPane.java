@@ -3,6 +3,8 @@
  */
 package calculator;
 
+import java.awt.Font;
+
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
@@ -100,6 +102,12 @@ public class MatrixTextPane extends JTextPane implements TextManipulation
 		
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		
+		//Change font size:
+		Font currentFont = getFont();
+		
+		Font newFont = new Font(currentFont.getFontName(), currentFont.getStyle(), 16);
+		this.setFont(newFont);
 	}
 	
 	/**

@@ -101,16 +101,12 @@ public class BasicGUIModel implements ActionEventHandler {
 			return;
 		}
 		
-		//Show the input and operator on the expression line
-		m_display.changeDisplay(userInput + " " + a_operator + " ", EXPRESSION, m_replace);
-		m_display.changeDisplay("Clear", INPUT, m_replace);
-		
 		int amtSelected = m_calculator.getAmountInputs();
 		
-		if (amtSelected < m_amtOperands) return;
-		
 		if (m_amtOperands == 1) m_display.setTextForUnary(a_operator, userInput);
-		//else m_display.setTextForBinary(a_operator, userInput);
+		else m_display.setTextForBinary(a_operator, userInput);
+		
+		if (amtSelected < m_amtOperands) return;
 		
 		if (!m_miscOperation) 
 		{
@@ -118,7 +114,7 @@ public class BasicGUIModel implements ActionEventHandler {
 		}
 		else
 		{
-			m_total = m_calculator.doMiscCalculation();
+			m_total = m_calculator.doUnaryCalculation();
 		}
 		
 		//Format and display the total to the user:
@@ -160,9 +156,7 @@ public class BasicGUIModel implements ActionEventHandler {
 	public void enterActionPerformed(ActionEvent a_event)
 	{
 		//Enter key is equivalent to the = operator.
-		//Do not change the operator in calculator here
-		setupCalculation("=");
-		m_display.clearExpression();
+		miscOperatorActionPerformed(a_event);
 	}
 	
 	/**
@@ -196,7 +190,7 @@ public class BasicGUIModel implements ActionEventHandler {
 			m_display.backspace();
 		}
 		
-		//If the text is now blank, place a 0 on the input line and set the typeOverFlag
+		//If the text is now blank, place a 0 on the input line and set the replace flag
 		if (m_display.getUserEnteredText().equals(""))
 		{
 			m_display.append("0");
@@ -211,6 +205,12 @@ public class BasicGUIModel implements ActionEventHandler {
 	{
 		//Find the given operator:
 		String operator = a_event.getActionCommand();
+		
+		if (operator.equals("=")) 
+		{
+			miscOperatorActionPerformed(a_event);
+			return;
+		}
 		
 		m_amtOperands = 2;
 		
@@ -231,6 +231,9 @@ public class BasicGUIModel implements ActionEventHandler {
 	{
 		
 		String operator = a_event.getActionCommand();
+		
+		//Change \n to = if the enter key was used.
+		if (operator.equals("\n")) operator = "=";
 		
 		m_miscOperation = true;
 		

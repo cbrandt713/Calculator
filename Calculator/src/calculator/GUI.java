@@ -246,12 +246,15 @@ public class GUI extends JPanel
 		m_frame.getContentPane().add(this);
 		m_frame.setJMenuBar(getJMenuBar());
 		m_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		m_frame.setResizable(false);
 		
         // Size the frame.
         m_frame.pack();
         
         // Show the frame
         m_frame.setVisible(true);
+        
+        System.out.println(m_frame.getSize());
 	}
 	
 	/**
@@ -271,7 +274,7 @@ public class GUI extends JPanel
 		createOperators();
 		createMiscOperators();
 		
-		m_basicSize = new Dimension(253, 224);	
+		m_basicSize = new Dimension(243, 240);	
 	}
 	
 	/**
@@ -286,14 +289,13 @@ public class GUI extends JPanel
 		m_GUIState = MATRIX;
 		
 		//Create elements of the layout:
-		//frame.setSize(400, 300);
 		createMatrixDisplay();
 		createNumbers();
 		createDeleteButtons();
 		createOperators();
 		createMatrixButtons();
 		
-		m_matrixSize = new Dimension(380, 313);
+		m_matrixSize = new Dimension(370, 338);
 	}
 	
 	/**

@@ -73,12 +73,14 @@ public class MatrixCalculator extends Calculator<Matrix> {
 	 * @see calculator.Calculator#getAmountInputs()
 	 */
 	@Override
-	public int getAmountInputs() {
+	public int getAmountInputs() 
+	{
+		int count = 0;
 		
-		if (m_input == null) return 0;
-		else if (m_input2 == null) return 1;
+		if (m_input != null) count++;
+		if (m_input2 != null || (m_operation.equals("Scalar") && m_fractionScalar != null)) count++;
 		
-		return 2;
+		return count;
 	}
 	
 	/**
@@ -113,7 +115,7 @@ public class MatrixCalculator extends Calculator<Matrix> {
 				m_result = REF(m_input);
 				break;
 			}
-			case "A⁻¹":
+			case "Aâ�»Â¹":
 			{
 				m_result = invertMatrix(m_input);
 				break;
