@@ -7,7 +7,6 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MatrixGUIModel.
  */

@@ -4,9 +4,8 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class BasicTextArea.
+ * Displays text for the GUI in the "Basic" view.
  */
 @SuppressWarnings("serial")
 public class BasicTextArea extends JTextArea implements TextManipulation 
@@ -267,7 +266,7 @@ public class BasicTextArea extends JTextArea implements TextManipulation
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see calculator.TextManipulation#insertAtFront(java.lang.String)
 	 */
 	@Override

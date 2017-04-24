@@ -1,36 +1,34 @@
 package calculator;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class Matrix.
+ * The representation of a Matrix for the Matrix Calculator.
  */
 public class Matrix
 {
 	
-	/** The m rows. */
-	//Java does not support unsigned, as such do not allow negative numbers
+	/** The amount of rows. */
 	private int m_rows;
 	
-	/** The m columns. */
+	/** The amount of columns. */
 	private int m_columns;
 	
-	/** The m numbers. */
+	/** The array of numbers. */
 	private Fraction m_numbers[][];
 	
-	/** The m name. */
+	/** The name. */
 	private String m_name;
 	
 	/**
-	 * Instantiates a new matrix.
+	 * Creates a new blank matrix from an amount of rows and columns.
 	 *
-	 * @param a_rows the a rows
-	 * @param a_columns the a columns
+	 * @param a_rows the amount of rows
+	 * @param a_columns the amount of columns
 	 */
 	//Regular Constructor:
 	public Matrix(int a_rows, int a_columns)
 	{
-		setRows(a_rows);
-		setColumns(a_columns);
+		m_rows = a_rows;
+		m_columns = a_columns;
 		m_numbers = new Fraction[m_rows][m_columns];
 		setName("");
 		
@@ -47,33 +45,33 @@ public class Matrix
 	}
 	
 	/**
-	 * Instantiates a new matrix.
+	 * Creates a new matrix from a 2d array.
 	 *
-	 * @param a_matrix the a matrix
+	 * @param a_matrix the 2d array of numbers to use.
 	 */
 	//Regular Constructor:
 	public Matrix(Fraction[][] a_matrix)
 	{
-		setRows(a_matrix.length);
-		setColumns(a_matrix[0].length);
+		m_rows = a_matrix.length;
+		m_columns = a_matrix[0].length;
 		m_numbers = a_matrix;
 		setName("");
 	}
 	
 	/**
-	 * Instantiates a new matrix.
+	 * Copy constructor. Creates a new matrix.
 	 *
 	 * @param a_other the a other
 	 */
 	//Copy Constructor:
 	public Matrix(Matrix a_other)
 	{
-		setRows(a_other.getRows());
-		setColumns(a_other.getColumns());
+		m_rows = a_other.getRows();
+		m_columns = a_other.getColumns();
 		this.m_numbers = new Fraction[m_rows][m_columns];
 		setName("Copy_" + a_other.getName());
 		
-		//Copy each row into this matrix:
+		//Copy each cell into this matrix:
 		for (int row = 0; row < a_other.getRows(); row++)
 		{
 			for (int column = 0; column < a_other.getColumns(); column++)
@@ -85,9 +83,9 @@ public class Matrix
 	}
 	
 	/**
-	 * Gets the rows.
+	 * Gets the amount of rows.
 	 *
-	 * @return the rows
+	 * @return the amount of rows
 	 */
 	public int getRows()
 	{
@@ -95,9 +93,9 @@ public class Matrix
 	}
 	
 	/**
-	 * Gets the columns.
+	 * Gets the amount of columns.
 	 *
-	 * @return the columns
+	 * @return the amount of columns
 	 */
 	public int getColumns()
 	{
@@ -105,10 +103,10 @@ public class Matrix
 	}
 	
 	/**
-	 * Gets the row.
+	 * Gets the row at the index.
 	 *
-	 * @param a_row the a row
-	 * @return the row
+	 * @param a_row the index
+	 * @return the row at the index
 	 */
 	public Fraction[] getRow(int a_row)
 	{
@@ -116,10 +114,11 @@ public class Matrix
 	}
 	
 	/**
-	 * Sets the row.
-	 *
-	 * @param a_row the a row
-	 * @param a_values the a values
+	 * Sets the row at the index.
+	 * Note: uses shallow copy, not deep copy.
+	 * 
+	 * @param a_row the row
+	 * @param a_values the values to set
 	 */
 	public void setRow(int a_row, Fraction[] a_values)
 	{
@@ -128,10 +127,10 @@ public class Matrix
 	}
 	
 	/**
-	 * Gets the column.
+	 * Gets the column at the index.
 	 *
-	 * @param a_column the a column
-	 * @return the column
+	 * @param a_column the index
+	 * @return the column at the index
 	 */
 	public Fraction[] getColumn(int a_column)
 	{
@@ -147,10 +146,10 @@ public class Matrix
 	}
 	
 	/**
-	 * Sets the column.
+	 * Sets the column at the index.
 	 *
-	 * @param a_column the a column
-	 * @param a_values the a values
+	 * @param a_column the index
+	 * @param a_values the values
 	 */
 	public void setColumn(int a_column, Fraction[] a_values)
 	{
@@ -173,28 +172,6 @@ public class Matrix
 		return m_name;
 	}
 	
-	//Inconsistent state: create new Matrix!
-	/**
-	 * Sets the rows.
-	 *
-	 * @param a_rows the new rows
-	 */
-	//Possibly delete these? Keep private for now
-	private void setRows(int a_rows)
-	{
-		m_rows = (a_rows > 0) ? a_rows : 1;
-	}
-	
-	/**
-	 * Sets the columns.
-	 *
-	 * @param a_columns the new columns
-	 */
-	private void setColumns(int a_columns)
-	{
-		m_columns = (a_columns > 0) ? a_columns : 1;
-	}
-	
 	/**
 	 * Sets the name.
 	 *
@@ -206,11 +183,11 @@ public class Matrix
 	}
 	
 	/**
-	 * Sets the cell.
+	 * Sets the cell at the given row and column with a Fraction value.
 	 *
-	 * @param a_row the a row
-	 * @param a_column the a column
-	 * @param a_value the a value
+	 * @param a_row the row index
+	 * @param a_column the column index
+	 * @param a_value the value to set
 	 */
 	public void setCell(int a_row, int a_column, Fraction a_value)
 	{
@@ -218,11 +195,11 @@ public class Matrix
 	}
 	
 	/**
-	 * Sets the cell.
+	 * Sets the cell at the given row and column with an int value.
 	 *
-	 * @param a_row the a row
-	 * @param a_column the a column
-	 * @param a_value the a value
+	 * @param a_row the row index
+	 * @param a_column the column index
+	 * @param a_value the value
 	 */
 	public void setCell(int a_row, int a_column, int a_value)
 	{
@@ -231,11 +208,11 @@ public class Matrix
 	}
 	
 	/**
-	 * Gets the cell.
+	 * Gets the value at the cell
 	 *
-	 * @param a_row the a row
-	 * @param a_column the a column
-	 * @return the cell
+	 * @param a_row the row index
+	 * @param a_column the column index
+	 * @return the cell value
 	 */
 	public Fraction getCell(int a_row, int a_column)
 	{
@@ -244,11 +221,11 @@ public class Matrix
 	}
 	
 	/**
-	 * Cell exists.
+	 * Checks if the cell requested is in the given range
 	 *
-	 * @param a_row the a row
-	 * @param a_column the a column
-	 * @return true, if successful
+	 * @param a_row the row index
+	 * @param a_column the column index
+	 * @return true, if it exists
 	 */
 	public boolean cellExists(int a_row, int a_column)
 	{
@@ -257,10 +234,10 @@ public class Matrix
 	}
 	
 	/**
-	 * Row exists.
+	 * Checks if a row exists in the matrix.
 	 *
-	 * @param a_row the a row
-	 * @return true, if successful
+	 * @param a_row the row index
+	 * @return true, if it exists
 	 */
 	public boolean rowExists(int a_row)
 	{
@@ -269,22 +246,22 @@ public class Matrix
 	}
 	
 	/**
-	 * Column exists.
+	 * Checks if a column exists in the matrix.
 	 *
-	 * @param a_column the a column
-	 * @return true, if successful
+	 * @param a_column the column index
+	 * @return true, if it exists
 	 */
 	public boolean columnExists(int a_column)
 	{
 		if (a_column < m_columns) return true;
-		else return true;
+		else return false;
 	}
 	
 	/**
-	 * Checks if is row zeroes.
+	 * Checks if a row is all zeroes.
 	 *
-	 * @param a_rowIndex the a row index
-	 * @return true, if is row zeroes
+	 * @param a_rowIndex the row index
+	 * @return true, if the row is all zeroes
 	 */
 	public boolean isRowZeroes(int a_rowIndex)
 	{
@@ -299,10 +276,10 @@ public class Matrix
 	}
 	
 	/**
-	 * Checks if is column zeroes.
+	 * Checks if a column is all zeroes.
 	 *
-	 * @param a_columnIndex the a column index
-	 * @return true, if is column zeroes
+	 * @param a_columnIndex the column index
+	 * @return true, if the column is all zeroes
 	 */
 	public boolean isColumnZeroes(int a_columnIndex)
 	{
@@ -315,10 +292,10 @@ public class Matrix
 	}
 	
 	/**
-	 * Amount zeroes in row.
+	 * Counts the amount of zeroes in a row.
 	 *
-	 * @param a_rowIndex the a row index
-	 * @return the int
+	 * @param a_rowIndex the row index
+	 * @return the amount of zeroes in the row
 	 */
 	public int amountZeroesInRow(int a_rowIndex)
 	{
@@ -334,10 +311,10 @@ public class Matrix
 	}
 	
 	/**
-	 * Amount zeroes in column.
+	 * Counts the amount of zeroes in a column.
 	 *
-	 * @param a_columnIndex the a column index
-	 * @return the int
+	 * @param a_columnIndex the column index
+	 * @return the amount of zeroes in the column
 	 */
 	public int amountZeroesInColumn(int a_columnIndex)
 	{
@@ -351,9 +328,10 @@ public class Matrix
 	}
 	
 	/**
-	 * Checks if is square matrix.
-	 *
-	 * @return true, if is square matrix
+	 * Checks if the matrix is a square matrix.
+	 * As in, amount of rows = amount of columns.
+	 * 
+	 * @return true, if it is a square matrix
 	 */
 	public boolean isSquareMatrix()
 	{
@@ -361,27 +339,27 @@ public class Matrix
 	}
 	
 	/**
-	 * Swap rows.
-	 *
-	 * @param a_firstRow the a first row
-	 * @param a_secondRow the a second row
+	 * Swap two rows.
+	 * Rows passes in by index: starting at 0, ending at RowCount - 1.
+	 * 
+	 * @param a_firstRowIndex the first row index
+	 * @param a_secondRowIndex the second row index
 	 */
-	//Rows passes in by index: starting at 0, ending at RowCount - 1
-	public void swapRows(int a_firstRow, int a_secondRow)
+	public void swapRows(int a_firstRowIndex, int a_secondRowIndex)
 	{
 		//Ensure both rows exist in the matrix:
-		if (!rowExists(a_firstRow) || !rowExists(a_secondRow)) return;
+		if (!rowExists(a_firstRowIndex) || !rowExists(a_secondRowIndex)) return;
 		
 		//Store the first and second rows:
-		Fraction[] firstRow = getRow(a_firstRow);
-		Fraction[] secondRow = getRow(a_secondRow);
+		Fraction[] firstRow = getRow(a_firstRowIndex);
+		Fraction[] secondRow = getRow(a_secondRowIndex);
 		
 		//Do the swap:
-		setRow(a_secondRow, firstRow);
-		setRow(a_firstRow, secondRow);	
+		setRow(a_secondRowIndex, firstRow);
+		setRow(a_firstRowIndex, secondRow);	
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -391,11 +369,15 @@ public class Matrix
 		
 		for (int i = 0; i < getRows(); i++)
 		{
+			//Open the row with a brace:
 			matrixString.append("[ ");
 			for (int j = 0; j < getColumns() - 1; j++)
 			{
+				//Get each cell value and add a | character:
 				matrixString.append(m_numbers[i][j].toString() + " | ");
 			}
+			
+			//Append the last number and add a closing brace:
 			matrixString.append(m_numbers[i][getColumns() - 1].toString());
 			matrixString.append(" ]\n");
 		}

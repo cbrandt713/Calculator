@@ -1,7 +1,7 @@
 package calculator;
 
 /**
- * The interface that any class that manipulates text should implement.
+ * The interface that any class that manipulates text must implement.
  */
 public interface TextManipulation {
 	

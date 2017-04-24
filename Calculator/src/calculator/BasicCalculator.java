@@ -3,7 +3,7 @@ package calculator;
 import javax.swing.JOptionPane;
 
 /**
- * The class which performs the operations of the calculator in the "Basic" view. 
+ * Performs the operations of the calculator in the "Basic" view. 
  */
 public class BasicCalculator extends Calculator<Double> 
 {
@@ -17,7 +17,6 @@ public class BasicCalculator extends Calculator<Double>
 	}
 	
 	/** 
-	 * Resets all values to defaults.
 	 * @see calculator.Calculator#resetAll()
 	 */
 	protected void resetAll()
@@ -29,7 +28,6 @@ public class BasicCalculator extends Calculator<Double>
 	}
 	
 	/** 
-	 * Resets only the inputs to defaults.
 	 * @see calculator.Calculator#resetInputs()
 	 */
 	protected void resetInputs()
@@ -39,8 +37,6 @@ public class BasicCalculator extends Calculator<Double>
 	}
 	
 	/**
-	 * Set the operation of the calculation.
-	 * @param a_operation the operation to set
 	 * @see calculator.Calculator#setOperation(java.lang.String)
 	 */
 	public void setOperation(String a_operation)
@@ -49,8 +45,6 @@ public class BasicCalculator extends Calculator<Double>
 	}
 	
 	/**
-	 * Set an input for the calculation.
-	 * @param a_input the input to set
 	 * @see calculator.Calculator#setInput(java.lang.Object)
 	 */
 	public void setInput(Double a_input)
@@ -60,7 +54,6 @@ public class BasicCalculator extends Calculator<Double>
 	}
 
 	/** 
-	 * Returns the amount of inputs set in the calculator.
 	 * @see calculator.Calculator#getAmountInputs()
 	 */
 	public int getAmountInputs()
@@ -71,7 +64,6 @@ public class BasicCalculator extends Calculator<Double>
 		return 2;
 	}
 	/**
-	 * Do the appropriate calculation.
 	 * @see calculator.Calculator#doCalculation()
 	 */
 	public Double doCalculation() 

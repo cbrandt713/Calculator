@@ -1,14 +1,13 @@
 package calculator;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class MatrixException.
+ * Contains a message about why an operation can't be performed and allows the offending matrix(ces) to be shown.
  */
 @SuppressWarnings("serial")
 public class MatrixException extends Exception 
 {
 	
-	/** The m offending matrices. */
+	/** The offending matrices. */
 	private String[] m_offendingMatrices;
 	
 	/**
@@ -21,9 +20,9 @@ public class MatrixException extends Exception
 	}
 	
 	/**
-	 * Instantiates a new matrix exception.
+	 * Instantiates a new matrix exception with given message.
 	 *
-	 * @param a_message the a message
+	 * @param a_message the message
 	 */
 	public MatrixException(String a_message)
 	{
@@ -32,10 +31,10 @@ public class MatrixException extends Exception
 	}
 	
 	/**
-	 * Instantiates a new matrix exception.
+	 * Instantiates a new matrix exception with message and offending matrices.
 	 *
-	 * @param a_message the a message
-	 * @param a_matrices the a matrices
+	 * @param a_message the message
+	 * @param a_matrices the offending matrices
 	 */
 	public MatrixException(String a_message, Matrix...a_matrices)
 	{
